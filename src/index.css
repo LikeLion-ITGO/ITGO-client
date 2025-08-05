@@ -40,6 +40,41 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* 디자인 가이드 추가 */
+
+  /* main-gray */
+  --color-gray-900: #171818;
+  --color-gray-800: #2f3032;
+  --color-gray-700: #47484b;
+  --color-gray-600: #5f6165;
+  --color-gray-500: #777a7f;
+  --color-gray-400: #8f9498;
+  --color-gray-300: #a7acb2;
+  --color-gray-200: #bcc3ce;
+  --color-gray-100: #f5f7fa;
+  --color-gray-50: #fafbfc;
+
+  /* main-blue */
+  --color-blue-light: #ddf0ff;
+  --color-blue-light-hover: #d5edff;
+  --color-blue-light-active: #b5e0ff;
+  --color-blue-normal: #3cadff;
+  --color-blue-normal-hover: #2695e8;
+  --color-blue-normal-active: #1c84cf;
+  --color-blue-dark: #1e7bc0;
+  --color-blue-dark-hover: #186198;
+  --color-blue-dark-active: #0f4873;
+  --color-blue-darker: #0c3756;
+
+  /* blue gradtation */
+  --color-blue-gradation-from: #3cadff;
+  --color-blue-gradation-to: #2695e8;
+
+  /* sub color */
+  --color-sub: #ffcd2a;
+  --color-red: #ff5252;
+  --color-subtxt: #d7a500;
 }
 
 :root {
@@ -109,6 +144,122 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+}
+
+/* Typography 가이드 정의 */
+
+@layer utilities {
+  /* title */
+  .display-02 {
+    font-size: 28px;
+    line-height: 130%;
+    font-weight: 600;
+    letter-spacing: -0.4px;
+  }
+  .display-01 {
+    font-size: 24px;
+    line-height: 130%;
+    font-weight: 600;
+    letter-spacing: -0.4px;
+  }
+  .headline-long-02 {
+    font-size: 20px;
+    line-height: 140%;
+    font-weight: 600;
+    letter-spacing: -0.4px;
+  }
+  .headline-02 {
+    font-size: 20px;
+    line-height: 100%;
+    font-weight: 600;
+    letter-spacing: -0.4px;
+  }
+  .headline-long-01 {
+    font-size: 18px;
+    line-height: 150%;
+    font-weight: 600;
+    letter-spacing: -0.4px;
+  }
+  .headline-01 {
+    font-size: 18px;
+    line-height: 100%;
+    font-weight: 600;
+    letter-spacing: -0.4px;
+  }
+  .subhead-03 {
+    font-size: 16px;
+    line-height: 100%;
+    font-weight: 600;
+    letter-spacing: -0.4px;
+  }
+  .subhead-long-03 {
+    font-size: 14px;
+    line-height: 150%;
+    font-weight: 600;
+    letter-spacing: -0.4px;
+  }
+  .subhead-02 {
+    font-size: 14px;
+    line-height: 100%;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+  }
+  .subhead-long-02 {
+    font-size: 14px;
+    line-height: 150%;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+  }
+  .subhead-01 {
+    font-size: 12px;
+    line-height: 100%;
+    font-weight: 500;
+    letter-spacing: -0.4px;
+  }
+
+  /* body */
+  .body-03 {
+    font-size: 16px;
+    line-height: 100%;
+    font-weight: 500;
+    letter-spacing: -0.4px;
+  }
+  .body-long-03 {
+    font-size: 16px;
+    line-height: 150%;
+    font-weight: 500;
+    letter-spacing: -0.4px;
+  }
+  .body-02 {
+    font-size: 16px;
+    line-height: 100%;
+    font-weight: 400;
+    letter-spacing: -0.4px;
+  }
+  .body-long-02 {
+    font-size: 16px;
+    line-height: 150%;
+    font-weight: 400;
+    letter-spacing: -0.4px;
+  }
+  .body-01 {
+    font-size: 14px;
+    line-height: 100%;
+    font-weight: 400;
+    letter-spacing: -0.4px;
+  }
+  .body-long-01 {
+    font-size: 14px;
+    line-height: 150%;
+    font-weight: 400;
+    letter-spacing: -0.4px;
+  }
+  .caption {
+    font-size: 12px;
+    line-height: 100%;
+    font-weight: 400;
+    letter-spacing: -0.4px;
+  }
 }
 
 @layer base {
