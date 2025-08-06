@@ -1,5 +1,5 @@
 import MainLayout from "@/components/layouts/MainLayout";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layouts/AppSidebar";
 import { ProductList } from "@/components/productList/ProductList";
 import EditedIcon from "@/assets/icons/storeInfoPage/Edited.svg";
@@ -8,6 +8,7 @@ import { ShareSection } from "@/components/home/bottom/ShareSection";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ShareStatusContent } from "@/components/home/ShareStatusContent";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 export default function Home() {
   const location = useLocation();

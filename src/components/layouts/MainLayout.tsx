@@ -1,3 +1,5 @@
+import { SidebarProvider } from "../ui/sidebar";
+
 export default function MainLayout({
   children,
   bgcolor = "#F5F7FA",
