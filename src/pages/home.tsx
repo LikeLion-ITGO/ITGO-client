@@ -2,6 +2,7 @@ import MainLayout from "@/components/layouts/MainLayout";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layouts/AppSidebar";
 import ChevronDown from "@/assets/icons/home/chevron-down.svg?react";
+import { ProductList } from "@/components/productList/ProductList";
 
 export default function Home() {
   return (
@@ -16,6 +17,7 @@ export default function Home() {
           <SidebarTrigger />
         </header>
       </SidebarProvider>
+      <ProductList />
     </MainLayout>
   );
 }
