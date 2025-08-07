@@ -3,5 +3,9 @@ export default function MainLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <div className="h-100dvh flex flex-col px-[20px]">{children}</div>;
+  return (
+    <div className="h-100dvh flex flex-col px-[20px] bg-[#F5F7FA]">
+      {children}
+    </div>
+  );
 }
