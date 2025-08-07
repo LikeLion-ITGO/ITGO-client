@@ -3,7 +3,9 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layouts/AppSidebar";
 import ChevronDown from "@/assets/icons/home/chevron-down.svg?react";
 import { ProductList } from "@/components/productList/ProductList";
-import { HomeBottom } from "@/components/home/bottom/HomeBottom";
+
+import { FloatingButton } from "@/components/home/bottom/FloatingButton";
+import { ShareSection } from "@/components/home/bottom/ShareSection";
 
 export default function Home() {
   return (
@@ -19,7 +21,10 @@ export default function Home() {
         </header>
       </SidebarProvider>
       <ProductList />
-      <HomeBottom />
+      <ShareSection />
+      <div className="flex justify-end ">
+        <FloatingButton />
+      </div>
     </MainLayout>
   );
 }

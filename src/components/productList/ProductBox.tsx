@@ -15,7 +15,7 @@ export const ProductBox = ({ type = "default" }: productType) => {
           : type == "noBtn"
           ? "h-[130[x]] "
           : "h-[198px]"
-      } rounded-[24px] border border-[#F5F7FA] bg-white shadow-[0_2px_12px_0_rgba(0,0,0,0.05)] mb-4 p-[20px] justify-between flex flex-col`}
+      } rounded-[24px] border border-[#F5F7FA] bg-white shadow-[0_2px_12px_0_rgba(0,0,0,0.05)]  p-[20px] justify-between flex flex-col`}
     >
       <div className="gap-[16px] flex ">
         <img
