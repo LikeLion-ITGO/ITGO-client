@@ -49,7 +49,7 @@ export const ProductBox = ({ type = "default" }: productType) => {
         </div>
       </div>
       {type == "default" && (
-        <Button className="w-full h-[44px] rounded-[76px] subhead-03 text-blue-normal bg-white border-[#3CADFF] border-[1px] ">
+        <Button className="w-full h-[44px] rounded-[76px] subhead-03 text-blue-normal bg-white border-[#3CADFF] border-[1px] active:bg-[#DDF0FF] hover:bg-[#fff]">
           요청하기
         </Button>
       )}
