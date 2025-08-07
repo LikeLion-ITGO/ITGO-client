@@ -2,9 +2,10 @@ import MainLayout from "@/components/layouts/MainLayout";
 import backIcon from "@/assets/icons/back.svg";
 import { ChevronDown } from "lucide-react";
 import { ShareCategoryFilter } from "@/components/shareListPage/ShareCategoryFilter";
-import { ShareProductList } from "@/components/shareListPage/ShareProductLIst";
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ShareProductList } from "@/components/shareListPage/ShareProductList";
 
 export const ShareListPage = () => {
   const [selectedCat, setSelectedCat] = useState("전체");
