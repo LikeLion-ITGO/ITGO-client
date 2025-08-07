@@ -3,6 +3,7 @@ import { ROUTES } from "./constants/routes";
 
 import Home from "./pages/home";
 import { ShareListPage } from "./pages/ShareListPage";
+import { ShareDetailPage } from "./pages/ShareDetailPage";
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
       <Routes>
         <Route path={ROUTES.HOME} element={<Home />} />
         <Route path={ROUTES.SHARELIST} element={<ShareListPage />} />
+        <Route path={ROUTES.SHAREDETAIL} element={<ShareDetailPage />} />
       </Routes>
     </BrowserRouter>
   );
