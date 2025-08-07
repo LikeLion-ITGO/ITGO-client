@@ -21,7 +21,7 @@ export const PendingRequestItem = () => {
         </div>
         <div className="flex flex-col justify-between items-end">
           <span className="caption text-gray-200">5분전</span>
-          <Button className="bg-white border border-blue-normal ml-3 text-blue-normal rounded-full">
+          <Button className="bg-white hover:bg-gray-100 border border-blue-normal ml-3 text-blue-normal rounded-full">
             수락
           </Button>
         </div>

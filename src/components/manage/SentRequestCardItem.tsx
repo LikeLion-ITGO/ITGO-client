@@ -27,7 +27,7 @@ export const SentRequestCardItem = ({
         <div className="w-full flex flex-row gap-4">
           <img
             src={MailMilk}
-            alt="매일 우융"
+            alt="매일 우유"
             className="h-[90px] w-[90px] rounded-full"
           />
           <div className="flex flex-col flex-1 gap-3">
@@ -57,8 +57,8 @@ export const SentRequestCardItem = ({
         className={clsx(
           "subhead-03 h-11 rounded-full border",
           status === ReceiveShareStatus.NO_REQUEST
-            ? "bg-gray-50 border-gray-300 text-gray-300"
-            : "bg-white border-blue-normal text-blue-normal"
+            ? "bg-gray-50 border-gray-300 text-gray-300 pointer-events-none"
+            : "bg-white hover:bg-gray-100 border-blue-normal text-blue-normal"
         )}
       >
         {" "}
