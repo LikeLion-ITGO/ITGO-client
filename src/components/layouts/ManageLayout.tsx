@@ -19,7 +19,7 @@ export default function ManageLayout({
   setSelectedTab,
 }: ManageLayoutProps) {
   return (
-    <div className="min-h-[100dvh] flex flex-col bg-blue-normal">
+    <div className="min-h-[100dvh] flex flex-col bg-blue-normal rounded-b-full">
       {/* 헤더 */}
       <header className="relative h-13 flex justify-center text-white text-xl font-semibold py-[14px] mx-5">
         <span className="absolute left-0">
@@ -46,7 +46,7 @@ export default function ManageLayout({
               {selectedTab === index && (
                 <>
                   <div className="absolute w-2 h-2 left-1/2 -translate-x-1/2 top-[34px] bg-blue-normal rounded-full z-10"></div>
-                  <div className="absolute left-1/2 -translate-x-1/2 top-[26px]">
+                  <div className="absolute left-1/2 -translate-x-1/2 top-[27px]">
                     <CurvedBtn />
                   </div>
                 </>
