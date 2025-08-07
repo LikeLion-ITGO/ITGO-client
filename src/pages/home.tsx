@@ -3,6 +3,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layouts/AppSidebar";
 import ChevronDown from "@/assets/icons/home/chevron-down.svg?react";
 import { ProductList } from "@/components/productList/ProductList";
+import { HomeBottom } from "@/components/home/bottom/HomeBottom";
 
 export default function Home() {
   return (
@@ -18,6 +19,7 @@ export default function Home() {
         </header>
       </SidebarProvider>
       <ProductList />
+      <HomeBottom />
     </MainLayout>
   );
 }
