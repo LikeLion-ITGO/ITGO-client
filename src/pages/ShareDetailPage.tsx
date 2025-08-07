@@ -1,4 +1,3 @@
-import sampleBigMilk from "@/assets/images/sampleBigMilk.png";
 import sampleStore from "@/assets/images/sampleStore.png";
 
 import grayArrow from "@/assets/icons/ShareListPage/grayArrow.svg";
@@ -7,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import MainLayout from "@/components/layouts/MainLayout";
 import { ShareSection } from "@/components/home/bottom/ShareSection";
 import { Button } from "@/components/ui/button";
+import { ShareImageSwiper } from "@/components/shareDetailPage/ShareImageSwiper";
 
 export const ShareDetailPage = () => {
   const navigate = useNavigate();
@@ -21,17 +21,13 @@ export const ShareDetailPage = () => {
 
   return (
     <MainLayout bgcolor="#fff">
-      <div className="relative -mx-[20px] ">
-        <img
-          src={sampleBigMilk}
-          alt="샘플 우유"
-          className=" w-full h-[400px] -pt-[44px] object-cover"
-        />
-        {/* 위에 어떻게 나오는지 체크하고 수정 */}
+      <div className="relative -mx-[20px] h-[400px]">
+        <ShareImageSwiper />
+        {/* 위에부분 사진-> 어떻게 나오는지 체크하고 수정 */}
         <img
           src={backIcon}
           alt="<"
-          className="absolute left-[20px] top-[12px] "
+          className="absolute left-[20px] top-[12px] z-3"
           onClick={() => navigate(-1)}
         />
       </div>
