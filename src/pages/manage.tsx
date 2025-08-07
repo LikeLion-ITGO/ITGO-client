@@ -2,6 +2,7 @@ import ManageLayout from "@/components/layouts/ManageLayout";
 import { useState } from "react";
 import ReceivedRequestContent from "@/components/manage/ReceivedRequestContent";
 import SentRequestContent from "@/components/manage/SentRequestContent";
+import { ReceiveShareStatus } from "@/constants/status";
 
 export default function Manage() {
   const [selectedTab, setSelectedTab] = useState(0);
@@ -13,7 +14,16 @@ export default function Manage() {
       selectedTab={selectedTab}
       setSelectedTab={setSelectedTab}
     >
-      {selectedTab === 0 ? <ReceivedRequestContent /> : <SentRequestContent />}
+      {selectedTab === 0 ? (
+        <ReceivedRequestContent />
+      ) : (
+        <SentRequestContent
+          receive_status={ReceiveShareStatus.SHARING_CONFIRMED}
+        />
+        // <SentRequestContent
+        //   receive_status={ReceiveShareStatus.MATCHING_IN_PROGRESS}
+        // />
+      )}
     </ManageLayout>
   );
 }
