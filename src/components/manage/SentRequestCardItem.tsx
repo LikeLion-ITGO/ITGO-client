@@ -61,7 +61,6 @@ export const SentRequestCardItem = ({
             : "bg-white hover:bg-gray-100 border-blue-normal text-blue-normal"
         )}
       >
-        {" "}
         {renderStatusText()}
       </Button>
     </div>

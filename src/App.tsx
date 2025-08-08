@@ -4,6 +4,7 @@ import { ROUTES } from "./constants/routes";
 import Home from "./pages/home";
 import Manage from "./pages/manage";
 import History from "./pages/history";
+import { Success } from "./pages/success";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path={ROUTES.HOME} element={<Home />} />
         <Route path={ROUTES.MANAGE} element={<Manage />} />
         <Route path={ROUTES.HISTORY} element={<History />} />
+        <Route path={ROUTES.SUCCESS} element={<Success />} />
       </Routes>
     </BrowserRouter>
   );
