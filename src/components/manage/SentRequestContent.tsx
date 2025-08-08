@@ -9,28 +9,24 @@ export default function SentRequestContent({
   return (
     <div className="flex flex-col px-5 pt-6 gap-16">
       {/* 보낸 요청 */}
-      <div className="min-w-full flex-shrink-0 snap-center">
-        <div
-          className="flex flex-row p-5 bg-white border border-gray-100 rounded-3xl gap-4"
-          style={{ boxShadow: "0px 2px 12px rgba(0, 0, 0, 0.05)" }}
-        >
-          <div className="flex flex-row flex-1 justify-between">
-            <div className="flex flex-col gap-3">
-              <div className="flex flex-col gap-[6px]">
-                <div className="flex flex-row justify-between">
-                  <span className="subhead-02 text-gray-500">요청 제목</span>
-                  <span className="caption text-gray-200">5분 전</span>
-                </div>
-                <span className="headline-01 text-gray-900">
-                  요청 품목 수량
-                </span>
-              </div>
-              <span className="body-01 text-gray-500">
-                나눔 요청 내용나눔 요청 내용나눔 요청 내용나눔 요청 내용나눔
-                요청 내용나눔 요청 내용나눔 요청 내용나내용나내용나
-              </span>
+      <div
+        className="flex flex-row p-5 bg-white border border-gray-100 rounded-3xl gap-4"
+        style={{ boxShadow: "0px 2px 12px rgba(0, 0, 0, 0.05)" }}
+      >
+        <div className="flex flex-1 flex-row justify-between">
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-[6px]">
+              <span className="subhead-02 text-gray-500">요청 제목</span>
+              <span className="headline-01 text-gray-900">요청 품목 수량</span>
             </div>
+            <span className="body-long-01 text-gray-500">
+              나눔 요청 내용나눔 요청 내용나눔 요청 내용나눔 요청 내용나눔 요청
+              내용나눔 요청 내용나눔 요청 내용나내용나내용나
+            </span>
           </div>
+          <span className="caption text-gray-200 whitespace-nowrap">
+            5분 전
+          </span>
         </div>
       </div>
 
