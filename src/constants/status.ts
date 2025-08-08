@@ -10,3 +10,9 @@ export enum ReceiveShareStatus {
   MATCHING_IN_PROGRESS = "MATCHING_IN_PROGRESS", // 나눔 요청을 보낸 상태 (수락 기다리는 중)
   SHARING_CONFIRMED = "SHARING_CONFIRMED", // 요청이 수락되어 매칭 완료됨
 }
+
+export enum ProductStatus {
+  NO_REQUEST = "NO_REQUEST", // 나눔 요청을 받지 못함
+  MATCHED = "MATCHED", // 나눔 요청을 받음 (confirm 이전)
+  CONFIRMED = "CONFIRMED", // 나눔이 진행된 이후 confirm 완료
+}
