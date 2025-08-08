@@ -260,6 +260,32 @@
     font-weight: 400;
     letter-spacing: -0.4px;
   }
+
+  .orbit-container {
+    position: relative;
+    width: 70px;
+    height: 70px;
+  }
+
+  .orbiting {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+
+    transform: translate(-50%, -50%) rotate(0deg) translateX(12px) rotate(0deg);
+    animation: orbit 2s linear infinite;
+  }
+
+  @keyframes orbit {
+    0% {
+      transform: translate(-50%, -50%) rotate(0deg) translateX(12px)
+        rotate(0deg);
+    }
+    100% {
+      transform: translate(-50%, -50%) rotate(360deg) translateX(12px)
+        rotate(-360deg);
+    }
+  }
 }
 
 @layer base {
@@ -278,4 +304,9 @@ body {
   font-family: "Pretendard", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+input[type="time"]::-webkit-calendar-picker-indicator {
+  display: none;
+  -webkit-appearance: none;
 }
