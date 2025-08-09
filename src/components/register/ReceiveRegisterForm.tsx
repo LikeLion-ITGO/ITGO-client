@@ -2,6 +2,7 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
 import { useState } from "react";
+import { TimeInput } from "../common/TimeInput";
 
 interface ReceiveRegisterFormProps {
   onSubmit: () => void;
@@ -85,36 +86,24 @@ export const ReceiveRegisterForm = ({ onSubmit }: ReceiveRegisterFormProps) => {
       <div className="subhead-02 text-gray-700 flex flex-col gap-4">
         <span>거래가능 시간대</span>
         <div className="flex flex-row gap-2">
-          <Input
-            type="time"
-            placeholder="10:00"
+          <TimeInput
             value={startTime}
-            onChange={(e) => setStartTime(e.target.value)}
+            onChange={setStartTime}
+            placeholder="10:00"
             disabled={storeTimeChecked}
-            className={`body-02 !h-11 border rounded-lg px-4 py-[15px]
-                placeholder:text-gray-400 focus:outline-none focus:ring-0
-                ${
-                  storeTimeChecked
-                    ? "bg-gray-100 text-gray-200 border-gray-200"
-                    : "text-gray-900 border-gray-200 focus-visible:border-blue-normal"
-                }
-              `}
+            className={`body-02 !h-11 border border-gray-200 rounded-lg px-4 py-[15px]
+    placeholder:text-gray-400 focus:outline-none focus:ring-0 focus-visible:border-blue-normal
+    ${storeTimeChecked ? "bg-gray-100 text-gray-200" : "text-gray-900"}`}
           />
           <span className="body-02 flex items-center text-gray-400">~</span>
-          <Input
-            type="time"
+          <TimeInput
             value={endTime}
-            onChange={(e) => setEndTime(e.target.value)}
-            disabled={storeTimeChecked}
+            onChange={setEndTime}
             placeholder="19:00"
-            className={`body-02 !h-11 border rounded-lg px-4 py-[15px]
-                placeholder:text-gray-400 focus:outline-none focus:ring-0
-                ${
-                  storeTimeChecked
-                    ? "bg-gray-100 text-gray-200 border-gray-200"
-                    : "text-gray-900 border-gray-200 focus-visible:border-blue-normal"
-                }
-              `}
+            disabled={storeTimeChecked}
+            className={`body-02 !h-11 border border-gray-200 rounded-lg px-4 py-[15px]
+    placeholder:text-gray-400 focus:outline-none focus:ring-0 focus-visible:border-blue-normal
+    ${storeTimeChecked ? "bg-gray-100 text-gray-200" : "text-gray-900"}`}
           />
         </div>
         {/* 가게 운영 시간과 동일 여부 */}
