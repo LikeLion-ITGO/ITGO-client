@@ -8,21 +8,25 @@ import { AIRecommend } from "./pages/ai-recommend";
 import Manage from "./pages/manage";
 import History from "./pages/history";
 import { Success } from "./pages/success";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
+const queryClient = new QueryClient();
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path={ROUTES.HOME} element={<Home />} />
-        <Route path={ROUTES.REGISTER_GIVE} element={<RegisterGive />} />
-        <Route path={ROUTES.REGISTER_RECEIVE} element={<RegisterReceive />} />
-        <Route path={ROUTES.AI_RECOMMEND} element={<AIRecommend />} />
-        <Route path={ROUTES.MANAGE} element={<Manage />} />
-        <Route path={ROUTES.HISTORY} element={<History />} />
-        <Route path={ROUTES.SUCCESS} element={<Success />} />
-      </Routes>
-    </BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <Routes>
+          <Route path={ROUTES.HOME} element={<Home />} />
+          <Route path={ROUTES.REGISTER_GIVE} element={<RegisterGive />} />
+          <Route path={ROUTES.REGISTER_RECEIVE} element={<RegisterReceive />} />
+          <Route path={ROUTES.AI_RECOMMEND} element={<AIRecommend />} />
+          <Route path={ROUTES.MANAGE} element={<Manage />} />
+          <Route path={ROUTES.HISTORY} element={<History />} />
+          <Route path={ROUTES.SUCCESS} element={<Success />} />
+        </Routes>
+      </BrowserRouter>
+    </QueryClientProvider>
   );
 }
 

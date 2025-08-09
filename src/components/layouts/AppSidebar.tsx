@@ -12,9 +12,16 @@ import EditIcon from "@/assets/icons/home/edit-icon.svg?react";
 import sample from "@/assets/images/sample.png";
 import { Separator } from "@radix-ui/react-separator";
 import { Clock, MapPin } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { getMyStore } from "@/apis/store";
+import type { Store } from "@/types/store";
 
 export const AppSidebar = () => {
   const { toggleSidebar } = useSidebar();
+  const { data: store } = useQuery<Store>({
+    queryKey: ["myStore"],
+    queryFn: getMyStore,
+  });
 
   return (
     <Sidebar side="right">
@@ -28,16 +35,16 @@ export const AppSidebar = () => {
         <SidebarGroup className="flex flex-row justify-between p-0">
           <div className="flex flex-col gap-4">
             <span className="text-xl font-semibold text-gray-900">
-              여기 꼬치네
+              {store?.name}
             </span>
             <div className="flex flex-col text-sm gap-[6px] text-gray-600">
               <span className="flex flex-row items-center tracking--2 gap-[6px]">
                 <MapPin size={16} />
-                노원구 공릉동 99로
+                {store?.address}
               </span>
               <span className="flex flex-row items-center tracking--2 gap-[6px]">
                 <Clock size={16} />
-                10:00 ~ 19:00
+                {store?.openAt} ~ {store?.closeAt}
               </span>
             </div>
           </div>
