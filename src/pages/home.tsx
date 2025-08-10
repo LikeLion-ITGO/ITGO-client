@@ -8,7 +8,6 @@ import { ShareSection } from "@/components/home/bottom/ShareSection";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ShareStatusContent } from "@/components/home/ShareStatusContent";
-import { SidebarProvider } from "@/components/ui/sidebar";
 
 export default function Home() {
   const location = useLocation();
