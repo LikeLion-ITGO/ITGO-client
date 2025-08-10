@@ -11,6 +11,8 @@ import XIcon from "@/assets/icons/home/x-icon.svg?react";
 import EditIcon from "@/assets/icons/home/edit-icon.svg?react";
 import sample from "@/assets/images/sample.png";
 import { Separator } from "@radix-ui/react-separator";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "@/constants/routes";
 import { Clock, MapPin } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getMyStore } from "@/apis/store";
@@ -18,6 +20,7 @@ import type { Store } from "@/types/store";
 
 export const AppSidebar = () => {
   const { toggleSidebar } = useSidebar();
+  const navigate = useNavigate();
   const { data: store } = useQuery<Store>({
     queryKey: ["myStore"],
     queryFn: getMyStore,
@@ -29,7 +32,7 @@ export const AppSidebar = () => {
         <button onClick={toggleSidebar}>
           <XIcon />
         </button>
-        <EditIcon />
+        <EditIcon onClick={() => navigate(ROUTES.MY_INFO)} />
       </SidebarHeader>
       <SidebarContent className="flex flex-col p-5 gap-5">
         <SidebarGroup className="flex flex-row justify-between p-0">

@@ -2,6 +2,7 @@ import React from "react";
 import clsx from "clsx";
 import ChevronLeft from "@/assets/icons/manage/chevron-left.svg?react";
 import CurvedBtn from "@/assets/icons/manage/curved-btn.svg?react";
+import { useNavigate } from "react-router-dom";
 
 interface ManageLayoutProps {
   children: React.ReactNode;
@@ -18,11 +19,17 @@ export default function ManageLayout({
   selectedTab,
   setSelectedTab,
 }: ManageLayoutProps) {
+  const navigate = useNavigate();
   return (
     <div className="min-h-[100dvh] flex flex-col bg-blue-normal rounded-b-full">
       {/* 헤더 */}
       <header className="relative h-13 flex justify-center text-white text-xl font-semibold py-[14px] mx-5">
-        <span className="absolute left-0">
+        <span
+          className="absolute left-0"
+          onClick={() => {
+            navigate("/");
+          }}
+        >
           <ChevronLeft />
         </span>
         {title}

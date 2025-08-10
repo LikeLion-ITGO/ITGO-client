@@ -1,11 +1,19 @@
 import ManageLayout from "@/components/layouts/ManageLayout";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ReceivedRequestContent from "@/components/manage/ReceivedRequestContent";
 import SentRequestContent from "@/components/manage/SentRequestContent";
 import { ReceiveShareStatus } from "@/constants/status";
 
-export default function Manage() {
+export default function Manage({ status }: { status: string }) {
   const [selectedTab, setSelectedTab] = useState(0);
+
+  useEffect(() => {
+    if (status === "receive") {
+      setSelectedTab(0);
+    } else {
+      setSelectedTab(1);
+    }
+  }, []);
 
   return (
     <ManageLayout
