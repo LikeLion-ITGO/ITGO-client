@@ -260,6 +260,32 @@
     font-weight: 400;
     letter-spacing: -0.4px;
   }
+
+  .orbit-container {
+    position: relative;
+    width: 70px;
+    height: 70px;
+  }
+
+  .orbiting {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+
+    transform: translate(-50%, -50%) rotate(0deg) translateX(12px) rotate(0deg);
+    animation: orbit 2s linear infinite;
+  }
+
+  @keyframes orbit {
+    0% {
+      transform: translate(-50%, -50%) rotate(0deg) translateX(12px)
+        rotate(0deg);
+    }
+    100% {
+      transform: translate(-50%, -50%) rotate(360deg) translateX(12px)
+        rotate(-360deg);
+    }
+  }
 }
 
 @layer base {
@@ -280,6 +306,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+
 .swiper-pagination-bullet {
   border-radius: 24px !important;
   background-color: #171818 !important;
@@ -296,4 +323,17 @@ body {
   width: 10px !important;
   height: 6px !important;
   z-index: 10 !important;
+
+input[type="time"]::-webkit-calendar-picker-indicator {
+  display: none;
+  -webkit-appearance: none;
+
+  /* 가르 스크롤 스크롤 바 숨기기 */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }

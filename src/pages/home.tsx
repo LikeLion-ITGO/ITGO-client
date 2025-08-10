@@ -1,14 +1,14 @@
 import MainLayout from "@/components/layouts/MainLayout";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layouts/AppSidebar";
 import ChevronDown from "@/assets/icons/home/chevron-down.svg?react";
 import { ProductList } from "@/components/productList/ProductList";
 import EditedIcon from "@/assets/icons/storeInfoPage/Edited.svg";
-
 import { FloatingButton } from "@/components/home/bottom/FloatingButton";
 import { ShareSection } from "@/components/home/bottom/ShareSection";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { ShareStatusContent } from "@/components/home/ShareStatusContent";
 
 export default function Home() {
   const location = useLocation();
@@ -43,7 +43,6 @@ export default function Home() {
           가게 정보가 수정되었어요!
         </div>
       )}
-      <SidebarProvider>
         <AppSidebar />
         <header className="w-full h-11 flex flex-row items-center justify-between py-[14px]">
           <div className="flex flex-row items-center text-xl font-semibold gap-[6px]">
@@ -52,7 +51,8 @@ export default function Home() {
           </div>
           <SidebarTrigger />
         </header>
-      </SidebarProvider>
+
+        <ShareStatusContent />
       <ProductList />
       <ShareSection />
       <div className="flex justify-end ">

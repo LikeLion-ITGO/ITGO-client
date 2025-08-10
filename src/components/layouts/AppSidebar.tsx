@@ -13,6 +13,8 @@ import sample from "@/assets/images/sample.png";
 import { Separator } from "@radix-ui/react-separator";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
+import { Clock, MapPin } from "lucide-react";
+
 
 export const AppSidebar = () => {
   const { toggleSidebar } = useSidebar();
@@ -29,10 +31,18 @@ export const AppSidebar = () => {
       <SidebarContent className="flex flex-col p-5 gap-5">
         <SidebarGroup className="flex flex-row justify-between p-0">
           <div className="flex flex-col gap-4">
-            <span className="text-xl font-semibold">여기 꼬치네</span>
-            <div className="flex flex-col text-sm gap-[6px]">
-              <span className="tracking--2">노원구 공릉동 99로</span>
-              <span className="tracking--2">10:00 ~ 19:00</span>
+            <span className="text-xl font-semibold text-gray-900">
+              여기 꼬치네
+            </span>
+            <div className="flex flex-col text-sm gap-[6px] text-gray-600">
+              <span className="flex flex-row items-center tracking--2 gap-[6px]">
+                <MapPin size={16} />
+                노원구 공릉동 99로
+              </span>
+              <span className="flex flex-row items-center tracking--2 gap-[6px]">
+                <Clock size={16} />
+                10:00 ~ 19:00
+              </span>
             </div>
           </div>
           <img src={sample} alt="여기꼬치네" className="h-[78px] w-[78px]" />
