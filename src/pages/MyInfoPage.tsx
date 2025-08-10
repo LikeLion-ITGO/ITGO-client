@@ -3,13 +3,17 @@ import backIcon from "@/assets/icons/back.svg";
 import PRF_IMG from "@/assets/icons/storeInfoPage/PRF_IMG.svg";
 import imageIcon from "@/assets/icons/storeInfoPage/imageIcon.svg";
 import TextareaAutosize from "react-textarea-autosize";
-
 import { useNavigate } from "react-router-dom";
-
 import { InputEdit } from "@/components/InputEdit";
+import { ROUTES } from "@/constants/routes";
 
 export const MyInfoPage = () => {
   const navigate = useNavigate();
+
+  const handleSave = () => {
+    navigate(ROUTES.HOME, { state: { showToast: true } });
+  };
+
   return (
     <MainLayout bgcolor="white">
       <header className="w-full h-11 flex flex-row items-center justify-center py-[14px] mb-[44px]">
@@ -22,7 +26,10 @@ export const MyInfoPage = () => {
           className="absolute left-[20px] top-[12px] z-3"
           onClick={() => navigate(-1)}
         />
-        <div className="absolute right-[20px] text-[20px] text-[#3CADFF] font-semibold z-3">
+        <div
+          className="absolute right-[20px] text-[20px] text-[#3CADFF] font-semibold z-3"
+          onClick={handleSave}
+        >
           저장
         </div>
       </header>
