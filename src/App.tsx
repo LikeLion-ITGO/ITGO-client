@@ -44,6 +44,7 @@ function App() {
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
+
   );
 }
 

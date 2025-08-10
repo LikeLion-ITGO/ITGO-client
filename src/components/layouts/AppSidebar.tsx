@@ -48,6 +48,7 @@ export const AppSidebar = () => {
               <span className="flex flex-row items-center tracking--2 gap-[6px]">
                 <Clock size={16} />
                 {store?.openAt} ~ {store?.closeAt}
+
               </span>
             </div>
           </div>
