@@ -1,5 +1,5 @@
 import MainLayout from "@/components/layouts/MainLayout";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layouts/AppSidebar";
 import { ProductList } from "@/components/productList/ProductList";
 import EditedIcon from "@/assets/icons/storeInfoPage/Edited.svg";
