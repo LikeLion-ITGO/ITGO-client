@@ -106,7 +106,7 @@ export const GiveRegisterForm = () => {
             onChange={setStartTime}
             placeholder="10:00"
             disabled={storeTimeChecked}
-            className={`body-02 !h-11 border border-gray-200 rounded-lg px-4 py-[15px]
+            className={`w-full flex-1 body-02 !h-11 border border-gray-200 rounded-lg px-4 py-[15px]
     placeholder:text-gray-400 focus:outline-none focus:ring-0 focus-visible:border-blue-normal
     ${storeTimeChecked ? "bg-gray-100 text-gray-200" : "text-gray-900"}`}
           />
@@ -116,7 +116,7 @@ export const GiveRegisterForm = () => {
             onChange={setEndTime}
             placeholder="19:00"
             disabled={storeTimeChecked}
-            className={`body-02 !h-11 border border-gray-200 rounded-lg px-4 py-[15px]
+            className={`w-full flex-1 body-02 !h-11 border border-gray-200 rounded-lg px-4 py-[15px]
     placeholder:text-gray-400 focus:outline-none focus:ring-0 focus-visible:border-blue-normal
     ${storeTimeChecked ? "bg-gray-100 text-gray-200" : "text-gray-900"}`}
           />

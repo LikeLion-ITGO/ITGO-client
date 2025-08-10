@@ -1,3 +1,4 @@
+import { useRef, useState } from "react";
 import MainLayout from "@/components/layouts/MainLayout";
 import backIcon from "@/assets/icons/back.svg";
 import PRF_IMG from "@/assets/icons/storeInfoPage/PRF_IMG.svg";
@@ -6,14 +7,26 @@ import TextareaAutosize from "react-textarea-autosize";
 import { useNavigate } from "react-router-dom";
 import { InputEdit } from "@/components/InputEdit";
 import { ROUTES } from "@/constants/routes";
-
 export const MyInfoPage = () => {
   const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [profileImage, setProfileImage] = useState<string | null>(null); // 선택된 이미지 URL
 
   const handleSave = () => {
     navigate(ROUTES.HOME, { state: { showToast: true } });
   };
 
+  const handleImageClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const imageURL = URL.createObjectURL(file); // 브라우저 미리보기 URL 생성
+      setProfileImage(imageURL);
+    }
+  };
   return (
     <MainLayout bgcolor="white">
       <header className="w-full h-11 flex flex-row items-center justify-center py-[14px] mb-[44px]">
@@ -34,18 +47,30 @@ export const MyInfoPage = () => {
         </div>
       </header>
       <div className="flex justify-center">
-        <div className="w-[112px] h-[112px] relative mb-[32px]">
+        <div
+          className="w-[112px] h-[112px] relative mb-[32px] cursor-pointer"
+          onClick={handleImageClick}
+        >
           {
             <img
-              src={PRF_IMG}
+              src={profileImage || PRF_IMG}
               alt="프로필 이미지"
-              className="w-[112px] h-[112px] bg-[#F5F7FA] rounded-[112px] object-cover "
+              className="w-[112px] h-[112px] bg-[#F5F7FA] rounded-[112px]"
             />
           }
           <img
             src={imageIcon}
             alt="사진변경"
             className="w-[36px] h-[36px] p-[6px] bg-[#3CADFF] rounded-[100px] absolute bottom-[0px] right-[0px] border-[2px] border-white"
+          />
+
+          {/* 숨겨진 파일 입력 */}
+          <input
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            onChange={handleFileChange}
           />
         </div>
       </div>
