@@ -2,6 +2,8 @@ import ChevronRight from "@/assets/icons/home/chevron-right.svg?react";
 import { Button } from "../ui/button";
 import { ReceiveShareStatus } from "@/constants/status";
 import { Clock } from "lucide-react";
+import { generatePath, useNavigate } from "react-router-dom";
+import { ROUTES } from "@/constants/routes";
 
 interface ShareReceiveContentProps {
   receive_status: ReceiveShareStatus;
@@ -10,6 +12,27 @@ interface ShareReceiveContentProps {
 export const ShareReceiveContent = ({
   receive_status,
 }: ShareReceiveContentProps) => {
+  const navigate = useNavigate();
+
+  // 상태 → 라우트 생성 함수 (id 처리)
+  const getRouteByStatus = (status: ReceiveShareStatus) => {
+    switch (status) {
+      case ReceiveShareStatus.NO_REQUEST:
+        return ROUTES.REGISTER_RECEIVE;
+      case ReceiveShareStatus.MATCHING_IN_PROGRESS:
+        return ROUTES.MANAGE_GIVE;
+      case ReceiveShareStatus.SHARING_CONFIRMED:
+        return generatePath(ROUTES.SUCCESS);
+      default:
+        return ROUTES.HOME;
+    }
+  };
+
+  const handleBannerClick = () => {
+    const to = getRouteByStatus(receive_status);
+    if (to) navigate(to);
+  };
+
   const renderBannerHeaderContent = () => {
     switch (receive_status) {
       case ReceiveShareStatus.NO_REQUEST:
@@ -67,6 +90,7 @@ export const ShareReceiveContent = ({
     <div
       className="bg-blue-normal active:bg-blue-normal-active rounded-[20px] select-none"
       style={{ boxShadow: "0px 2px 12px rgba(0, 0, 0, 0.05)" }}
+      onClick={() => handleBannerClick()}
     >
       <div className="mx-5 my-3 flex flex-row justify-between">
         {renderBannerHeaderContent()}

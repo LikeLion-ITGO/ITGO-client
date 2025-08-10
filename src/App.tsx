@@ -14,8 +14,6 @@ import Manage from "./pages/manage";
 import History from "./pages/history";
 import { Success } from "./pages/success";
 
-
-
 function App() {
   return (
     <BrowserRouter>
@@ -29,7 +27,11 @@ function App() {
         <Route path={ROUTES.REGISTER_GIVE} element={<RegisterGive />} />
         <Route path={ROUTES.REGISTER_RECEIVE} element={<RegisterReceive />} />
         <Route path={ROUTES.AI_RECOMMEND} element={<AIRecommend />} />
-        <Route path={ROUTES.MANAGE} element={<Manage />} />
+        <Route
+          path={ROUTES.MANAGE_RECEIVE}
+          element={<Manage status={"receive"} />}
+        />
+        <Route path={ROUTES.MANAGE_GIVE} element={<Manage status={"give"} />} />
         <Route path={ROUTES.HISTORY} element={<History />} />
         <Route path={ROUTES.SUCCESS} element={<Success />} />
       </Routes>

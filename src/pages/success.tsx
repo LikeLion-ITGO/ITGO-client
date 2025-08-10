@@ -5,6 +5,7 @@ import Firework from "@/assets/icons/success/firework.svg?react";
 import ThankYouBubble from "@/assets/icons/success/thank-you-bubble.svg?react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { ROUTES } from "@/constants/routes";
 
 export const Success = () => {
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ export const Success = () => {
       <header className="text-gray-900 py-[14px]">
         <ChevronLeft
           onClick={() => {
-            navigate("/manage");
+            navigate(-1);
           }}
         />
       </header>
@@ -80,7 +81,12 @@ export const Success = () => {
         >
           홈으로
         </Button>
-        <Button className="h-12 subhead-03 flex-1 text-blue-darker bg-blue-light rounded-full">
+        <Button
+          className="h-12 subhead-03 flex-1 text-blue-darker bg-blue-light rounded-full"
+          onClick={() => {
+            navigate(ROUTES.HISTORY);
+          }}
+        >
           거래내역
         </Button>
       </div>

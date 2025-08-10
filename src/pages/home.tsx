@@ -1,7 +1,6 @@
 import MainLayout from "@/components/layouts/MainLayout";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layouts/AppSidebar";
-import ChevronDown from "@/assets/icons/home/chevron-down.svg?react";
 import { ProductList } from "@/components/productList/ProductList";
 import EditedIcon from "@/assets/icons/storeInfoPage/Edited.svg";
 import { FloatingButton } from "@/components/home/bottom/FloatingButton";
@@ -14,6 +13,7 @@ export default function Home() {
   const location = useLocation();
   const navigate = useNavigate();
   const [showToast, setShowToast] = useState(false);
+
   useEffect(() => {
     if (location.state?.showToast) {
       setShowToast(true);
@@ -31,6 +31,7 @@ export default function Home() {
     const t = setTimeout(() => setShowToast(false), 2000);
     return () => clearTimeout(t);
   }, [showToast]);
+
   return (
     <MainLayout>
       <SidebarProvider>
@@ -46,10 +47,9 @@ export default function Home() {
         )}
         <AppSidebar />
         <div className="flex flex-col">
-          <header className="w-full h-11 flex flex-row items-center justify-between py-[14px]">
-            <div className="flex flex-row items-center text-xl font-semibold gap-[6px]">
-              공릉 1동
-              <ChevronDown />
+          <header className="w-full h-11 flex flex-row items-center justify-between py-[11px]">
+            <div className="display-01 text-gray-900 flex flex-row items-center gap-[6px]">
+              우리는 공릉동 사장님
             </div>
             <SidebarTrigger />
           </header>
