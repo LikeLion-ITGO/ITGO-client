@@ -2,21 +2,61 @@ import MainLayout from "@/components/layouts/MainLayout";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layouts/AppSidebar";
 import ChevronDown from "@/assets/icons/home/chevron-down.svg?react";
+import { ProductList } from "@/components/productList/ProductList";
+import EditedIcon from "@/assets/icons/storeInfoPage/Edited.svg";
+import { FloatingButton } from "@/components/home/bottom/FloatingButton";
+import { ShareSection } from "@/components/home/bottom/ShareSection";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { ShareStatusContent } from "@/components/home/ShareStatusContent";
 
 export default function Home() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [showToast, setShowToast] = useState(false);
+  useEffect(() => {
+    if (location.state?.showToast) {
+      setShowToast(true);
+
+      const newState = { ...location.state };
+      delete newState.showToast;
+      navigate(location.pathname, { replace: true, state: newState });
+
+      setShowToast(true);
+    }
+  }, [location.state, location.pathname, navigate]);
+
+  useEffect(() => {
+    if (!showToast) return;
+    const t = setTimeout(() => setShowToast(false), 2000);
+    return () => clearTimeout(t);
+  }, [showToast]);
   return (
     <MainLayout>
-      <AppSidebar />
-      <div className="w-full flex flex-col">
-        <header className="h-11 flex flex-row items-center justify-between py-[14px]">
+      {/* 토스트 !!*/}
+      {showToast && (
+        <div
+          className="fixed w-[calc(100%-40px)]  bottom-5 flex justify-center items-center gap-[10px] bg-[#5F6165E5] text-white px-5 py-4 rounded-[12px] transition-transform subhead-03"
+          onClick={() => setShowToast(false)}
+        >
+          <img src={EditedIcon} alt="완료" />
+          가게 정보가 수정되었어요!
+        </div>
+      )}
+        <AppSidebar />
+        <header className="w-full h-11 flex flex-row items-center justify-between py-[14px]">
           <div className="flex flex-row items-center text-xl font-semibold gap-[6px]">
             공릉 1동
             <ChevronDown />
           </div>
           <SidebarTrigger />
         </header>
+
         <ShareStatusContent />
+      <ProductList />
+      <ShareSection />
+      <div className="flex justify-end ">
+        <FloatingButton />
       </div>
     </MainLayout>
   );
