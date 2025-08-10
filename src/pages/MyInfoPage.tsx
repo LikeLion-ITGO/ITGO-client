@@ -7,10 +7,51 @@ import TextareaAutosize from "react-textarea-autosize";
 import { useNavigate } from "react-router-dom";
 import { InputEdit } from "@/components/InputEdit";
 import { ROUTES } from "@/constants/routes";
+import { Input } from "@/components/ui/input";
+import {
+  useDaumPostcodePopup,
+  type Address, // 주소 타입
+} from "react-daum-postcode";
+import { TimeInput } from "@/components/common/TimeInput";
+
 export const MyInfoPage = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [profileImage, setProfileImage] = useState<string | null>(null); // 선택된 이미지 URL
+
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+
+  // 주소 상태
+  const [address, setAddress] = useState("");
+  const [addressDetail, setAddressDetail] = useState("");
+
+  // 1) 팝업 훅 (스크립트 URL은 기본값 그대로 둬도 됩니다)
+  const scriptUrl =
+    "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
+  const openPostcode = useDaumPostcodePopup(scriptUrl);
+
+  // 2) 팝업 완료 콜백
+  const onComplete = (data: Address) => {
+    let full = data.address;
+    const extras: string[] = [];
+    if (data.addressType === "R") {
+      if (data.bname) extras.push(data.bname);
+      if (data.buildingName) extras.push(data.buildingName);
+      if (extras.length) full += ` (${extras.join(", ")})`;
+    }
+    setAddress(full);
+    // 팝업은 자동으로 닫힙니다.
+  };
+
+  // 3) 팝업 열기
+  const handleOpenPostcode = () => {
+    openPostcode({
+      onComplete,
+      // theme, animation, autoClose 등 옵션도 가능
+      // autoClose: true,
+    });
+  };
 
   const handleSave = () => {
     navigate(ROUTES.HOME, { state: { showToast: true } });
@@ -27,6 +68,7 @@ export const MyInfoPage = () => {
       setProfileImage(imageURL);
     }
   };
+
   return (
     <MainLayout bgcolor="white">
       <header className="w-full h-11 flex flex-row items-center justify-center py-[14px] mb-[44px]">
@@ -64,7 +106,6 @@ export const MyInfoPage = () => {
             className="w-[36px] h-[36px] p-[6px] bg-[#3CADFF] rounded-[100px] absolute bottom-[0px] right-[0px] border-[2px] border-white"
           />
 
-          {/* 숨겨진 파일 입력 */}
           <input
             type="file"
             accept="image/*"
@@ -81,7 +122,22 @@ export const MyInfoPage = () => {
         </div>
         <div className="gap-4 flex flex-col">
           <label className="subhead-02 text-[#47484B] text-[14px]">위치</label>
-          <InputEdit placeholder="가게의 정확한 주소를 적어주세요." />
+          <Input
+            placeholder="가게의 정확한 주소를 적어주세요."
+            value={address}
+            readOnly
+            onClick={handleOpenPostcode}
+            className="body-02 !h-11 text-gray-900 border border-gray-200 rounded-lg px-4 py-[15px] placeholder:text-gray-400
+            focus:outline-none focus:ring-0 focus:ring-transparent focus-visible:ring-0 focus-visible:border-blue-normal"
+          />
+          {/* 상세 주소 */}
+          <Input
+            placeholder="상세 주소"
+            value={addressDetail}
+            onChange={(e) => setAddressDetail(e.target.value)}
+            className="body-02 !h-11 text-gray-900 border border-gray-200 rounded-lg px-4 py-[15px] placeholder:text-gray-400
+            focus:outline-none focus:ring-0 focus:ring-transparent focus-visible:ring-0 focus-visible:border-blue-normal"
+          />
         </div>
         <div className="gap-2 flex flex-col">
           <label className="subhead-02 text-[#47484B] text-[14px]">
@@ -91,9 +147,19 @@ export const MyInfoPage = () => {
             운영시간 안에 거래가 가능해요!
           </span>
           <div className="flex flex-row gap-2 items-center align-center">
-            <InputEdit placeholder="00:00" />
-            <span>~</span>
-            <InputEdit placeholder="00:00" />
+            <TimeInput
+              value={startTime}
+              onChange={setStartTime}
+              placeholder="10:00"
+              className="w-full flex-1 body-02 !h-11 border border-gray-200 rounded-lg px-4 py-[15px] placeholder:text-gray-400 focus:outline-none focus:ring-0 focus-visible:border-blue-normal text-gray-900"
+            />
+            <span className="body-02 flex items-center text-gray-400">~</span>
+            <TimeInput
+              value={endTime}
+              onChange={setEndTime}
+              placeholder="19:00"
+              className="w-full flex-1 body-02 !h-11 border border-gray-200 rounded-lg px-4 py-[15px] placeholder:text-gray-400 focus:outline-none focus:ring-0 focus-visible:border-blue-normal text-gray-900"
+            />
           </div>
         </div>
         <div className="gap-4 flex flex-col">
