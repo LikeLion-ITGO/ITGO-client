@@ -1,5 +1,5 @@
 import MainLayout from "@/components/layouts/MainLayout";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layouts/AppSidebar";
 import ChevronDown from "@/assets/icons/home/chevron-down.svg?react";
 import { ProductList } from "@/components/productList/ProductList";
@@ -33,31 +33,36 @@ export default function Home() {
   }, [showToast]);
   return (
     <MainLayout>
-      {/* 토스트 !!*/}
-      {showToast && (
-        <div
-          className="fixed w-[calc(100%-40px)]  bottom-5 flex justify-center items-center gap-[10px] bg-[#5F6165E5] text-white px-5 py-4 rounded-[12px] transition-transform subhead-03"
-          onClick={() => setShowToast(false)}
-        >
-          <img src={EditedIcon} alt="완료" />
-          가게 정보가 수정되었어요!
-        </div>
-      )}
-        <AppSidebar />
-        <header className="w-full h-11 flex flex-row items-center justify-between py-[14px]">
-          <div className="flex flex-row items-center text-xl font-semibold gap-[6px]">
-            공릉 1동
-            <ChevronDown />
+      <SidebarProvider>
+        {/* 토스트 !!*/}
+        {showToast && (
+          <div
+            className="fixed w-[calc(100%-40px)]  bottom-5 flex justify-center items-center gap-[10px] bg-[#5F6165E5] text-white px-5 py-4 rounded-[12px] transition-transform subhead-03"
+            onClick={() => setShowToast(false)}
+          >
+            <img src={EditedIcon} alt="완료" />
+            가게 정보가 수정되었어요!
           </div>
-          <SidebarTrigger />
-        </header>
-
-        <ShareStatusContent />
-      <ProductList />
-      <ShareSection />
-      <div className="flex justify-end ">
-        <FloatingButton />
-      </div>
+        )}
+        <AppSidebar />
+        <div className="flex flex-col">
+          <header className="w-full h-11 flex flex-row items-center justify-between py-[14px]">
+            <div className="flex flex-row items-center text-xl font-semibold gap-[6px]">
+              공릉 1동
+              <ChevronDown />
+            </div>
+            <SidebarTrigger />
+          </header>
+          <div className="flex flex-col gap-16">
+            <ShareStatusContent />
+            <ProductList />
+          </div>
+          <ShareSection />
+          <div className="flex justify-end ">
+            <FloatingButton />
+          </div>
+        </div>
+      </SidebarProvider>
     </MainLayout>
   );
 }

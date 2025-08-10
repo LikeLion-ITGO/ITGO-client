@@ -15,7 +15,6 @@ import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 import { Clock, MapPin } from "lucide-react";
 
-
 export const AppSidebar = () => {
   const { toggleSidebar } = useSidebar();
   const navigate = useNavigate();
