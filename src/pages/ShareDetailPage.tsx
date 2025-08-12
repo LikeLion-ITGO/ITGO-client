@@ -56,9 +56,11 @@ export const ShareDetailPage = () => {
           ))}
         </div>
         <ShareSection />
-        <Button className="w-full h-[48px] rounded-[76px] bg-[#3CADFF] subhead-03 mt-[22px] mb-[48px] active:bg-[#DDF0FF] active:text-[#3CADFF]">
-          나눔 요청하기
-        </Button>
+        <div className="bg-white w-full h-[77px] fixed -bottom-1 inset-x-0 px-[20px] pt-[12px] pb-[17px] z-50 border-[2px] border-t border-[#fff] ">
+          <Button className="w-full h-[48px] rounded-[76px] bg-[#3CADFF] subhead-03  active:bg-[#DDF0FF] active:text-[#3CADFF] ">
+            나눔 요청하기
+          </Button>
+        </div>
       </div>
     </MainLayout>
   );
