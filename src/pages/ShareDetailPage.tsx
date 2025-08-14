@@ -7,9 +7,16 @@ import MainLayout from "@/components/layouts/MainLayout";
 import { ShareSection } from "@/components/home/bottom/ShareSection";
 import { Button } from "@/components/ui/button";
 import { ShareImageSwiper } from "@/components/shareDetailPage/ShareImageSwiper";
+import { useEffect, useMemo, useState } from "react";
+
+type ShareStatus = "open" | "closed" | "requested";
 
 export const ShareDetailPage = () => {
   const navigate = useNavigate();
+
+  const [status, setStatus] = useState<ShareStatus>("open");
+
+  useEffect(() => setStatus("open"), []);
 
   const sampleData = {
     브랜드: "매일",
@@ -18,6 +25,19 @@ export const ShareDetailPage = () => {
     거래장소: "노원구 공릉동 99로",
     운영시간: "10:00~19:00",
   };
+
+  const requestButton = useMemo<{ label: string; disabled: boolean }>(() => {
+    switch (status) {
+      case "open":
+        return { label: "나눔 요청하기", disabled: false };
+      case "closed":
+        return { label: "앗 이미 끝난 나눔이에요..!", disabled: true };
+      case "requested":
+        return { label: "이미 요청한 나눔이에요", disabled: true };
+      default:
+        return { label: "", disabled: true };
+    }
+  }, [status]);
 
   return (
     <MainLayout bgcolor="#fff">
@@ -55,10 +75,21 @@ export const ShareDetailPage = () => {
             </div>
           ))}
         </div>
-        <ShareSection />
-        <Button className="w-full h-[48px] rounded-[76px] bg-[#3CADFF] subhead-03 mt-[22px] mb-[48px] active:bg-[#DDF0FF] active:text-[#3CADFF]">
-          나눔 요청하기
-        </Button>
+        <div className="mb-[90px]">
+          <ShareSection />
+        </div>
+        <div className="bg-white w-full h-[77px] fixed -bottom-1 inset-x-0 px-[20px] pt-[12px] pb-[17px] z-50 border-[2px] border-t border-[#fff] ">
+          <Button
+            className={`w-full h-[48px] rounded-[76px] subhead-03  ${
+              requestButton.disabled
+                ? "bg-[#DDF0FF] text-[#0C3756] disabled:opacity-100"
+                : "bg-[#3CADFF] text-[#fff] active:bg-[#DDF0FF] active:text-[#3CADFF]"
+            }`}
+            disabled={requestButton.disabled}
+          >
+            {requestButton.label}
+          </Button>
+        </div>
       </div>
     </MainLayout>
   );
