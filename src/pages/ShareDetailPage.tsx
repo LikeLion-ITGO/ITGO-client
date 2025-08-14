@@ -8,6 +8,8 @@ import { ShareSection } from "@/components/home/bottom/ShareSection";
 import { Button } from "@/components/ui/button";
 import { ShareImageSwiper } from "@/components/shareDetailPage/ShareImageSwiper";
 import { useEffect, useMemo, useState } from "react";
+import { ShareDeleteModal } from "@/components/shareDetailPage/ShareDeleteModal";
+import { ROUTES } from "@/constants/routes";
 
 type ShareStatus = "open" | "closed" | "requested";
 
@@ -15,8 +17,10 @@ export const ShareDetailPage = () => {
   const navigate = useNavigate();
 
   const [status, setStatus] = useState<ShareStatus>("open");
+  const [openDeleteModal, setOpenDeleteModal] = useState<boolean>(false);
 
-  useEffect(() => setStatus("open"), []);
+  const isOwner: boolean = true; //나중에
+  useEffect(() => setStatus("open"), []); // 나중에 연결할때 수정하깅
 
   const sampleData = {
     브랜드: "매일",
@@ -79,18 +83,40 @@ export const ShareDetailPage = () => {
           <ShareSection />
         </div>
         <div className="bg-white w-full h-[77px] fixed -bottom-1 inset-x-0 px-[20px] pt-[12px] pb-[17px] z-50 border-[2px] border-t border-[#fff] ">
-          <Button
-            className={`w-full h-[48px] rounded-[76px] subhead-03  ${
-              requestButton.disabled
-                ? "bg-[#DDF0FF] text-[#0C3756] disabled:opacity-100"
-                : "bg-[#3CADFF] text-[#fff] active:bg-[#DDF0FF] active:text-[#3CADFF]"
-            }`}
-            disabled={requestButton.disabled}
-          >
-            {requestButton.label}
-          </Button>
+          {isOwner ? (
+            <div className="flex gap-2">
+              <Button
+                className="w-[162px] h-[48px] rounded-[76px] bg-[#DDF0FF] text-[#0C3756] subhead-03"
+                onClick={() => setOpenDeleteModal(true)}
+              >
+                삭제하기
+              </Button>
+              <Button
+                className="w-[162px] h-[48px] rounded-[76px] bg-[#3CADFF] subhead-03 text-[#fff]"
+                onClick={() => navigate(ROUTES.REGISTER_GIVE)}
+              >
+                수정하기
+              </Button>
+            </div>
+          ) : (
+            <Button
+              className={`w-full h-[48px] rounded-[76px] subhead-03  ${
+                requestButton.disabled
+                  ? "bg-[#DDF0FF] text-[#0C3756] disabled:opacity-100"
+                  : "bg-[#3CADFF] text-[#fff] active:bg-[#DDF0FF] active:text-[#3CADFF]"
+              }`}
+              disabled={requestButton.disabled}
+            >
+              {requestButton.label}
+            </Button>
+          )}
         </div>
       </div>
+      <ShareDeleteModal
+        open={openDeleteModal}
+        onClose={() => setOpenDeleteModal(false)}
+        onConfirm={() => navigate(-1)} //지우는거 추가하기
+      />
     </MainLayout>
   );
 };
