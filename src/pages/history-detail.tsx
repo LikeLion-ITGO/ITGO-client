@@ -22,7 +22,7 @@ export const HistoryDetail = () => {
 
   return (
     <RegisterLayout header={"나눔 내역 상세"}>
-      <div className="flex flex-col pt-3 gap-6 mt-14">
+      <div className="flex flex-col pt-3 gap-6">
         {/* 나눔 상태 */}
         <div className="w-fit headline-02 px-3 py-2 rounded-lg text-blue-normal-hover bg-blue-light mb-1 mx-5">
           나눔 매칭
