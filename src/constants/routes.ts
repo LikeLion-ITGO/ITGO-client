@@ -11,6 +11,7 @@ export const ROUTES = {
   MANAGE_RECEIVE: "/manage/receive",
   MANAGE_GIVE: "/manage/give",
   HISTORY: "/history",
+  HISTORY_DETAIL: "/history/detail/:id",
   SUCCESS: "/success",
 } as const;
 

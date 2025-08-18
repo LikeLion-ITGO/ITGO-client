@@ -49,7 +49,7 @@ export const RegisterGive = () => {
   };
   return (
     <RegisterLayout header={"나눔 주기"}>
-      <div className="flex flex-col px-5 pt-11 gap-16">
+      <div className="flex flex-col px-5 pt-10 gap-16">
         {/* 사진 section */}
         <div className="flex flex-col gap-5">
           <div className="flex flex-row gap-2">
