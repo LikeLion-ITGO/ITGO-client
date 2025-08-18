@@ -2,6 +2,7 @@ import MailMilk from "@/assets/images/mail-milk.png";
 import { ProductStatus } from "@/constants/status";
 import { Clock, MapPin } from "lucide-react";
 import { Button } from "../ui/button";
+import Phone from "@/assets/icons/history/phone.svg?react";
 
 interface HistoryContentProps {
   status: ProductStatus;
@@ -82,7 +83,7 @@ export const HistoryContent = ({ status, isReceived }: HistoryContentProps) => {
                 10:00 ~ 19:00
               </span>
               <span className="flex flex-row items-center tracking--2 gap-[6px]">
-                <Clock size={16} />
+                <Phone />
                 010-9634-0405
               </span>
             </div>
