@@ -15,9 +15,11 @@ export default function RegisterLayout({
   const navigate = useNavigate();
   return (
     <div className={`h-100dvh flex flex-col ${backgroundColor}`}>
-      <header className="relative flex text-xl font-semibold justify-center mx-5 py-[14px] text-gray-900">
+      <header
+        className={`fixed top-0 w-full flex text-xl font-semibold justify-center px-5 py-[14px] text-gray-900 ${backgroundColor}`}
+      >
         <div
-          className="absolute left-0"
+          className="absolute left-5"
           onClick={() => {
             navigate(-1);
           }}
@@ -26,7 +28,7 @@ export default function RegisterLayout({
         </div>
         {header}
       </header>
-      <main>{children}</main>
+      <main className="mt-16">{children}</main>
     </div>
   );
 }
