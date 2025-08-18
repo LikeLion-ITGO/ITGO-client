@@ -10,7 +10,8 @@ export const ROUTES = {
   AI_RECOMMEND: "/ai-recommend",
   MANAGE_RECEIVE: "/manage/receive",
   MANAGE_GIVE: "/manage/give",
-  HISTORY: "/history",
+  HISTORY_RECEIVE: "/history/receive",
+  HISTORY_GIVE: "/history/give",
   HISTORY_DETAIL: "/history/detail/:id",
   SUCCESS: "/success",
 } as const;

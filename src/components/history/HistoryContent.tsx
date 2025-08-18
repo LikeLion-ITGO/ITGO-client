@@ -3,6 +3,8 @@ import { ProductStatus } from "@/constants/status";
 import { Clock, MapPin } from "lucide-react";
 import { Button } from "../ui/button";
 import Phone from "@/assets/icons/history/phone.svg?react";
+import { toast } from "sonner";
+import CheckCircle from "@/assets/icons/history/check-circle.svg?react";
 
 interface HistoryContentProps {
   status: ProductStatus;
@@ -97,7 +99,20 @@ export const HistoryContent = ({ status, isReceived }: HistoryContentProps) => {
       </div>
 
       {isReceived && status === ProductStatus.MATCHED && (
-        <Button className="subhead-03 w-full h-12 text-white bg-blue-normal hover:bg-blue-normal-hover rounded-full">
+        <Button
+          className="subhead-03 w-full h-12 text-white bg-blue-normal hover:bg-blue-normal-hover rounded-full"
+          onClick={() => {
+            toast("나눔이 완료되었습니다!", {
+              icon: <CheckCircle />,
+              unstyled: true,
+              classNames: {
+                toast:
+                  "w-full h-14 flex flex-row items-center px-5 py-4 bg-[#5F6165] rounded-xl gap-[10px]",
+                title: "subhead-03 text-white",
+              },
+            });
+          }}
+        >
           나눔 완료
         </Button>
       )}

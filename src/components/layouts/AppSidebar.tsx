@@ -92,7 +92,7 @@ export const AppSidebar = () => {
             <div
               className="h-[17px] flex items-center text-sm text-[#8F9498]"
               onClick={() => {
-                navigate("/history");
+                navigate("/history/give");
               }}
             >
               거래 내역

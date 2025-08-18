@@ -3,12 +3,16 @@ import { ConfirmedCardSlider } from "./ConfirmedCardSlider";
 import Present from "@/assets/icons/manage/present.svg?react";
 import { GiveShareStatus } from "@/constants/status";
 import { Button } from "../ui/button";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "@/constants/routes";
 
 export default function ReceivedRequestContent({
   give_status,
 }: {
   give_status: GiveShareStatus;
 }) {
+  const navigate = useNavigate();
+
   return (
     <div className="flex flex-col px-5 pt-6 gap-16">
       {give_status === GiveShareStatus.NO_REQUEST ? (
@@ -18,14 +22,16 @@ export default function ReceivedRequestContent({
             <span>없습니다</span>
           </div>
           <Present />
-          <Button className="subhead-03 h-12 text-blue-normal-hover px-[46px] bg-blue-light rounded-full">
+          <Button
+            className="subhead-03 h-12 text-blue-normal-hover px-[46px] bg-blue-light rounded-full hover:bg-blue-light-hover active:bg-blue-light-active"
+            onClick={() => navigate(ROUTES.REGISTER_GIVE)}
+          >
             나눔 올리기
           </Button>
         </div>
       ) : (
         <>
           <ConfirmedCardSlider />
-          <Present />
           {/* pending request section */}
           <div className="w-full flex flex-col gap-6">
             <div className="headline-02 flex flex-row gap-1">

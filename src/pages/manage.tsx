@@ -8,17 +8,14 @@ export default function Manage({ status }: { status: string }) {
   const [selectedTab, setSelectedTab] = useState(0);
 
   useEffect(() => {
-    if (status === "receive") {
-      setSelectedTab(0);
-    } else {
-      setSelectedTab(1);
-    }
-  }, []);
+    setSelectedTab(status === "receive" ? 0 : 1);
+  }, [status]); // ✅ status 바뀔 때도 동기화
 
   return (
     <ManageLayout
       title={"나눔현황"}
       category={["받은 요청", "보낸 요청"]}
+      route={["/manage/receive", "/manage/give"]}
       selectedTab={selectedTab}
       setSelectedTab={setSelectedTab}
     >

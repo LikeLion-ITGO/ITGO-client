@@ -2,12 +2,16 @@ import { ReceiveShareStatus } from "@/constants/status";
 import { SentRequestCardList } from "./SentRequestCardList";
 import Heart from "@/assets/icons/manage/heart.svg?react";
 import { Button } from "../ui/button";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "@/constants/routes";
 
 export default function SentRequestContent({
   receive_status,
 }: {
   receive_status: ReceiveShareStatus;
 }) {
+  const navigate = useNavigate();
+
   return (
     <div className="flex flex-col px-5 pt-6 gap-16">
       {receive_status === ReceiveShareStatus.NO_REQUEST ? (
@@ -17,7 +21,12 @@ export default function SentRequestContent({
             <span>없습니다</span>
           </div>
           <Heart />
-          <Button className="subhead-03 h-12 text-blue-normal-hover px-[30.5px] bg-blue-light rounded-full">
+          <Button
+            className="subhead-03 h-12 text-blue-normal-hover px-[30.5px] bg-blue-light hover:bg-blue-light-hover active:bg-blue-light-active rounded-full"
+            onClick={() => {
+              navigate(ROUTES.SHARELIST);
+            }}
+          >
             나눔 리스트 보기
           </Button>
         </div>
@@ -54,20 +63,11 @@ export default function SentRequestContent({
                   <span className="">도움을 요청했어요</span>
                 </div>
               </div>
-          {/* 거래 내역 */}
-          <SentRequestCardList receive_status={receive_status} />
-        </div>
-      )}
-
-      {receive_status === ReceiveShareStatus.SHARING_CONFIRMED && (
-        // 나눔 요청 상태
-        <div className="flex flex-col gap-6">
-          <div className="w-full flex flex-col gap-6">
-            <div className="headline-02 flex flex-row gap-1">
-              <span>나눔이 성사됐어요!</span>
-
+              {/* 거래 내역 */}
+              <SentRequestCardList receive_status={receive_status} />
             </div>
           )}
+
           {receive_status === ReceiveShareStatus.SHARING_CONFIRMED && (
             // 나눔 요청 상태
             <div className="flex flex-col gap-6">

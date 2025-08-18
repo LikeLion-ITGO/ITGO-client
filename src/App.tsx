@@ -42,7 +42,14 @@ function App() {
             path={ROUTES.MANAGE_GIVE}
             element={<Manage status={"give"} />}
           />
-          <Route path={ROUTES.HISTORY} element={<History />} />
+          <Route
+            path={ROUTES.HISTORY_RECEIVE}
+            element={<History status={"receive"} />}
+          />
+          <Route
+            path={ROUTES.HISTORY_GIVE}
+            element={<History status={"give"} />}
+          />
           <Route path={ROUTES.HISTORY_DETAIL} element={<HistoryDetail />} />
           <Route path={ROUTES.SUCCESS} element={<Success />} />
         </Routes>

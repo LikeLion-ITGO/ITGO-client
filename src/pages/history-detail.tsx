@@ -11,11 +11,13 @@ import { useState } from "react";
 import { ShareCancelModal } from "@/components/history/ShareCancelModal";
 import { toast } from "sonner";
 import CheckCircle from "@/assets/icons/history/check-circle.svg?react";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "@/constants/routes";
 
 export const HistoryDetail = () => {
   const [isMe] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-
+  const navigate = useNavigate();
   const handleCancelModalClick = () => {
     setModalOpen(true);
   };
@@ -160,6 +162,7 @@ export const HistoryDetail = () => {
                       title: "subhead-03 text-white",
                     },
                   });
+                  navigate(ROUTES.MANAGE_GIVE);
                 }}
               >
                 나눔 완료
