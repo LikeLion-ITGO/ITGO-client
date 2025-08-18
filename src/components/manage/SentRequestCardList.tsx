@@ -18,9 +18,15 @@ export const SentRequestCardList = ({
       ) : (
         <div className="flex flex-col gap-4">
           <SentRequestCardItem status={ReceiveShareStatus.SHARING_CONFIRMED} />
-          <SentRequestCardItem status={ReceiveShareStatus.NO_REQUEST} />
-          <SentRequestCardItem status={ReceiveShareStatus.NO_REQUEST} />
-          <SentRequestCardItem status={ReceiveShareStatus.NO_REQUEST} />
+          <SentRequestCardItem
+            status={ReceiveShareStatus.MATCHING_IN_PROGRESS}
+          />
+          <SentRequestCardItem
+            status={ReceiveShareStatus.MATCHING_IN_PROGRESS}
+          />
+          <SentRequestCardItem
+            status={ReceiveShareStatus.MATCHING_IN_PROGRESS}
+          />
         </div>
       )}
     </>

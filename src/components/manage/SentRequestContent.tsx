@@ -54,9 +54,18 @@ export default function SentRequestContent({
                   <span className="">도움을 요청했어요</span>
                 </div>
               </div>
+          {/* 거래 내역 */}
+          <SentRequestCardList receive_status={receive_status} />
+        </div>
+      )}
 
-              {/* 거래 내역 */}
-              <SentRequestCardList receive_status={receive_status} />
+      {receive_status === ReceiveShareStatus.SHARING_CONFIRMED && (
+        // 나눔 요청 상태
+        <div className="flex flex-col gap-6">
+          <div className="w-full flex flex-col gap-6">
+            <div className="headline-02 flex flex-row gap-1">
+              <span>나눔이 성사됐어요!</span>
+
             </div>
           )}
           {receive_status === ReceiveShareStatus.SHARING_CONFIRMED && (
