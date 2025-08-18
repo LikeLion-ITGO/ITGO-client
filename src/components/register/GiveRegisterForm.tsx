@@ -101,6 +101,7 @@ export const GiveRegisterForm = () => {
       <div className="subhead-02 text-gray-700 flex flex-col gap-4">
         <span>거래가능 시간대</span>
         <div className="flex flex-row gap-2">
+
           <div className="flex-1 min-w-0">
             <TimeInput
               value={startTime}
@@ -113,6 +114,7 @@ export const GiveRegisterForm = () => {
             />
           </div>
           <span className="body-02 flex items-center text-gray-400">~</span>
+
           <div className="flex-1 min-w-0">
             <TimeInput
               value={endTime}

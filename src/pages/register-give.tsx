@@ -135,7 +135,6 @@ export const RegisterGive = () => {
             type="file"
             accept="image/*"
             multiple
-            capture="environment" // 모바일: 후면 카메라 우선(브라우저별 동작 상이)
             onChange={onPickFiles}
             className="hidden"
           />

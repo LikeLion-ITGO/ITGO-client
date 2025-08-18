@@ -86,6 +86,7 @@ export const ReceiveRegisterForm = ({ onSubmit }: ReceiveRegisterFormProps) => {
       <div className="subhead-02 text-gray-700 flex flex-col gap-4">
         <span>거래가능 시간대</span>
         <div className="flex flex-row gap-2">
+
           <div className="flex-1 min-w-0">
             <TimeInput
               value={startTime}
@@ -93,11 +94,13 @@ export const ReceiveRegisterForm = ({ onSubmit }: ReceiveRegisterFormProps) => {
               placeholder="10:00"
               disabled={storeTimeChecked}
               className={`body-02 w-full !h-11 border border-gray-200 rounded-lg px-4 py-[15px]
+
     placeholder:text-gray-400 focus:outline-none focus:ring-0 focus-visible:border-blue-normal
     ${storeTimeChecked ? "bg-gray-100 text-gray-200" : "text-gray-900"}`}
             />
           </div>
           <span className="body-02 flex items-center text-gray-400">~</span>
+
           <div className="flex-1 min-w-0">
             <TimeInput
               value={endTime}
@@ -105,6 +108,7 @@ export const ReceiveRegisterForm = ({ onSubmit }: ReceiveRegisterFormProps) => {
               placeholder="19:00"
               disabled={storeTimeChecked}
               className={`body-02 w-full !h-11 border border-gray-200 rounded-lg px-4 py-[15px]
+
     placeholder:text-gray-400 focus:outline-none focus:ring-0 focus-visible:border-blue-normal
     ${storeTimeChecked ? "bg-gray-100 text-gray-200" : "text-gray-900"}`}
             />
