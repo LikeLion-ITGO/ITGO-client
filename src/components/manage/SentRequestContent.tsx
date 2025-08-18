@@ -50,7 +50,7 @@ export default function SentRequestContent({
         <div className="flex flex-col gap-6">
           <div className="w-full flex flex-col gap-6">
             <div className="headline-02 flex flex-row gap-1">
-              <span className="">나눔이 성사됐어요!</span>
+              <span>나눔이 성사됐어요!</span>
             </div>
           </div>
 
