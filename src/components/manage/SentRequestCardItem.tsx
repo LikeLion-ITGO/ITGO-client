@@ -3,6 +3,7 @@ import { Button } from "../ui/button";
 import MailMilk from "@/assets/images/mail-milk.png";
 import { ReceiveShareStatus } from "@/constants/status";
 import { useState } from "react";
+import Dot from "@/assets/icons/manage/dot.svg?react";
 
 export const SentRequestCardItem = ({
   status,
@@ -46,9 +47,18 @@ export const SentRequestCardItem = ({
   };
   return (
     <div
-      className="flex flex-col p-5 bg-white border border-gray-100 rounded-3xl gap-6"
+      className="relative flex flex-col p-5 bg-white border border-gray-100 rounded-3xl gap-6"
       style={{ boxShadow: "0px 2px 12px rgba(0, 0, 0, 0.05)" }}
     >
+      <span
+        className="absolute top-0 left-0 w-[81px] h-[25px] flex flex-row items-center justify-center text-[10px] font-bold text-white rounded-br-lg rounded-tl-[24px] gap-1"
+        style={{
+          background:
+            "linear-gradient(95.66deg, #54B7FF 14.18%, #2695E8 97.19%)",
+        }}
+      >
+        <Dot /> 신선도 보장
+      </span>
       <div className="flex flex-row justify-between">
         <div className="w-full flex flex-row gap-4">
           <img
