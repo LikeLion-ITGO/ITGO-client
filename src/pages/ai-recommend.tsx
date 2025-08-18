@@ -13,7 +13,7 @@ export const AIRecommend = () => {
     <>
       {isRecommended ? (
         <RegisterLayout header="나눔 매칭" backgroundColor="bg-gray-100">
-          <div className="flex flex-col mt-8 px-5 gap-8">
+          <div className="flex flex-col mt-8 px-5 gap-8 mb-19">
             <div className="flex flex-col gap-[6px]">
               <span className="headline-02 text-gray-700">
                 AI가 나와 맞는 나눔을
@@ -27,7 +27,7 @@ export const AIRecommend = () => {
               <RecommendList />
             </div>
           </div>
-          <div className="flex flex-row pt-3 pb-4 px-5 gap-2 bg-white">
+          <div className="fixed bottom-0 flex flex-row pt-3 pb-4 px-5 gap-2 bg-white">
             <Button
               className="subhead-03 flex-1 w-41 h-12 border bg-white border-blue-normal text-gray-900 hover:bg-gray-100 rounded-full"
               onClick={() => navigate("/")}
@@ -36,7 +36,7 @@ export const AIRecommend = () => {
             </Button>
             <Button
               className="subhead-03 flex-1 w-41 h-12 border bg-blue-normal border-blue-normal text-white hover:bg-blue-normal-hover rounded-full"
-              onClick={() => navigate("/history")}
+              onClick={() => navigate("/history/give")}
             >
               내역 보기
             </Button>

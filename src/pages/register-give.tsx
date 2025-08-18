@@ -19,7 +19,6 @@ export const RegisterGive = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const MAX = 10;
 
-  // objectURL 메모리 정리
   useEffect(() => {
     return () => images.forEach((p) => URL.revokeObjectURL(p.url));
   }, [images]);
@@ -40,7 +39,6 @@ export const RegisterGive = () => {
     }));
 
     setImages((prev) => [...prev, ...next]);
-    // 같은 파일 다시 선택 가능하도록 value 초기화
     e.target.value = "";
   };
 

@@ -25,10 +25,10 @@ export default function Manage({ status }: { status: string }) {
         // <SentRequestContent
         //   receive_status={ReceiveShareStatus.SHARING_CONFIRMED}
         // />
-        <SentRequestContent receive_status={ReceiveShareStatus.NO_REQUEST} />
-        // <SentRequestContent
-        //   receive_status={ReceiveShareStatus.MATCHING_IN_PROGRESS}
-        // />
+        // <SentRequestContent receive_status={ReceiveShareStatus.NO_REQUEST} />
+        <SentRequestContent
+          receive_status={ReceiveShareStatus.MATCHING_IN_PROGRESS}
+        />
       )}
     </ManageLayout>
   );

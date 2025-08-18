@@ -22,16 +22,15 @@ export const MyInfoPage = () => {
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
 
+  const [description, setDescription] = useState("");
+
   // 주소 상태
   const [address, setAddress] = useState("");
-  const [addressDetail, setAddressDetail] = useState("");
 
-  // 1) 팝업 훅 (스크립트 URL은 기본값 그대로 둬도 됩니다)
   const scriptUrl =
     "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
   const openPostcode = useDaumPostcodePopup(scriptUrl);
 
-  // 2) 팝업 완료 콜백
   const onComplete = (data: Address) => {
     let full = data.address;
     const extras: string[] = [];
@@ -41,15 +40,11 @@ export const MyInfoPage = () => {
       if (extras.length) full += ` (${extras.join(", ")})`;
     }
     setAddress(full);
-    // 팝업은 자동으로 닫힙니다.
   };
 
-  // 3) 팝업 열기
   const handleOpenPostcode = () => {
     openPostcode({
       onComplete,
-      // theme, animation, autoClose 등 옵션도 가능
-      // autoClose: true,
     });
   };
 
@@ -64,7 +59,7 @@ export const MyInfoPage = () => {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      const imageURL = URL.createObjectURL(file); // 브라우저 미리보기 URL 생성
+      const imageURL = URL.createObjectURL(file);
       setProfileImage(imageURL);
     }
   };
@@ -130,14 +125,6 @@ export const MyInfoPage = () => {
             className="body-02 !h-11 text-gray-900 border border-gray-200 rounded-lg px-4 py-[15px] placeholder:text-gray-400
             focus:outline-none focus:ring-0 focus:ring-transparent focus-visible:ring-0 focus-visible:border-blue-normal"
           />
-          {/* 상세 주소 */}
-          <Input
-            placeholder="상세 주소"
-            value={addressDetail}
-            onChange={(e) => setAddressDetail(e.target.value)}
-            className="body-02 !h-11 text-gray-900 border border-gray-200 rounded-lg px-4 py-[15px] placeholder:text-gray-400
-            focus:outline-none focus:ring-0 focus:ring-transparent focus-visible:ring-0 focus-visible:border-blue-normal"
-          />
         </div>
         <div className="gap-2 flex flex-col">
           <label className="subhead-02 text-[#47484B] text-[14px]">
@@ -172,14 +159,15 @@ export const MyInfoPage = () => {
           <label className="flex flex-row justify-between subhead-02 text-[#47484B] text-[14px]">
             <p>가게 소개</p>
             <p className="text-[#8F9498]">
-              <span className="text-[#3CADFF]">0</span>/500
+              <span className="text-[#3CADFF]">{description.length}</span>/500
             </p>
           </label>
 
           <TextareaAutosize
             placeholder={"우리 가게를 소개해봐요!"}
+            onChange={(e) => setDescription(e.target.value)}
             maxLength={500}
-            className="h-auto w-full text-[16px]  rounded-[8px] border-[1px] border-[#BCC3CE] px-4 py-4 focus:border-[#3CADFF] focus:outline-none resize-none "
+            className="min-h-[138px] h-auto w-full text-[16px]  rounded-[8px] border-[1px] border-[#BCC3CE] px-4 py-4 focus:border-[#3CADFF] focus:outline-none resize-none "
           />
         </div>
       </form>
