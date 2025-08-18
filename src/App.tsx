@@ -14,12 +14,14 @@ import Manage from "./pages/manage";
 import History from "./pages/history";
 import { Success } from "./pages/success";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "./components/ui/sonner";
 
 const queryClient = new QueryClient();
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
+      <Toaster />
       <BrowserRouter>
         <Routes>
           <Route path={ROUTES.HOME} element={<Home />} />
