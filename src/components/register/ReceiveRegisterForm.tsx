@@ -29,7 +29,7 @@ export const ReceiveRegisterForm = ({ onSubmit }: ReceiveRegisterFormProps) => {
   };
   return (
     <form
-      className="flex flex-col gap-10"
+      className="flex flex-col gap-10 pb-[81px] mb-19"
       onSubmit={(e) => {
         e.preventDefault();
         onSubmit();
@@ -86,25 +86,29 @@ export const ReceiveRegisterForm = ({ onSubmit }: ReceiveRegisterFormProps) => {
       <div className="subhead-02 text-gray-700 flex flex-col gap-4">
         <span>거래가능 시간대</span>
         <div className="flex flex-row gap-2">
-          <TimeInput
-            value={startTime}
-            onChange={setStartTime}
-            placeholder="10:00"
-            disabled={storeTimeChecked}
-            className={`body-02 !h-11 border border-gray-200 rounded-lg px-4 py-[15px]
+          <div className="flex-1 min-w-0">
+            <TimeInput
+              value={startTime}
+              onChange={setStartTime}
+              placeholder="10:00"
+              disabled={storeTimeChecked}
+              className={`body-02 w-full !h-11 border border-gray-200 rounded-lg px-4 py-[15px]
     placeholder:text-gray-400 focus:outline-none focus:ring-0 focus-visible:border-blue-normal
     ${storeTimeChecked ? "bg-gray-100 text-gray-200" : "text-gray-900"}`}
-          />
+            />
+          </div>
           <span className="body-02 flex items-center text-gray-400">~</span>
-          <TimeInput
-            value={endTime}
-            onChange={setEndTime}
-            placeholder="19:00"
-            disabled={storeTimeChecked}
-            className={`body-02 !h-11 border border-gray-200 rounded-lg px-4 py-[15px]
+          <div className="flex-1 min-w-0">
+            <TimeInput
+              value={endTime}
+              onChange={setEndTime}
+              placeholder="19:00"
+              disabled={storeTimeChecked}
+              className={`body-02 w-full !h-11 border border-gray-200 rounded-lg px-4 py-[15px]
     placeholder:text-gray-400 focus:outline-none focus:ring-0 focus-visible:border-blue-normal
     ${storeTimeChecked ? "bg-gray-100 text-gray-200" : "text-gray-900"}`}
-          />
+            />
+          </div>
         </div>
         {/* 가게 운영 시간과 동일 여부 */}
         <div className="flex flex-row items-center gap-[6px]">
@@ -117,7 +121,7 @@ export const ReceiveRegisterForm = ({ onSubmit }: ReceiveRegisterFormProps) => {
           <span className="subhead-02 text-gray-700">가게 운영시간과 동일</span>
         </div>
       </div>
-      <div className="pt-3 pb-4 boder-t border-gray-100">
+      <div className="fixed bottom-0 inset-x-0 mx-5 pt-3 pb-4 boder-t border-gray-100 bg-white">
         <Button
           type="submit"
           className="subhead-03 w-full h-12 bg-blue-normal text-white hover:bg-blue-normal-hover active:bg-blue-normal-active rounded-full"
