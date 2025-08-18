@@ -52,9 +52,26 @@ export const RegisterGive = () => {
     });
   };
 
+  const handleAIClick = () => {
+    if (images.length === 0) {
+      toast("사진을 먼저 업로드 해주세요!", {
+        icon: <CheckFail />,
+        unstyled: true,
+        classNames: {
+          toast:
+            "w-full h-14 flex flex-row items-center px-5 py-4 bg-[#5F6165] rounded-xl gap-[10px]",
+          title: "subhead-03 text-white",
+        },
+      });
+      console.log("클릭");
+      return;
+    }
+    setIsModalOpen(true);
+  };
+
   const handleVerifyClick = () => {
     if (images.length === 0) {
-      toast("나눔이 취소되었습니다!", {
+      toast("사진을 먼저 업로드 해주세요!", {
         icon: <CheckFail />,
         unstyled: true,
         classNames: {
@@ -132,7 +149,7 @@ export const RegisterGive = () => {
 
           <button
             className="w-fit flex flex-row px-[14px] py-[7px] mt-3 subhead-03 items-center bg-blue-light text-blue-normal rounded-xl gap-[6px]"
-            onClick={() => setIsModalOpen(true)}
+            onClick={handleAIClick}
           >
             <MagicIcon />
             AI로 작성하기
