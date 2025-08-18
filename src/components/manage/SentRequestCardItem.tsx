@@ -2,22 +2,48 @@ import { Clock } from "lucide-react";
 import { Button } from "../ui/button";
 import MailMilk from "@/assets/images/mail-milk.png";
 import { ReceiveShareStatus } from "@/constants/status";
-import clsx from "clsx";
+import { useState } from "react";
 
 export const SentRequestCardItem = ({
   status,
+  isRecommend,
 }: {
   status?: ReceiveShareStatus;
+  isRecommend?: boolean;
 }) => {
+  const [requested, setRequested] = useState(false);
+  const isRequested = isRecommend && requested;
+
   const renderStatusText = () => {
     switch (status) {
       case ReceiveShareStatus.SHARING_CONFIRMED:
-        return "거래 내역";
+        return "나눔 내역 상세";
       default:
         return "요청 취소";
     }
   };
 
+  const buttonLabel = isRecommend
+    ? requested
+      ? "요청완료"
+      : "요청하기"
+    : renderStatusText();
+
+  const buttonClasses =
+    "subhead-03 h-11 rounded-full border " +
+    (isRecommend
+      ? isRequested
+        ? "bg-gray-50 border-gray-300 text-gray-300 pointer-events-none"
+        : "bg-white hover:bg-gray-100 border-blue-normal text-blue-normal"
+      : status === ReceiveShareStatus.NO_REQUEST
+      ? "bg-gray-50 border-gray-300 text-gray-300 pointer-events-none"
+      : "bg-white hover:bg-gray-100 border-blue-normal text-blue-normal");
+
+  const handleButtonClick = () => {
+    if (isRecommend && !requested) {
+      setRequested(true);
+    }
+  };
   return (
     <div
       className="flex flex-col p-5 bg-white border border-gray-100 rounded-3xl gap-6"
@@ -53,15 +79,8 @@ export const SentRequestCardItem = ({
         </div>
       </div>
 
-      <Button
-        className={clsx(
-          "subhead-03 h-11 rounded-full border",
-          status === ReceiveShareStatus.NO_REQUEST
-            ? "bg-gray-50 border-gray-300 text-gray-300 pointer-events-none"
-            : "bg-white hover:bg-gray-100 border-blue-normal text-blue-normal"
-        )}
-      >
-        {renderStatusText()}
+      <Button className={buttonClasses} onClick={handleButtonClick}>
+        {buttonLabel}
       </Button>
     </div>
   );

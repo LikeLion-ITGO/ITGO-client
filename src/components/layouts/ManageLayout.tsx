@@ -8,6 +8,7 @@ interface ManageLayoutProps {
   children: React.ReactNode;
   title: string;
   category: string[];
+  route: string[];
   selectedTab: number;
   setSelectedTab: (index: number) => void;
 }
@@ -16,6 +17,7 @@ export default function ManageLayout({
   children,
   title,
   category,
+  route,
   selectedTab,
   setSelectedTab,
 }: ManageLayoutProps) {
@@ -47,7 +49,10 @@ export default function ManageLayout({
                   ? "text-white font-semibold pointer-tab"
                   : "text-blue-light-active"
               )}
-              onClick={() => setSelectedTab(index)}
+              onClick={() => {
+                setSelectedTab(index);
+                navigate(route[index]);
+              }}
             >
               {item}
               {selectedTab === index && (
