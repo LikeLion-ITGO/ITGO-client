@@ -3,7 +3,7 @@ import MainLayout from "@/components/layouts/MainLayout";
 import backIcon from "@/assets/icons/back.svg";
 import PRF_IMG from "@/assets/icons/storeInfoPage/PRF_IMG.svg";
 import imageIcon from "@/assets/icons/storeInfoPage/imageIcon.svg";
-import TextareaAutosize from "react-textarea-autosize";
+
 import { useNavigate } from "react-router-dom";
 import { InputEdit } from "@/components/InputEdit";
 import { ROUTES } from "@/constants/routes";
@@ -163,11 +163,11 @@ export const MyInfoPage = () => {
             </p>
           </label>
 
-          <TextareaAutosize
+          <textarea
             placeholder={"우리 가게를 소개해봐요!"}
             onChange={(e) => setDescription(e.target.value)}
             maxLength={500}
-            className="min-h-[138px] h-auto w-full text-[16px]  rounded-[8px] border-[1px] border-[#BCC3CE] px-4 py-4 focus:border-[#3CADFF] focus:outline-none resize-none "
+            className="h-[138px]  w-full text-[16px]  rounded-[8px] border-[1px] border-[#BCC3CE] px-4 py-4 focus:border-[#3CADFF] focus:outline-none resize-none "
           />
         </div>
       </form>
