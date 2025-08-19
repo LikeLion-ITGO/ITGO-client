@@ -22,7 +22,6 @@ import type { Store } from "@/types/store";
 import { useState } from "react";
 import { LogoutModal } from "../home/LogoutModal";
 
-
 export const AppSidebar = () => {
   const { toggleSidebar } = useSidebar();
   const navigate = useNavigate();
@@ -37,7 +36,6 @@ export const AppSidebar = () => {
     setLogoutOpen(true);
   };
 
-
   return (
     <Sidebar side="right">
       <SidebarHeader className="flex flex-row justify-between px-5 py-4">
@@ -49,20 +47,17 @@ export const AppSidebar = () => {
       <SidebarContent className="flex flex-col p-5 gap-5">
         <SidebarGroup className="flex flex-row justify-between p-0">
           <div className="flex flex-col gap-4">
-
             <span className="h-6 flex items-center text-xl font-semibold text-gray-900">
-
               {store?.name}
             </span>
             <div className="flex flex-col text-sm gap-[6px] text-gray-600">
               <span className="flex flex-row items-center tracking--2 gap-[6px]">
                 <MapPin size={16} />
-                {store?.address}
+                {store?.address.roadAddress}
               </span>
               <span className="flex flex-row items-center tracking--2 gap-[6px]">
                 <Clock size={16} />
-                {store?.openAt} ~ {store?.closeAt}
-
+                {store?.openTime} ~ {store?.closeTime}
               </span>
             </div>
           </div>
