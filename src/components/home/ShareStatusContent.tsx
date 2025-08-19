@@ -13,10 +13,12 @@ export const ShareStatusContent = () => {
         receive_status={ReceiveShareStatus.MATCHING_IN_PROGRESS}
       /> */}
       {/* <ShareReceiveContent receive_status={ReceiveShareStatus.NO_REQUEST} /> */}
+
       {/* <ShareGiveContent give_status={GiveShareStatus.NO_REQUEST} /> */}
       {/* <ShareGiveContent give_status={GiveShareStatus.MATCHING_IN_PROGRESS} />
       <ShareGiveContent give_status={GiveShareStatus.RECEIVED_REQUEST} /> */}
       <ShareGiveContent give_status={GiveShareStatus.SHARING_CONFIRMED} />
+
     </div>
   );
 };

@@ -18,8 +18,10 @@ import { Clock, MapPin } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getMyStore } from "@/apis/store";
 import type { Store } from "@/types/store";
+
 import { useState } from "react";
 import { LogoutModal } from "../home/LogoutModal";
+
 
 export const AppSidebar = () => {
   const { toggleSidebar } = useSidebar();
@@ -28,11 +30,13 @@ export const AppSidebar = () => {
     queryKey: ["myStore"],
     queryFn: getMyStore,
   });
+
   const [logoutOpen, setLogoutOpen] = useState(false);
 
   const handleLogoutClick = () => {
     setLogoutOpen(true);
   };
+
 
   return (
     <Sidebar side="right">
@@ -45,7 +49,9 @@ export const AppSidebar = () => {
       <SidebarContent className="flex flex-col p-5 gap-5">
         <SidebarGroup className="flex flex-row justify-between p-0">
           <div className="flex flex-col gap-4">
+
             <span className="h-6 flex items-center text-xl font-semibold text-gray-900">
+
               {store?.name}
             </span>
             <div className="flex flex-col text-sm gap-[6px] text-gray-600">
@@ -56,6 +62,7 @@ export const AppSidebar = () => {
               <span className="flex flex-row items-center tracking--2 gap-[6px]">
                 <Clock size={16} />
                 {store?.openAt} ~ {store?.closeAt}
+
               </span>
             </div>
           </div>
