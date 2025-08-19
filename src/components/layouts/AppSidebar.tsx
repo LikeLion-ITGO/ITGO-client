@@ -48,12 +48,12 @@ export const AppSidebar = () => {
         <SidebarGroup className="flex flex-row justify-between p-0">
           <div className="flex flex-col gap-4">
             <span className="h-6 flex items-center text-xl font-semibold text-gray-900">
-              {store?.name}
+              {store?.storeName}
             </span>
             <div className="flex flex-col text-sm gap-[6px] text-gray-600">
               <span className="flex flex-row items-center tracking--2 gap-[6px]">
                 <MapPin size={16} />
-                {store?.address.roadAddress}
+                {store?.address?.roadAddress}
               </span>
               <span className="flex flex-row items-center tracking--2 gap-[6px]">
                 <Clock size={16} />
