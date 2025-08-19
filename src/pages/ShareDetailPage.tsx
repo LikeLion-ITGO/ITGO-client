@@ -79,6 +79,7 @@ export const ShareDetailPage = () => {
             </div>
           ))}
         </div>
+
         <div className="mb-[90px]">
           <ShareSection />
         </div>
@@ -110,6 +111,7 @@ export const ShareDetailPage = () => {
               {requestButton.label}
             </Button>
           )}
+
         </div>
       </div>
       <ShareDeleteModal

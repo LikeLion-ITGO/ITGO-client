@@ -265,6 +265,8 @@
     position: relative;
     width: 70px;
     height: 70px;
+    --orbit-scale: 1.5;
+    --orbit-inv: 0.6667;
   }
 
   .orbiting {

@@ -8,7 +8,7 @@ export const RegisterReceive = () => {
 
   return (
     <RegisterLayout header={"나눔 받기"}>
-      <div className="flex flex-col px-5 pt-11 gap-16">
+      <div className="flex flex-col px-5 pt-8 gap-16">
         {/* 입력폼 */}
         <ReceiveRegisterForm onSubmit={() => setIsModalOpen(true)} />
       </div>
