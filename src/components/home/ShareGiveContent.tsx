@@ -72,7 +72,7 @@ export const ShareGiveContent = ({ give_status }: ShareGiveContentProps) => {
             className="w-full flex flex-row px-4 py-3 justify-between items-center bg-sub active:bg-subtxt rounded-[20px] select-none"
             style={{ boxShadow: "0px 2px 12px rgba(0, 0, 0, 0.05)" }}
             onClick={() => {
-              navigate(ROUTES.SUCCESS);
+              navigate(generatePath(ROUTES.STORE_INFO, { storeId: String(1) }));
             }}
           >
             <span className="text-gray-900 text-base font-semibold">

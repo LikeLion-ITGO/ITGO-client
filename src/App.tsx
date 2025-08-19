@@ -15,11 +15,16 @@ import History from "./pages/history";
 import { Success } from "./pages/success";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
+import { HistoryDetail } from "./pages/history-detail";
+import { Toaster } from "./components/ui/sonner";
+
+
 const queryClient = new QueryClient();
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
+      <Toaster />
       <BrowserRouter>
         <Routes>
           <Route path={ROUTES.HOME} element={<Home />} />
@@ -39,7 +44,17 @@ function App() {
             path={ROUTES.MANAGE_GIVE}
             element={<Manage status={"give"} />}
           />
-          <Route path={ROUTES.HISTORY} element={<History />} />
+
+          <Route
+            path={ROUTES.HISTORY_RECEIVE}
+            element={<History status={"receive"} />}
+          />
+          <Route
+            path={ROUTES.HISTORY_GIVE}
+            element={<History status={"give"} />}
+          />
+          <Route path={ROUTES.HISTORY_DETAIL} element={<HistoryDetail />} />
+
           <Route path={ROUTES.SUCCESS} element={<Success />} />
         </Routes>
       </BrowserRouter>

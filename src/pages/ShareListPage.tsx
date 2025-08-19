@@ -1,14 +1,14 @@
 import MainLayout from "@/components/layouts/MainLayout";
 import backIcon from "@/assets/icons/back.svg";
 import { ChevronDown } from "lucide-react";
-import { ShareCategoryFilter } from "@/components/shareListPage/ShareCategoryFilter";
+// import { ShareCategoryFilter } from "@/components/shareListPage/ShareCategoryFilter";
 
-import { useState } from "react";
+// import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ShareProductList } from "@/components/shareListPage/ShareProductList";
 
 export const ShareListPage = () => {
-  const [selectedCat, setSelectedCat] = useState("전체");
+  // const [selectedCat, setSelectedCat] = useState("전체");
   const navigate = useNavigate();
   return (
     <MainLayout>
@@ -25,10 +25,10 @@ export const ShareListPage = () => {
             <ChevronDown />
           </div>
         </header>
-        <ShareCategoryFilter
+        {/* <ShareCategoryFilter
           catHandler={setSelectedCat}
           selectedCat={selectedCat}
-        />
+        /> */}
         <div className="flex mb-5 mt-8 gap-[6px] text-[14px] text-[#5F6165] font-semibold leading-[100%] tracking-[-0.4px] items-center">
           최신순
           <ChevronDown className="w-[10px]" />
