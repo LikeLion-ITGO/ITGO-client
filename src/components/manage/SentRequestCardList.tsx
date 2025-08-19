@@ -9,7 +9,6 @@ export const SentRequestCardList = ({
   // receive_status: ShareStatus;
   claims?: ClaimItem[];
 }) => {
-  console.log(claims);
   return (
     <>
       <div className="flex flex-col gap-4">

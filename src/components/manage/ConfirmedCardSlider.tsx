@@ -30,6 +30,33 @@ export const ConfirmedCardSlider = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shareItems.length]);
 
+  const getTimeAgo = (dateStr?: string) => {
+    if (!dateStr) return "";
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMinutes = Math.floor(diffMs / 1000 / 60);
+
+    if (diffMinutes < 60) {
+      return `${diffMinutes}분 전`;
+    }
+    const diffHours = Math.floor(diffMinutes / 60);
+    if (diffHours < 24) {
+      return `${diffHours}시간 전`;
+    }
+    const diffDays = Math.floor(diffHours / 24);
+    return `${diffDays}일 전`;
+  };
+
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return "";
+    const d = new Date(dateStr);
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    return `${yyyy}.${mm}.${dd}`;
+  };
+
   return (
     <div className="w-full">
       {/* 카드 리스트 */}
@@ -63,10 +90,12 @@ export const ConfirmedCardSlider = ({
                     </span>
                   </div>
                   <span className="body-01 text-gray-500">
-                    {share.expirationDate}
+                    {formatDate(share.expirationDate)}까지
                   </span>
                 </div>
-                <span className="caption text-gray-200">{share.regDate}</span>
+                <span className="caption text-gray-200">
+                  {getTimeAgo(share.regDate)}
+                </span>
               </div>
             </div>
           </div>

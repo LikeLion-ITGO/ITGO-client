@@ -26,7 +26,6 @@ export default function Manage({ status }: { status: string }) {
   const wishItems = wish?.flat ?? [];
   const shareItems = share?.flat ?? [];
 
-  console.log("shareitems", shareItems);
   useEffect(() => {
     setSelectedTab(status === "receive" ? 0 : 1);
   }, [status]);

@@ -19,7 +19,7 @@ export default function SentRequestContent({
   const navigate = useNavigate();
 
   console.log(wish);
-  const { data } = useSentClaims(wishId, 0, 10); // ← 필요시 size 조절
+  const { data } = useSentClaims(wishId, 0, 10);
 
   const claims = data?.content ?? [];
 
@@ -34,10 +34,13 @@ export default function SentRequestContent({
       return `${diffMinutes}분 전`;
     }
     const diffHours = Math.floor(diffMinutes / 60);
-    return `${diffHours}시간 전`;
+    if (diffHours < 24) {
+      return `${diffHours}시간 전`;
+    }
+    const diffDays = Math.floor(diffHours / 24);
+    return `${diffDays}일 전`;
   };
 
-  console.log(wishId);
   return (
     <div className="flex flex-col px-5 pt-6 gap-16">
       {receive_status === ShareStatus.NO_REQUEST ? (

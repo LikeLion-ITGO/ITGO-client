@@ -31,7 +31,11 @@ export const SentRequestCardItem = ({
       return `${diffMinutes}분 전`;
     }
     const diffHours = Math.floor(diffMinutes / 60);
-    return `${diffHours}시간 전`;
+    if (diffHours < 24) {
+      return `${diffHours}시간 전`;
+    }
+    const diffDays = Math.floor(diffHours / 24);
+    return `${diffDays}일 전`;
   };
 
   const formatDate = (dateStr?: string) => {
@@ -116,7 +120,9 @@ export const SentRequestCardItem = ({
                 <span className="w-[1px] h-[10px] bg-[#D9D9D9]"></span>
                 <span className="flex flex-row items-center gap-1">
                   <Clock size={16} />
-                  <span>00:00 ~ 00:00</span>
+                  <span>
+                    {claim?.share?.openTime} ~ {claim?.share?.closeTime}
+                  </span>
                 </span>
               </div>
               <span>{formatDate(shareItem?.expirationDate)}까지</span>
