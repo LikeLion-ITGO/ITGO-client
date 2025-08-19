@@ -1,28 +1,22 @@
-import { ShareStatus } from "@/constants/status";
+// import { ShareStatus } from "@/constants/status";
 import { SentRequestCardItem } from "./SentRequestCardItem";
+import type { ClaimItem } from "@/types/claim";
 
 export const SentRequestCardList = ({
-  receive_status,
+  // receive_status,
+  claims,
 }: {
-  receive_status: ShareStatus;
+  // receive_status: ShareStatus;
+  claims?: ClaimItem[];
 }) => {
+  console.log(claims);
   return (
     <>
-      {receive_status === ShareStatus.PENDING ? (
-        <div className="flex flex-col gap-4">
-          <SentRequestCardItem />
-          <SentRequestCardItem />
-          <SentRequestCardItem />
-          <SentRequestCardItem />
-        </div>
-      ) : (
-        <div className="flex flex-col gap-4">
-          <SentRequestCardItem status={ShareStatus.ACCEPTED} />
-          <SentRequestCardItem status={ShareStatus.PENDING} />
-          <SentRequestCardItem status={ShareStatus.PENDING} />
-          <SentRequestCardItem status={ShareStatus.PENDING} />
-        </div>
-      )}
+      <div className="flex flex-col gap-4">
+        {claims?.map((claim) => (
+          <SentRequestCardItem key={claim.claimId} claim={claim} />
+        ))}
+      </div>
     </>
   );
 };

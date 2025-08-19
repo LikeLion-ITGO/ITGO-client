@@ -1,23 +1,51 @@
 import { Clock } from "lucide-react";
 import { Button } from "../ui/button";
-import MailMilk from "@/assets/images/mail-milk.png";
 import { ShareStatus } from "@/constants/status";
 import { useState } from "react";
 import Dot from "@/assets/icons/manage/dot.svg?react";
+import type { ClaimItem } from "@/types/claim";
+import DefaultImage from "@/assets/images/mail-milk.png"; // 기본 이미지
 
 export const SentRequestCardItem = ({
   status,
   isRecommend,
+  claim,
 }: {
   status?: ShareStatus;
   isRecommend?: boolean;
+  claim?: ClaimItem;
 }) => {
   const [requested, setRequested] = useState(false);
   const isRequested = isRecommend && requested;
 
+  const shareItem = claim?.share;
+
+  const getTimeAgo = (dateStr?: string) => {
+    if (!dateStr) return "";
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMinutes = Math.floor(diffMs / 1000 / 60);
+
+    if (diffMinutes < 60) {
+      return `${diffMinutes}분 전`;
+    }
+    const diffHours = Math.floor(diffMinutes / 60);
+    return `${diffHours}시간 전`;
+  };
+
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return "";
+    const d = new Date(dateStr);
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    return `${yyyy}.${mm}.${dd}`;
+  };
+
   const renderStatusText = () => {
-    switch (status) {
-      case ShareStatus.ACCEPTED:
+    switch (claim?.status) {
+      case "ACCEPTED":
         return "나눔 내역 상세";
       default:
         return "요청 취소";
@@ -45,6 +73,7 @@ export const SentRequestCardItem = ({
       setRequested(true);
     }
   };
+
   return (
     <div
       className="relative flex flex-col p-5 bg-white border border-gray-100 rounded-3xl gap-6"
@@ -62,28 +91,35 @@ export const SentRequestCardItem = ({
       <div className="flex flex-row justify-between">
         <div className="w-full flex flex-row gap-4">
           <img
-            src={MailMilk}
-            alt="매일 우유"
+            src={shareItem?.primaryImageUrl || DefaultImage}
+            alt={shareItem?.itemName}
             className="h-[90px] w-[90px] rounded-full"
           />
           <div className="flex flex-col flex-1 gap-3">
             <div className="flex flex-row justify-between">
               <div className="flex flex-col gap-[6px]">
-                <span className="subhead-02 text-gray-500">[브랜드]</span>
-                <span className="headline-01 text-gray-900">제품명 수량</span>
+                <span className="subhead-02 text-gray-500">
+                  {shareItem?.brand}
+                </span>
+                <span className="headline-01 text-gray-900 ">
+                  {shareItem?.itemName}&nbsp;
+                  {shareItem?.quantity}개
+                </span>
               </div>
-              <span className="caption text-gray-200">5분 전</span>
+              <span className="caption text-gray-200">
+                {getTimeAgo(claim?.regDate)}
+              </span>
             </div>
             <div className="flex flex-col gap-2 body-01 text-gray-500">
               <div className="flex flex-row gap-2">
-                <span>1km</span>
+                <span>{claim?.distanceKm}km</span>
                 <span className="w-[1px] h-[10px] bg-[#D9D9D9]"></span>
                 <span className="flex flex-row items-center gap-1">
                   <Clock size={16} />
                   <span>00:00 ~ 00:00</span>
                 </span>
               </div>
-              <span>2025.05.23까지</span>
+              <span>{formatDate(shareItem?.expirationDate)}까지</span>
             </div>
           </div>
         </div>
