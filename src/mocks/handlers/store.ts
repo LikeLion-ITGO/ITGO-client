@@ -6,7 +6,7 @@ const BASE = "*/api/v1/store";
 
 const mockStore: Store = {
   id: 1,
-  name: "테스트 가게",
+  storeName: "테스트 가게",
   address: {
     roadAddress: "서울 노원구 동일로192길 62 2층",
     dong: "공릉동",
