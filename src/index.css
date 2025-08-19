@@ -299,6 +299,14 @@
   }
 }
 
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+} /* Chrome/Safari */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+} /* IE/Edge, Firefox */
+
 html,
 body {
   margin: 0;
@@ -306,6 +314,7 @@ body {
   font-family: "Pretendard", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
 .swiper-pagination-bullet {
