@@ -1,1 +1,1 @@
-// 회원가입 request dto 타입 정의
+export type LoginPayload = { loginId: string; password: string };
