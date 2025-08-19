@@ -1,13 +1,13 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-interface UserState {
+interface AuthState {
   isLoggedIn: boolean;
   setLogin: () => void;
   setLogout: () => void;
 }
 
-export const useUserStore = create<UserState>()(
+export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
       isLoggedIn: false,
