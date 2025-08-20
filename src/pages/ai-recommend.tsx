@@ -16,6 +16,7 @@ export const AIRecommend = () => {
   const matches = state?.matches ?? [];
   const isRecommended = matches.length > 0;
 
+  console.log(matches);
   return (
     <>
       {isRecommended ? (

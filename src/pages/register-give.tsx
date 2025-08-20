@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import MagicIcon from "@/assets/icons/register/magic-icon.svg?react";
 import QuestionMark from "@/assets/icons/register/question-mark.svg?react";
 import CheckFail from "@/assets/icons/register/check-fail.svg?react";
+import FreshIcon from "@/assets/icons/register/fresh-icon.svg?react";
 import { X } from "lucide-react";
 import { toast } from "sonner";
 import { FreshResultModal } from "@/components/register/FreshResultModal";
@@ -18,6 +19,8 @@ import {
 } from "@/apis/share";
 import { getExtAndType } from "@/lib/utils";
 import ToolTip from "@/assets/icons/register/tooltip.svg";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "@/constants/routes";
 
 type Preview = { id: string; file: File; url: string };
 
@@ -28,6 +31,7 @@ export const RegisterGive = () => {
   const [images, setImages] = useState<Preview[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const MAX = 5;
+  const navigate = useNavigate();
 
   useEffect(() => {
     return () => images.forEach((p) => URL.revokeObjectURL(p.url));
@@ -89,6 +93,7 @@ export const RegisterGive = () => {
           title: "subhead-03 text-white",
         },
       });
+
       console.log("클릭");
       return;
     }
@@ -139,11 +144,18 @@ export const RegisterGive = () => {
         finalShare?.images?.find((i) => i.seq === 0)?.publicUrl ?? null;
 
       console.log("최종 등록", finalShare, primary);
-      toast.success("이미지까지 업로드 완료!"); //
 
-      // TODO: 필요시 라우팅/초기화
-      // setImages([]);
-      // navigate(ROUTES.SHARELIST);
+      toast("나눔이 성공적으로 업로드되었어요!", {
+        icon: <FreshIcon className="w-[20px] h-[20px]" />,
+        unstyled: true,
+        classNames: {
+          toast:
+            "w-full h-14 flex flex-row items-center px-5 py-4 bg-[#5F6165] rounded-xl gap-[10px]",
+          title: "subhead-03 text-white",
+        },
+      });
+
+      navigate(ROUTES.HOME);
     } catch (err) {
       console.error(err);
       toast.error("업로드 중 문제가 발생했어요."); //
