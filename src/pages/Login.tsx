@@ -1,9 +1,11 @@
 import axiosInstance from "@/apis/axiosInstance";
-import { login } from "@/apis/user";
+import { login } from "@/apis/auth";
 import { InputEdit } from "@/components/InputEdit";
 import MainLayout from "@/components/layouts/MainLayout";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/constants/routes";
+import { useAuthStore } from "@/stores/auth";
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -13,6 +15,8 @@ export const Login = () => {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+
+  const { setLogin } = useAuthStore(); // ✅ zustand login 함수 가져오기
 
   const handleSubmit = async () => {
     try {
@@ -26,6 +30,7 @@ export const Login = () => {
         axiosInstance.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
       }
       if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
+      setLogin();
 
       navigate(ROUTES.HOME, { replace: true });
       console.log(loading);
