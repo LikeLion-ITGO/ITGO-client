@@ -6,18 +6,32 @@ import { useEffect, useRef, useState } from "react";
 import MagicIcon from "@/assets/icons/register/magic-icon.svg?react";
 import QuestionMark from "@/assets/icons/register/question-mark.svg?react";
 import CheckFail from "@/assets/icons/register/check-fail.svg?react";
+import FreshIcon from "@/assets/icons/register/fresh-icon.svg?react";
 import { X } from "lucide-react";
 import { toast } from "sonner";
 import { FreshResultModal } from "@/components/register/FreshResultModal";
+import type { RecieveRegisterRequest } from "@/types/share";
+import {
+  confirmShareImages,
+  createShare,
+  presignShareImages,
+  putToS3,
+} from "@/apis/share";
+import { getExtAndType } from "@/lib/utils";
+import ToolTip from "@/assets/icons/register/tooltip.svg";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "@/constants/routes";
 
 type Preview = { id: string; file: File; url: string };
 
 export const RegisterGive = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isTooltipOpen, setIsToolTipOpen] = useState(false);
   const [isFreshModalOpen, setIsFreshModalOpen] = useState(false);
   const [images, setImages] = useState<Preview[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const MAX = 10;
+  const MAX = 5;
+  const navigate = useNavigate();
 
   useEffect(() => {
     return () => images.forEach((p) => URL.revokeObjectURL(p.url));
@@ -40,6 +54,7 @@ export const RegisterGive = () => {
 
     setImages((prev) => [...prev, ...next]);
     e.target.value = "";
+    setIsToolTipOpen(true);
   };
 
   const removeImage = (id: string) => {
@@ -78,18 +93,80 @@ export const RegisterGive = () => {
           title: "subhead-03 text-white",
         },
       });
+
       console.log("클릭");
       return;
     }
     setIsFreshModalOpen(true);
   };
 
+  //
+  const handleSubmit = async (values: RecieveRegisterRequest) => {
+    try {
+      // 1) 메타데이터 생성
+      const created = await createShare(values);
+      const shareId: number =
+        created.shareId ?? created.data?.shareId ?? created?.id;
+
+      // 이미지 없으면 종료
+      if (!images.length) {
+        toast.success("나눔이 등록되었어요!");
+        return;
+      }
+
+      // 2) presign 발급용 payload
+      const presignItems = images.map((p, idx) => {
+        const { ext, contentType } = getExtAndType(p.file);
+        return { seq: idx, ext, contentType, sizeBytes: p.file.size };
+      });
+
+      // 2-1) presign 요청
+      const signed = await presignShareImages(shareId, presignItems);
+
+      // 3) S3로 PUT 업로드 (presign 응답의 seq로 파일 매칭)
+      await Promise.all(
+        signed.map(async (s) => {
+          const f = images[s.seq]?.file;
+          if (!f) return; // 혹시 배열 불일치 방어
+          const { contentType } = getExtAndType(f);
+          await putToS3(s.putUrl, f, contentType);
+        })
+      );
+
+      // 4) confirm(커밋) -> 서버가 최종 Share 데이터(이미지 포함) 반환
+      const finalShare = await confirmShareImages(
+        shareId,
+        signed.map((s) => ({ seq: s.seq, objectKey: s.objectKey }))
+      );
+
+      // 대표 이미지 publicUrl (seq=0 규칙)
+      const primary =
+        finalShare?.images?.find((i) => i.seq === 0)?.publicUrl ?? null;
+
+      console.log("최종 등록", finalShare, primary);
+
+      toast("나눔이 성공적으로 업로드되었어요!", {
+        icon: <FreshIcon className="w-[20px] h-[20px]" />,
+        unstyled: true,
+        classNames: {
+          toast:
+            "w-full h-14 flex flex-row items-center px-5 py-4 bg-[#5F6165] rounded-xl gap-[10px]",
+          title: "subhead-03 text-white",
+        },
+      });
+
+      navigate(ROUTES.HOME);
+    } catch (err) {
+      console.error(err);
+      toast.error("업로드 중 문제가 발생했어요."); //
+    }
+  };
   return (
     <RegisterLayout header={"나눠주기"}>
       <div className="flex flex-col px-5 pt-11 gap-5">
         {/* 사진 section */}
         <div className="flex flex-col gap-4">
-          <div className="flex flex-row gap-2">
+          <div className="flex flex-row gap-2 relative">
             {/* 카메라 버튼 */}
             <button
               type="button"
@@ -141,9 +218,21 @@ export const RegisterGive = () => {
             className="subhead-03 flex flex-row h-11 items-center justify-center border border-blue-normal text-blue-normal gap-2 rounded-full"
             onClick={handleVerifyClick}
           >
-            신선제품 인증하기 <QuestionMark />
+            신선제품 인증하기
+            <QuestionMark
+              onClick={() => {
+                setIsToolTipOpen((curr) => images.length == 0 && !curr);
+              }}
+            />
           </button>
-
+          {isTooltipOpen && (
+            <img
+              src={ToolTip}
+              alt="신선제품인증안내"
+              className="absolute right-[25px] top-[230px]"
+              onClick={() => setIsToolTipOpen(false)}
+            />
+          )}
           <button
             className="w-fit flex flex-row px-[14px] py-[7px] mt-3 subhead-03 items-center bg-blue-light text-blue-normal rounded-xl gap-[6px]"
             onClick={handleAIClick}
@@ -153,7 +242,7 @@ export const RegisterGive = () => {
           </button>
         </div>
         {/* 입력폼 */}
-        <GiveRegisterForm />
+        <GiveRegisterForm onSubmit={handleSubmit} />
       </div>
       <AIGeneratingModal
         open={isModalOpen}

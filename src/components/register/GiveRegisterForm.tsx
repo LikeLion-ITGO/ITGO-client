@@ -4,11 +4,21 @@ import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
 import { TimeInput } from "../common/TimeInput";
 import clsx from "clsx";
+import type { RecieveRegisterRequest, StorageType } from "@/types/share";
 
 const STORE_OPEN_TIME = "09:00";
 const STORE_CLOSE_TIME = "18:00";
 
-export const GiveRegisterForm = () => {
+const METHOD_TO_STORAGE: Record<string, StorageType> = {
+  냉장: "REFRIGERATED",
+  냉동: "FROZEN",
+  상온: "ROOM_TEMPERATURE",
+};
+
+type Props = {
+  onSubmit?: (payload: RecieveRegisterRequest) => void;
+};
+export const GiveRegisterForm = ({ onSubmit }: Props) => {
   const [selectedMethod, setSelectedMethod] = useState("냉장");
 
   const [itemName, setItemName] = useState("");
@@ -33,9 +43,9 @@ export const GiveRegisterForm = () => {
     }
   };
 
-  // ✅ 필수값 모두 채워졌는지 검증
   const hasTimes =
     storeTimeChecked || (startTime.length === 5 && endTime.length === 5);
+
   const isValid =
     itemName.trim().length > 0 &&
     brand.trim().length > 0 &&
@@ -45,8 +55,27 @@ export const GiveRegisterForm = () => {
     hasTimes &&
     selectedMethod; // 보관방식은 기본값 존재
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isValid) return;
+
+    const payload: RecieveRegisterRequest = {
+      itemName: itemName.trim(),
+      brand: brand.trim(),
+      quantity: Number(quantity.replace(/[^0-9]/g, "")) || 0,
+      description: desc.trim(),
+      expirationDate: expiry.trim(),
+      storageType: METHOD_TO_STORAGE[selectedMethod],
+      freshCertified: false, // 신선인증 결과-> 상위에서 바꾸기
+      openTime: storeTimeChecked ? STORE_OPEN_TIME : startTime,
+      closeTime: storeTimeChecked ? STORE_CLOSE_TIME : endTime,
+    };
+
+    onSubmit?.(payload);
+  };
+
   return (
-    <form className="flex flex-col gap-10 pb-[66px] mb-19">
+    <form className="flex flex-col gap-10 pb-[66px] mb-19 ">
       {/* 품목명 */}
       <div className="subhead-02 text-gray-700 flex flex-col gap-4">
         <span>품목명</span>
@@ -178,6 +207,7 @@ export const GiveRegisterForm = () => {
               ? "bg-blue-normal text-white hover:bg-blue-normal-hover active:bg-blue-normal-active"
               : "bg-gray-100 text-gray-300 pointer-events-none"
           )}
+          onClick={handleSubmit}
         >
           업로드
         </Button>
