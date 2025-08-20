@@ -3,9 +3,6 @@ import { Button } from "../ui/button";
 
 import { ShareStatus } from "@/constants/status";
 
-// import MailMilk from "@/assets/images/mail-milk.png";
-import { ReceiveShareStatus } from "@/constants/status";
-
 import { useState } from "react";
 import Dot from "@/assets/icons/manage/dot.svg?react";
 import { formatLocalTime, type LocalTime } from "@/types/time";
@@ -86,7 +83,6 @@ export const SentRequestCardItem = ({
         <div className="w-full flex flex-row gap-4">
           {primaryImageUrl ? (
             <img
-              // src={MailMilk}
               src={primaryImageUrl}
               alt={itemName}
               className="h-[90px] w-[90px] rounded-full"
