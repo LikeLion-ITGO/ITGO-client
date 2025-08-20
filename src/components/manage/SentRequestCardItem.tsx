@@ -4,7 +4,7 @@ import { Button } from "../ui/button";
 import { ShareStatus } from "@/constants/status";
 
 // import MailMilk from "@/assets/images/mail-milk.png";
-// import { ReceiveShareStatus } from "@/constants/status";
+import { ReceiveShareStatus } from "@/constants/status";
 
 import { useState } from "react";
 import Dot from "@/assets/icons/manage/dot.svg?react";
