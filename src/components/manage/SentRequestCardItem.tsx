@@ -1,6 +1,11 @@
 import { Clock } from "lucide-react";
 import { Button } from "../ui/button";
 import { ShareStatus } from "@/constants/status";
+
+
+// import MailMilk from "@/assets/images/mail-milk.png";
+//import { ReceiveShareStatus } from "@/constants/status";
+
 import { useState } from "react";
 import Dot from "@/assets/icons/manage/dot.svg?react";
 import { formatLocalTime, type LocalTime } from "@/types/time";
@@ -93,7 +98,7 @@ export const SentRequestCardItem = ({
             <img
               src={primaryImageUrl}
               alt={itemName}
-              className="h-[90px] w-[90px] rounded-full"
+              className="h-[90px] w-[90px] rounded-full object-cover "
             />
           ) : (
             <div className="h-[90px] w-[90px] rounded-full bg-gray-100 flex items-center justify-center text-gray-400 text-sm">
@@ -107,7 +112,7 @@ export const SentRequestCardItem = ({
                   {brand ? `[${brand}]` : "[브랜드 없음]"}
                 </span>
                 <span className="headline-01 text-gray-900">
-                  {itemName} {quantity && `· ${quantity}개`}
+                  {itemName} {quantity && ` ${quantity}개`}
                 </span>
               </div>
               <span className="caption text-gray-200">{minutesAgo}분 전</span>
@@ -123,7 +128,11 @@ export const SentRequestCardItem = ({
                   </span>
                 </span>
               </div>
-              <span>{formatDate(expirationDate)}까지</span>
+
+              <span>
+                {expirationDate?.replace("-", ".").replace("-", ".")}까지
+              </span>
+
             </div>
           </div>
         </div>
