@@ -14,3 +14,14 @@ export interface ClaimItem {
   share?: ShareItem;
   distanceKm?: number;
 }
+
+export interface ClaimAccept {
+  claimId: number;
+  wishId: number;
+  shareId: number;
+  requesterStoreId: number;
+  quantity: number;
+  status: ClaimStatus;
+  claimAt: string;
+  decideAt: string;
+}

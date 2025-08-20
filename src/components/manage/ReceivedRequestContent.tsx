@@ -61,7 +61,10 @@ export default function ReceivedRequestContent({
               </span>
               <span className="">도움을 필요로 해요</span>
             </div>
-            <PendingRequestList claims={data?.content} />
+            <PendingRequestList
+              claims={data?.content}
+              shareId={activeShare?.shareId}
+            />
           </div>
         </>
       )}

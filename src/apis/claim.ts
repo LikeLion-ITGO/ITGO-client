@@ -42,3 +42,8 @@ export async function fetchSentClaims(wishId: number, page: number, size = 10) {
     page,
   };
 }
+
+export async function acceptClaim(claimId: number) {
+  const res = await axiosInstance.post(`/claim/accept/${claimId}`);
+  return res.data;
+}

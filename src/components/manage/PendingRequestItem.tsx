@@ -1,7 +1,44 @@
 import type { ClaimItem } from "@/types/claim";
 import { Button } from "../ui/button";
+import { useNavigate } from "react-router-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { acceptClaim } from "@/apis/claim";
+import { useEffect, useState } from "react";
+import { ROUTES } from "@/constants/routes";
 
-export const PendingRequestItem = ({ claim }: { claim: ClaimItem }) => {
+export const PendingRequestItem = ({
+  claim,
+  shareId,
+}: {
+  claim: ClaimItem;
+  shareId?: number;
+}) => {
+  const [awaitingAccept, setAwaitingAccept] = useState(false);
+  const navigate = useNavigate();
+  const qc = useQueryClient();
+  const { mutate: accept } = useMutation({
+    mutationFn: (id: number) => acceptClaim(id),
+    onSuccess: () => {
+      console.log("수락완료");
+      if (shareId) {
+        qc.invalidateQueries({ queryKey: ["received-claims", shareId] });
+      } else {
+        qc.invalidateQueries({ queryKey: ["received-claims"] });
+      }
+    },
+    onError: (err) => {
+      console.error("수락 실패:", err);
+      setAwaitingAccept(false);
+    },
+  });
+
+  useEffect(() => {
+    if (awaitingAccept && claim.tradeId) {
+      console.log("claim trade id", claim.tradeId);
+      navigate(ROUTES.SUCCESS.replace(":id", String(claim.tradeId)));
+    }
+  }, [awaitingAccept, claim.tradeId, navigate]);
+
   const getTimeAgo = (dateStr?: string) => {
     if (!dateStr) return "";
     const date = new Date(dateStr);
@@ -47,7 +84,13 @@ export const PendingRequestItem = ({ claim }: { claim: ClaimItem }) => {
           <div className="flex flex-col justify-between items-end">
             <span className="caption text-gray-200">{when}</span>
             {isPending && (
-              <Button className="bg-white hover:bg-gray-100 border border-blue-normal ml-3 text-blue-normal rounded-full">
+              <Button
+                className="bg-white hover:bg-gray-100 border border-blue-normal ml-3 text-blue-normal rounded-full"
+                onClick={() => {
+                  setAwaitingAccept(true);
+                  accept(claim.claimId);
+                }}
+              >
                 수락
               </Button>
             )}
@@ -55,7 +98,16 @@ export const PendingRequestItem = ({ claim }: { claim: ClaimItem }) => {
         </div>
       </div>
       {!isPending && (
-        <Button className="bg-white hover:bg-gray-100 border border-blue-normal text-blue-normal rounded-full mt-6">
+        <Button
+          className="bg-white hover:bg-gray-100 border border-blue-normal text-blue-normal rounded-full mt-6"
+          onClick={() => {
+            if (claim.tradeId) {
+              navigate(
+                ROUTES.HISTORY_DETAIL.replace(":id", String(claim.tradeId))
+              );
+            }
+          }}
+        >
           나눔 내역 상세
         </Button>
       )}

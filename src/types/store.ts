@@ -4,8 +4,9 @@ export interface Store {
   address: Address;
   openTime: string; // "09:00"
   closeTime: string; // "18:00"
-  phone?: string;
+  phoneNumber?: string;
   name?: string;
+  storeImageUrl?: string;
 }
 
 export interface Address {
