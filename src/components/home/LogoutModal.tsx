@@ -1,6 +1,11 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Info } from "lucide-react";
 import { Button } from "../ui/button";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import { logout } from "@/apis/auth";
+import { ROUTES } from "@/constants/routes";
+import { useAuthStore } from "@/stores/auth";
 
 interface LogoutModalProps {
   open: boolean;
@@ -8,6 +13,32 @@ interface LogoutModalProps {
 }
 
 export const LogoutModal = ({ open, onClose }: LogoutModalProps) => {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const { setLogout } = useAuthStore();
+
+  const { mutate } = useMutation({
+    mutationFn: logout,
+    onSuccess: () => {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+
+      queryClient.clear();
+
+      onClose();
+      setLogout();
+      navigate(ROUTES.HOME);
+    },
+    onError: () => {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      queryClient.clear();
+
+      onClose();
+      navigate(ROUTES.HOME);
+    },
+  });
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="flex flex-col w-[318px] rounded-[24px] pt-8 pb-5 gap-8 bg-white [&>button]:hidden">
@@ -24,7 +55,10 @@ export const LogoutModal = ({ open, onClose }: LogoutModalProps) => {
           >
             아니오
           </Button>
-          <Button className="h-12 flex-1 subhead-03 text-white rounded-xl bg-blue-normal hover:bg-blue-normal">
+          <Button
+            className="h-12 flex-1 subhead-03 text-white rounded-xl bg-blue-normal hover:bg-blue-normal"
+            onClick={() => mutate()}
+          >
             로그아웃하기
           </Button>
         </div>
