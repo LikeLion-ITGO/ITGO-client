@@ -17,7 +17,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { HistoryDetail } from "./pages/history-detail";
 import { Toaster } from "./components/ui/sonner";
-
+import { ProtectedRoute } from "./pages/ProtectRoute";
 
 const queryClient = new QueryClient();
 
@@ -27,39 +27,43 @@ function App() {
       <Toaster />
       <BrowserRouter>
         <Routes>
-          <Route path={ROUTES.HOME} element={<Home />} />
-          <Route path={ROUTES.STORE_INFO} element={<StoreInfoPage />} />
-          <Route path={ROUTES.MY_INFO} element={<MyInfoPage />} />
-          <Route path={ROUTES.SHARELIST} element={<ShareListPage />} />
-          <Route path={ROUTES.SHAREDETAIL} element={<ShareDetailPage />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path={ROUTES.HOME} element={<Home />} />
+            <Route path={ROUTES.STORE_INFO} element={<StoreInfoPage />} />
+            <Route path={ROUTES.MY_INFO} element={<MyInfoPage />} />
+            <Route path={ROUTES.SHARELIST} element={<ShareListPage />} />
+            <Route path={ROUTES.SHAREDETAIL} element={<ShareDetailPage />} />
+            <Route path={ROUTES.REGISTER_GIVE} element={<RegisterGive />} />
+            <Route
+              path={ROUTES.REGISTER_RECEIVE}
+              element={<RegisterReceive />}
+            />
+            <Route path={ROUTES.AI_RECOMMEND} element={<AIRecommend />} />
+            <Route
+              path={ROUTES.MANAGE_RECEIVE}
+              element={<Manage status={"receive"} />}
+            />
+            <Route
+              path={ROUTES.MANAGE_GIVE}
+              element={<Manage status={"give"} />}
+            />
+
+            <Route
+              path={ROUTES.HISTORY_RECEIVE}
+              element={<History status={"receive"} />}
+            />
+            <Route
+              path={ROUTES.HISTORY_GIVE}
+              element={<History status={"give"} />}
+            />
+            <Route path={ROUTES.HISTORY_DETAIL} element={<HistoryDetail />} />
+
+            <Route path={ROUTES.SUCCESS} element={<Success />} />
+          </Route>
           <Route path={ROUTES.LOGIN} element={<Login />} />
-          <Route path={ROUTES.REGISTER_GIVE} element={<RegisterGive />} />
-          <Route path={ROUTES.REGISTER_RECEIVE} element={<RegisterReceive />} />
-          <Route path={ROUTES.AI_RECOMMEND} element={<AIRecommend />} />
-          <Route
-            path={ROUTES.MANAGE_RECEIVE}
-            element={<Manage status={"receive"} />}
-          />
-          <Route
-            path={ROUTES.MANAGE_GIVE}
-            element={<Manage status={"give"} />}
-          />
-
-          <Route
-            path={ROUTES.HISTORY_RECEIVE}
-            element={<History status={"receive"} />}
-          />
-          <Route
-            path={ROUTES.HISTORY_GIVE}
-            element={<History status={"give"} />}
-          />
-          <Route path={ROUTES.HISTORY_DETAIL} element={<HistoryDetail />} />
-
-          <Route path={ROUTES.SUCCESS} element={<Success />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
-
   );
 }
 
