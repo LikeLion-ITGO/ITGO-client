@@ -1,7 +1,11 @@
 // src/apis/wish.ts
 import axiosInstance from "@/apis/axiosInstance";
 import type { ApiResponse, PageData } from "@/types/api";
-import type { WishItem } from "@/types/wish";
+import type {
+  WishCreateAndMatchResponse,
+  WishItem,
+  WishUpsertRequest,
+} from "@/types/wish";
 
 /**
  * wish 목록 페이지네이션
@@ -23,3 +27,11 @@ export async function fetchWishPage(page: number, size = 20) {
     page,
   };
 }
+
+export const postWishMatch = (
+  payload: WishUpsertRequest,
+  params?: { radiusKm?: number; size?: number }
+) =>
+  axiosInstance.post<WishCreateAndMatchResponse>("/wish/match", payload, {
+    params: { radiusKm: params?.radiusKm ?? 3, size: params?.size ?? 10 },
+  });
