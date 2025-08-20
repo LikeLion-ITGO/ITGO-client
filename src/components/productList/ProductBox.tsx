@@ -1,12 +1,14 @@
 import { Button } from "../ui/button";
-import sampleImg from "../../assets/images/sampleMilk.png";
+// import sampleImg from "../../assets/images/sampleMilk.png";
 import timeIcon from "../../assets/icons/home/timeIcon.svg";
+import type { ShareResponse } from "@/types/share";
 
 interface productType {
   type?: "default" | "simple" | "noBtn";
+  item: ShareResponse;
 }
 
-export const ProductBox = ({ type = "default" }: productType) => {
+export const ProductBox = ({ item, type = "default" }: productType) => {
   return (
     <div
       className={`${
@@ -18,20 +20,34 @@ export const ProductBox = ({ type = "default" }: productType) => {
       } rounded-[24px] border border-[#F5F7FA] bg-white shadow-[0_2px_12px_0_rgba(0,0,0,0.05)]  p-[20px] justify-between flex flex-col`}
     >
       <div className="gap-[16px] flex ">
-        <img
-          src={sampleImg}
-          alt="제품사진"
-          className={`${
-            type == "simple" ? "w-[64px] h-[64px]" : "w-[90px] h-[90px]"
-          } `}
-        />
+        <div>
+          {item.primaryImageUrl ? (
+            <img
+              src={item.primaryImageUrl}
+              alt="제품사진"
+              className={`${
+                type == "simple" ? "w-[64px] h-[64px]" : "w-[90px] h-[90px]"
+              } `}
+            />
+          ) : (
+            <div
+              className={`rounded-full bg-gray-100 flex items-center justify-center text-gray-400 text-sm ${
+                type == "simple" ? "w-[64px] h-[64px]" : "w-[90px] h-[90px]"
+              } `}
+            >
+              No Img
+            </div>
+          )}
+        </div>
         <div className="flex w-full flex-col justify-between">
           <div className="flex  justify-between">
             <div className="gap-[6px] flex flex-col">
               <p className="leading-[100%] font-medium tracking-[-0.4px] text-[14px] text-[#47484B]">
-                [브랜드]
+                [{item.brand}]
               </p>
-              <p className="headline-01">제품명 수량</p>
+              <p className="headline-01">
+                {item.itemName} {item.quantity}개
+              </p>
             </div>
             <div className="caption text-[#BCC3CE]">5분 전</div>
           </div>
@@ -41,10 +57,12 @@ export const ProductBox = ({ type = "default" }: productType) => {
                 <p>1Km</p>
                 <span className="bg-[#D9D9D9] w-[1px] h-[10px]  mx-[8px] inline-block"></span>
                 <img src={timeIcon} className="w-[16px] h-[16px] mr-[4px]" />
-                <p>00:00~00:00</p>
+                <p>
+                  {item.openTime}~{item.closeTime}
+                </p>
               </div>
             )}
-            <p>2025.05.23까지</p>
+            <p>{item.expirationDate}까지</p>
           </div>
         </div>
       </div>

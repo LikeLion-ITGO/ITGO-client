@@ -1,7 +1,7 @@
 // src/apis/wish.ts
 import axiosInstance from "@/apis/axiosInstance";
 import type { PageData } from "@/types/api";
-import type { ShareItem } from "@/types/share";
+import type { ShareItem, ShareResponse } from "@/types/share";
 
 /**
  * wish 목록 페이지네이션
@@ -20,3 +20,17 @@ export async function fetchSharePage(page: number, size = 20) {
     page,
   };
 }
+
+//ShareList용....
+export async function fetchShareList(page: number, size = 20) {
+  const res = await axiosInstance.get<PageData<ShareResponse>>("/share", {
+    params: { page, size },
+  });
+
+  const data = res.data;
+  return {
+    ...data,
+    page,
+  };
+}
+//

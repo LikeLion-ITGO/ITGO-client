@@ -11,3 +11,19 @@ export interface ShareItem {
   primaryImageUrl: string;
   claimTotalCount: number;
 }
+
+//ShareList용...
+export interface ShareResponse {
+  shareId: number;
+  itemName: string;
+  brand?: string;
+  quantity: number;
+  expirationDate: string;
+  freshCertified: boolean;
+  openTime: string;
+  closeTime: string;
+  regDate: string;
+  primaryImageUrl?: string;
+  claimTotalCount: number;
+}
+//
