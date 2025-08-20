@@ -26,7 +26,8 @@ export const AIRecommend = () => {
                 AI가 나와 맞는 나눔을
               </span>
               <span className="display-01 flex flex-row text-gray-900 gap-1">
-                <span className="text-blue-dark">5개</span> 찾았어요
+                <span className="text-blue-dark">{matches.length}개</span>
+                찾았어요
               </span>
             </div>
             <div className="flex flex-col mb-[23px]">
