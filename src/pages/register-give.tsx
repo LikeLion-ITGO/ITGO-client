@@ -9,6 +9,14 @@ import CheckFail from "@/assets/icons/register/check-fail.svg?react";
 import { X } from "lucide-react";
 import { toast } from "sonner";
 import { FreshResultModal } from "@/components/register/FreshResultModal";
+import type { RecieveRegisterRequest } from "@/types/share";
+import {
+  confirmShareImages,
+  createShare,
+  presignShareImages,
+  putToS3,
+} from "@/apis/share";
+import { getExtAndType } from "@/lib/utils";
 
 type Preview = { id: string; file: File; url: string };
 
@@ -17,7 +25,7 @@ export const RegisterGive = () => {
   const [isFreshModalOpen, setIsFreshModalOpen] = useState(false);
   const [images, setImages] = useState<Preview[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const MAX = 10;
+  const MAX = 5;
 
   useEffect(() => {
     return () => images.forEach((p) => URL.revokeObjectURL(p.url));
@@ -84,6 +92,60 @@ export const RegisterGive = () => {
     setIsFreshModalOpen(true);
   };
 
+  //
+  const handleSubmit = async (values: RecieveRegisterRequest) => {
+    try {
+      // 1) 메타데이터 생성
+      const created = await createShare(values);
+      const shareId: number =
+        created.shareId ?? created.data?.shareId ?? created?.id;
+
+      // 이미지 없으면 종료
+      if (!images.length) {
+        toast.success("나눔이 등록되었어요!");
+        return;
+      }
+
+      // 2) presign 발급용 payload
+      const presignItems = images.map((p, idx) => {
+        const { ext, contentType } = getExtAndType(p.file);
+        return { seq: idx, ext, contentType, sizeBytes: p.file.size };
+      });
+
+      // 2-1) presign 요청
+      const signed = await presignShareImages(shareId, presignItems);
+
+      // 3) S3로 PUT 업로드 (presign 응답의 seq로 파일 매칭)
+      await Promise.all(
+        signed.map(async (s) => {
+          const f = images[s.seq]?.file;
+          if (!f) return; // 혹시 배열 불일치 방어
+          const { contentType } = getExtAndType(f);
+          await putToS3(s.putUrl, f, contentType);
+        })
+      );
+
+      // 4) confirm(커밋) -> 서버가 최종 Share 데이터(이미지 포함) 반환
+      const finalShare = await confirmShareImages(
+        shareId,
+        signed.map((s) => ({ seq: s.seq, objectKey: s.objectKey }))
+      );
+
+      // 대표 이미지 publicUrl (seq=0 규칙)
+      const primary =
+        finalShare?.images?.find((i) => i.seq === 0)?.publicUrl ?? null;
+
+      console.log("최종 등록", finalShare, primary);
+      toast.success("이미지까지 업로드 완료!");
+
+      // TODO: 필요시 라우팅/초기화
+      // setImages([]);
+      // navigate(ROUTES.SHARELIST);
+    } catch (err) {
+      console.error(err);
+      toast.error("업로드 중 문제가 발생했어요.");
+    }
+  };
   return (
     <RegisterLayout header={"나눠주기"}>
       <div className="flex flex-col px-5 pt-11 gap-5">
@@ -153,7 +215,7 @@ export const RegisterGive = () => {
           </button>
         </div>
         {/* 입력폼 */}
-        <GiveRegisterForm />
+        <GiveRegisterForm onSubmit={handleSubmit} />
       </div>
       <AIGeneratingModal
         open={isModalOpen}
