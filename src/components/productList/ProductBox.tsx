@@ -23,13 +23,19 @@ export const ProductBox = ({ item, type = "default" }: productType) => {
       <div className="gap-[16px] flex ">
         <div>
           {item.primaryImageUrl ? (
-            <img
-              src={item.primaryImageUrl}
-              alt="제품사진"
+            <div
               className={`${
                 type == "simple" ? "w-[64px] h-[64px]" : "w-[90px] h-[90px]"
-              } `}
-            />
+              }`}
+            >
+              <img
+                src={item.primaryImageUrl}
+                alt="제품사진"
+                className={`${
+                  type == "simple" ? "w-[64px] h-[64px]" : "w-[90px] h-[90px]"
+                } rounded-full object-cover `}
+              />
+            </div>
           ) : (
             <div
               className={`rounded-full bg-gray-100 flex items-center justify-center text-gray-400 text-sm ${

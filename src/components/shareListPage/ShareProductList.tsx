@@ -19,7 +19,7 @@ export const ShareProductList = () => {
       </div>
     );
   return (
-    <div className="flex flex-col gap-4 mb-[19px] w-full h-[100vh]">
+    <div className="flex flex-col gap-4 mb-[19px] w-full ">
       {list.map((item) => (
         <ProductBox key={item.shareId} item={item} />
       ))}
