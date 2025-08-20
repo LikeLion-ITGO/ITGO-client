@@ -5,6 +5,10 @@ import { Clock } from "lucide-react";
 import { generatePath, useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 import type { WishItem } from "@/types/wish";
+import { useSentClaims } from "@/hooks/useSentClaims";
+import { getTradeDetail } from "@/apis/trade";
+import type { TradeDetail } from "@/types/trade";
+import { useQuery } from "@tanstack/react-query";
 
 interface ShareReceiveContentProps {
   receive_status: ShareStatus;
@@ -19,6 +23,25 @@ export const ShareReceiveContent = ({
   hasAnySentRequest = false,
 }: ShareReceiveContentProps) => {
   const navigate = useNavigate();
+  const activeWishId = wishItems?.[0]?.wishId;
+
+  const { data: sentClaimsPage } = useSentClaims(
+    activeWishId,
+    0, // page
+    50 // size 넉넉히
+  );
+  const sentClaims = sentClaimsPage?.content ?? [];
+
+  const acceptedTradeId = sentClaims.find(
+    (c) => c.status === "ACCEPTED"
+  )?.tradeId;
+
+  const { data: trade } = useQuery<TradeDetail>({
+    queryKey: ["trade-detail", acceptedTradeId],
+    queryFn: () => getTradeDetail(acceptedTradeId!),
+    enabled: !!acceptedTradeId, // tradeId 없으면 요청 안 보내도록
+    staleTime: 30_000,
+  });
 
   // 상태 → 라우트 생성 함수 (id 처리)
   const getRouteByStatus = (status: ShareStatus) => {
@@ -31,7 +54,9 @@ export const ShareReceiveContent = ({
       case ShareStatus.PENDING:
         return ROUTES.MANAGE_GIVE;
       case ShareStatus.ACCEPTED:
-        return generatePath(ROUTES.SUCCESS);
+        return acceptedTradeId
+          ? generatePath(ROUTES.HISTORY_DETAIL, { id: String(acceptedTradeId) })
+          : ROUTES.MANAGE_GIVE;
       default:
         return ROUTES.REGISTER_RECEIVE;
     }
@@ -92,7 +117,7 @@ export const ShareReceiveContent = ({
           <>
             {wishItems && (
               <>
-                <span>[픽업 장소]로 가서 </span>
+                <span>{trade?.giver.storeName}로 가서 </span>
                 <span>{wishItems[0].itemName}을 받아보세요!</span>
               </>
             )}
@@ -102,6 +127,8 @@ export const ShareReceiveContent = ({
         return null;
     }
   };
+
+  const toHHmm = (t?: string) => (t ? t.slice(0, 5) : "--:--");
 
   return (
     <div
@@ -123,7 +150,10 @@ export const ShareReceiveContent = ({
             <span className="w-[1px] h-[10px] bg-[#D9D9D9]"></span>
             <span className="flex flex-row items-center gap-1">
               <Clock size={16} />
-              <span>00:00 ~ 00:00</span>
+              <span>
+                {toHHmm(trade?.giver.openTime)} ~{" "}
+                {toHHmm(trade?.giver.closeTime)}
+              </span>
             </span>
           </div>
         )}

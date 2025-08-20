@@ -1,15 +1,12 @@
 import axiosInstance from "./axiosInstance";
-import type { TradeDetail } from "@/types/trade";
+import type { TradeDetail, TradeItem } from "@/types/trade";
+import type { ApiResponse, PageData } from "@/types/api";
 
 /**
  * wish 목록 페이지네이션
  * @param page 0-based
  * @param size 페이지 크기 (기본 20)
  */
-
-import type { ApiResponse, PageData } from "@/types/api";
-import axiosInstance from "./axiosInstance";
-import type { TradeItem } from "@/types/trade";
 
 export async function fetchReceivedTradePage(page: number, size = 20) {
   const res = await axiosInstance.get<ApiResponse<PageData<TradeItem>>>(
@@ -54,7 +51,3 @@ export const completeTrade = async (tradeId: number) => {
   const { data } = await axiosInstance.post(`/trade/complete/${tradeId}`);
   return data;
 };
-
-
-
-

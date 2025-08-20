@@ -36,7 +36,6 @@ export const AppSidebar = () => {
     queryFn: getMyStore,
   });
 
-
   const setStoreId = useStoreIdStore((s) => s.setStoreId);
 
   useEffect(() => {
@@ -44,8 +43,6 @@ export const AppSidebar = () => {
       setStoreId(store.storeId);
     }
   }, [store?.storeId, setStoreId]);
-
-  const [logoutOpen, setLogoutOpen] = useState(false);
 
   // wish 목록 조회
   const {
