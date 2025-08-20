@@ -1,14 +1,21 @@
 import { RecommendList } from "@/components/ai-recommend/RecommendList";
 import RegisterLayout from "@/components/layouts/RegisterLayout";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+// import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import NotFoundIcon from "@/assets/icons/ai-recommend/not-found-icon.svg?react";
 import { ROUTES } from "@/constants/routes";
+import type { WishMatchItem } from "@/types/wish";
 
 export const AIRecommend = () => {
   const navigate = useNavigate();
-  const [isRecommended] = useState(true);
+  const { state } = useLocation() as {
+    state?: { wishId?: number; matches?: WishMatchItem[] };
+  };
+
+  const matches = state?.matches ?? [];
+  const isRecommended = matches.length > 0;
+
   return (
     <>
       {isRecommended ? (
@@ -24,7 +31,7 @@ export const AIRecommend = () => {
             </div>
             <div className="flex flex-col mb-[23px]">
               {/* 추천 리스트 */}
-              <RecommendList />
+              <RecommendList matches={matches} />
             </div>
           </div>
           <div className="fixed bottom-0 flex flex-row pt-3 pb-4 px-5 gap-2 bg-white">
