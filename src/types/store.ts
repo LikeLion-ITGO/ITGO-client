@@ -1,5 +1,5 @@
 export interface Store {
-  id: number;
+  storeId: number;
   storeName: string;
   address: Address;
   openTime: string; // "09:00"

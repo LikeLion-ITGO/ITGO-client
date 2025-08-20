@@ -19,8 +19,9 @@ import { useQuery } from "@tanstack/react-query";
 import { getMyStore } from "@/apis/store";
 import type { Store } from "@/types/store";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LogoutModal } from "../home/LogoutModal";
+import { useStoreIdStore } from "@/stores/\bstore";
 
 export const AppSidebar = () => {
   const { toggleSidebar } = useSidebar();
@@ -29,6 +30,15 @@ export const AppSidebar = () => {
     queryKey: ["myStore"],
     queryFn: getMyStore,
   });
+
+  console.log(store);
+  const setStoreId = useStoreIdStore((s) => s.setStoreId);
+
+  useEffect(() => {
+    if (store?.storeId) {
+      setStoreId(store.storeId);
+    }
+  }, [store?.storeId, setStoreId]);
 
   const [logoutOpen, setLogoutOpen] = useState(false);
 

@@ -1,15 +1,18 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Info } from "lucide-react";
 import { Button } from "../ui/button";
-import { toast } from "sonner";
-import CheckCircle from "@/assets/icons/history/check-circle.svg?react";
 
 interface ShareCancelModalProps {
   open: boolean;
   onClose: () => void;
+  onConfirm: () => void;
 }
 
-export const ShareCancelModal = ({ open, onClose }: ShareCancelModalProps) => {
+export const ShareCancelModal = ({
+  open,
+  onClose,
+  onConfirm,
+}: ShareCancelModalProps) => {
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="flex flex-col w-[318px] rounded-[24px] pt-8 pb-5 gap-8 bg-white [&>button]:hidden">
@@ -28,17 +31,7 @@ export const ShareCancelModal = ({ open, onClose }: ShareCancelModalProps) => {
           </Button>
           <Button
             className="h-12 flex-1 subhead-03 text-white rounded-xl bg-blue-normal hover:bg-blue-normal"
-            onClick={() => {
-              toast("나눔이 취소되었습니다!", {
-                icon: <CheckCircle />,
-                unstyled: true,
-                classNames: {
-                  toast:
-                    "w-full h-14 flex flex-row items-center px-5 py-4 bg-[#5F6165] rounded-xl gap-[10px]",
-                  title: "subhead-03 text-white",
-                },
-              });
-            }}
+            onClick={onConfirm}
           >
             취소하기
           </Button>
