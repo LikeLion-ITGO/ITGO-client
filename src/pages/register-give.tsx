@@ -50,6 +50,7 @@ export const RegisterGive = () => {
 
     setImages((prev) => [...prev, ...next]);
     e.target.value = "";
+    setIsToolTipOpen(true);
   };
 
   const removeImage = (id: string) => {
@@ -153,7 +154,7 @@ export const RegisterGive = () => {
       <div className="flex flex-col px-5 pt-11 gap-5">
         {/* 사진 section */}
         <div className="flex flex-col gap-4">
-          <div className="flex flex-row gap-2">
+          <div className="flex flex-row gap-2 relative">
             {/* 카메라 버튼 */}
             <button
               type="button"
@@ -202,25 +203,24 @@ export const RegisterGive = () => {
           />
 
           <button
-            className="subhead-03 flex flex-row h-11 items-center justify-center border border-blue-normal text-blue-normal gap-2 rounded-full relative"
+            className="subhead-03 flex flex-row h-11 items-center justify-center border border-blue-normal text-blue-normal gap-2 rounded-full"
             onClick={handleVerifyClick}
           >
             신선제품 인증하기
             <QuestionMark
               onClick={() => {
-                setIsToolTipOpen((curr) => !curr);
+                setIsToolTipOpen((curr) => images.length == 0 && !curr);
               }}
             />
-            {isTooltipOpen && (
-              <img
-                src={ToolTip}
-                alt="신선제품인증안내"
-                className="absolute right-[5px] top-[37px]"
-                onClick={() => setIsToolTipOpen(false)}
-              />
-            )}
           </button>
-
+          {isTooltipOpen && (
+            <img
+              src={ToolTip}
+              alt="신선제품인증안내"
+              className="absolute right-[25px] top-[230px]"
+              onClick={() => setIsToolTipOpen(false)}
+            />
+          )}
           <button
             className="w-fit flex flex-row px-[14px] py-[7px] mt-3 subhead-03 items-center bg-blue-light text-blue-normal rounded-xl gap-[6px]"
             onClick={handleAIClick}
