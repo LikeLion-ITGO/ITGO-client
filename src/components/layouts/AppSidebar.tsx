@@ -19,8 +19,9 @@ import { useQuery } from "@tanstack/react-query";
 import { getMyStore } from "@/apis/store";
 import type { Store } from "@/types/store";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LogoutModal } from "../home/LogoutModal";
+import { useStoreIdStore } from "@/stores/\bstore";
 
 import { useWishInfinite } from "@/hooks/useWishInfinite";
 import { useShareInfinite } from "@/hooks/useShareInfinite";
@@ -34,6 +35,14 @@ export const AppSidebar = () => {
     queryKey: ["myStore"],
     queryFn: getMyStore,
   });
+
+  const setStoreId = useStoreIdStore((s) => s.setStoreId);
+
+  useEffect(() => {
+    if (store?.storeId) {
+      setStoreId(store.storeId);
+    }
+  }, [store?.storeId, setStoreId]);
 
   // wish 목록 조회
   const {

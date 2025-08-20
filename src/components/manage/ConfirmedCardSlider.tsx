@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import MailMilk from "@/assets/images/mail-milk.png";
 import type { ShareItem } from "@/types/share";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "@/constants/routes";
+
 
 export const ConfirmedCardSlider = ({
   shareItems = [],
@@ -11,6 +14,7 @@ export const ConfirmedCardSlider = ({
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const navigate = useNavigate();
 
   const handleScroll = () => {
     const el = scrollRef.current;
@@ -69,6 +73,11 @@ export const ConfirmedCardSlider = ({
           <div
             key={share.shareId}
             className="min-w-full flex-shrink-0 snap-center "
+            onClick={() => {
+              navigate(
+                ROUTES.SHAREDETAIL.replace(":id", String(share.shareId))
+              );
+            }}
           >
             <div
               className="flex flex-row p-5 bg-white border border-gray-100 rounded-3xl gap-4"

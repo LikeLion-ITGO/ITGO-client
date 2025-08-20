@@ -18,6 +18,7 @@ export const SentRequestCardList = ({ claims }: { claims?: ClaimItem[] }) => {
         {claims?.map((claim) => (
           <SentRequestCardItem
             key={claim.claimId}
+            claimId={claim.claimId}
             brand={claim.share?.brand}
             itemName={claim.share?.itemName}
             quantity={claim.share?.quantity}
@@ -28,6 +29,7 @@ export const SentRequestCardList = ({ claims }: { claims?: ClaimItem[] }) => {
             expirationDate={claim.share?.expirationDate}
             primaryImageUrl={claim.share?.primaryImageUrl}
             status={claim.status}
+            tradeId={claim.tradeId}
           />
         ))}
       </div>

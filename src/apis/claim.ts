@@ -42,3 +42,17 @@ export async function fetchSentClaims(wishId: number, page: number, size = 10) {
     page,
   };
 }
+
+// claim 수락
+export async function acceptClaim(claimId: number) {
+  const res = await axiosInstance.post(`/claim/accept/${claimId}`);
+  return res.data;
+}
+
+// claim 취소
+export async function cancelClaim(claimId: number) {
+  const res = await axiosInstance.post<ApiResponse<unknown>>(
+    `/claim/cancel/${claimId}`
+  );
+  return res.data;
+}
