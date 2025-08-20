@@ -50,11 +50,11 @@ export const AppSidebar = () => {
   } = useShareInfinite(20);
   const shareItems = share?.flat ?? [];
 
-  if (isWishLoading) return <div className="p-4">불러오는 중…</div>;
-  if (isWishError) return <div className="p-4">목록을 불러오지 못했어요.</div>;
+  if (isWishLoading) return <div className="p-4"></div>;
+  if (isWishError) return <div className="p-4"></div>;
 
-  if (isShareLoading) return <div className="p-4">불러오는 중…</div>;
-  if (isShareError) return <div className="p-4">목록을 불러오지 못했어요.</div>;
+  if (isShareLoading) return <div className="p-4"></div>;
+  if (isShareError) return <div className="p-4"></div>;
 
   const receivedCount = (shareItems ?? []).reduce(
     (sum, s) => sum + (s.claimTotalCount ?? 0),

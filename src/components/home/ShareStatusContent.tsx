@@ -48,10 +48,10 @@ export const ShareStatusContent = () => {
   if (isWishLoading || isSentLoading)
     return <div className="p-4">불러오는 중…</div>;
   if (isWishError || isSentError)
-    return <div className="p-4">목록을 불러오지 못했어요.</div>;
+    if (isShareLoading || isClaimLoading)
+      // return <div className="p-4">목록을 불러오지 못했어요.</div>;
 
-  if (isShareLoading || isClaimLoading)
-    return <div className="p-4">불러오는 중…</div>;
+      return <div className="p-4">불러오는 중…</div>;
   if (isShareError || isClaimError)
     return <div className="p-4">목록을 불러오지 못했어요.</div>;
 
