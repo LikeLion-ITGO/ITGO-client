@@ -2,6 +2,9 @@ import { Clock } from "lucide-react";
 import { Button } from "../ui/button";
 import { ShareStatus } from "@/constants/status";
 
+// import MailMilk from "@/assets/images/mail-milk.png";
+//import { ReceiveShareStatus } from "@/constants/status";
+
 import { useState } from "react";
 import Dot from "@/assets/icons/manage/dot.svg?react";
 import { formatLocalTime, type LocalTime } from "@/types/time";
@@ -55,6 +58,15 @@ export const SentRequestCardItem = ({
       console.log(err);
     },
   });
+
+  // const formatDate = (dateStr?: string) => {
+  //   if (!dateStr) return "";
+  //   const d = new Date(dateStr);
+  //   const yyyy = d.getFullYear();
+  //   const mm = String(d.getMonth() + 1).padStart(2, "0");
+  //   const dd = String(d.getDate()).padStart(2, "0");
+  //   return `${yyyy}.${mm}.${dd}`;
+  // };
 
   const renderStatusText = () => {
     switch (status) {

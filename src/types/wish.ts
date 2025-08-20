@@ -7,7 +7,7 @@ export interface WishItem {
   brand: string;
   quantity: number;
   description: string;
-  regDate: string; // ISO string
+  regDate: string;
   claimTotalCount: number;
 }
 

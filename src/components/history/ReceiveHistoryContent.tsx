@@ -1,12 +1,23 @@
-import { ProductStatus } from "@/constants/status";
 import { HistoryContent } from "./HistoryContent";
+import { useReceivedTradeInfinite } from "@/hooks/useReceivedTradeInfinite";
 
 export const ReceiveHistoryContent = () => {
+  const { data, isLoading, isError } = useReceivedTradeInfinite(20);
+  const trades = data?.flat ?? [];
+
+  if (isLoading) return <div className="px-5 py-7">로딩 중…</div>;
+  if (isError) return <div className="px-5 py-7">불러오기에 실패했어요.</div>;
+
   return (
     <div className="flex flex-col px-5 py-7 gap-16">
-      <HistoryContent isReceived={true} status={ProductStatus.MATCHED} />
-      <HistoryContent isReceived={true} status={ProductStatus.CONFIRMED} />
-      <HistoryContent isReceived={true} status={ProductStatus.CONFIRMED} />
+      {trades.map((trade) => (
+        <HistoryContent
+          key={trade.tradeId}
+          status={trade.status}
+          isReceived={true}
+          trade={trade ?? []}
+        />
+      ))}
     </div>
   );
 };

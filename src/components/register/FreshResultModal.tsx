@@ -78,8 +78,11 @@ export const FreshResultModal = ({
                 <span>{lines[1]}</span>
               </div>
             </div>
-            <Button className="subhead-03 h-12 bg-blue-normal text-white">
-              확인
+            <Button
+              className="subhead-03 h-12 bg-blue-normal text-white"
+              onClick={onClose}
+            >
+              {fresh_result == "SPOILED" ? "다른 사진으로 인증하기" : "확인"}
             </Button>
           </div>
         </div>

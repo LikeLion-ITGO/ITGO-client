@@ -3,7 +3,6 @@ import type { LoginPayload } from "@/types/user";
 
 export async function login({ loginId, password }: LoginPayload) {
   const res = await axiosInstance.post("/auth/login", { loginId, password });
-  console.log(res);
   const accessToken =
     res.headers["authorization"]?.replace(/^Bearer\s+/i, "") ?? "";
   const refreshToken = res.headers["x-refresh-token"] ?? "";
@@ -14,3 +13,8 @@ export async function login({ loginId, password }: LoginPayload) {
     refreshToken,
   };
 }
+
+export const logout = async () => {
+  const { data } = await axiosInstance.post("/auth/logout");
+  return data;
+};

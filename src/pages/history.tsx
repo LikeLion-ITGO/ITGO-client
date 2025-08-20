@@ -18,7 +18,13 @@ export default function History({ status }: { status: string }) {
       selectedTab={selectedTab}
       setSelectedTab={setSelectedTab}
     >
-      {selectedTab === 0 ? <SendHistoryContent /> : <ReceiveHistoryContent />}
+      {selectedTab === 0 ? (
+        // 나눔한 내역
+        <SendHistoryContent />
+      ) : (
+        // 나눔 받은 내역
+        <ReceiveHistoryContent />
+      )}
     </ManageLayout>
   );
 }
