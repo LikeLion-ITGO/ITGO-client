@@ -1,4 +1,4 @@
-import { ShareStatus } from "@/constants/status";
+import { ReceiveShareStatus } from "@/constants/status";
 import { SentRequestCardList } from "./SentRequestCardList";
 import Heart from "@/assets/icons/manage/heart.svg?react";
 import { Button } from "../ui/button";
@@ -8,13 +8,13 @@ import { ROUTES } from "@/constants/routes";
 export default function SentRequestContent({
   receive_status,
 }: {
-  receive_status: ShareStatus;
+  receive_status: ReceiveShareStatus;
 }) {
   const navigate = useNavigate();
 
   return (
     <div className="flex flex-col px-5 pt-6 gap-16">
-      {receive_status === ShareStatus.NO_REQUEST ? (
+      {receive_status === ReceiveShareStatus.NO_REQUEST ? (
         <div className="flex flex-col items-center gap-4 pt-[171px]">
           <div className="flex flex-col items-center headline-long-02 text-gray-900">
             <span>아직 보낸 요청이</span>
@@ -54,7 +54,7 @@ export default function SentRequestContent({
               </span>
             </div>
           </div>
-          {receive_status === ShareStatus.PENDING && (
+          {receive_status === ReceiveShareStatus.MATCHING_IN_PROGRESS && (
             // 나눔 요청 상태
             <div className="flex flex-col gap-6">
               <div className="w-full flex flex-col gap-6">
@@ -68,7 +68,7 @@ export default function SentRequestContent({
             </div>
           )}
 
-          {receive_status === ShareStatus.ACCEPTED && (
+          {receive_status === ReceiveShareStatus.SHARING_CONFIRMED && (
             // 나눔 요청 상태
             <div className="flex flex-col gap-6">
               <div className="w-full flex flex-col gap-6">
