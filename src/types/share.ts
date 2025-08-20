@@ -12,6 +12,23 @@ export interface ShareItem {
   claimTotalCount: number;
 }
 
+
+//ShareList용...
+export interface ShareResponse {
+  shareId: number;
+  itemName: string;
+  brand?: string;
+  quantity: number;
+  expirationDate: string;
+  freshCertified: boolean;
+  openTime: string;
+  closeTime: string;
+  regDate: string;
+  primaryImageUrl?: string;
+  claimTotalCount: number;
+}
+//
+
 export type StorageType = "REFRIGERATED" | "FROZEN" | "ROOM_TEMPERATURE";
 
 export type RecieveRegisterRequest = {
@@ -60,3 +77,4 @@ export type ShareDetail = {
   roadAddress: string;
   regDate: string;
 };
+
