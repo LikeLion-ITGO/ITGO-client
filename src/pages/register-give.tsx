@@ -17,11 +17,13 @@ import {
   putToS3,
 } from "@/apis/share";
 import { getExtAndType } from "@/lib/utils";
+import ToolTip from "@/assets/icons/register/tooltip.svg";
 
 type Preview = { id: string; file: File; url: string };
 
 export const RegisterGive = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isTooltipOpen, setIsToolTipOpen] = useState(false);
   const [isFreshModalOpen, setIsFreshModalOpen] = useState(false);
   const [images, setImages] = useState<Preview[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -136,14 +138,14 @@ export const RegisterGive = () => {
         finalShare?.images?.find((i) => i.seq === 0)?.publicUrl ?? null;
 
       console.log("최종 등록", finalShare, primary);
-      toast.success("이미지까지 업로드 완료!");
+      toast.success("이미지까지 업로드 완료!"); //
 
       // TODO: 필요시 라우팅/초기화
       // setImages([]);
       // navigate(ROUTES.SHARELIST);
     } catch (err) {
       console.error(err);
-      toast.error("업로드 중 문제가 발생했어요.");
+      toast.error("업로드 중 문제가 발생했어요."); //
     }
   };
   return (
@@ -200,10 +202,23 @@ export const RegisterGive = () => {
           />
 
           <button
-            className="subhead-03 flex flex-row h-11 items-center justify-center border border-blue-normal text-blue-normal gap-2 rounded-full"
+            className="subhead-03 flex flex-row h-11 items-center justify-center border border-blue-normal text-blue-normal gap-2 rounded-full relative"
             onClick={handleVerifyClick}
           >
-            신선제품 인증하기 <QuestionMark />
+            신선제품 인증하기
+            <QuestionMark
+              onClick={() => {
+                setIsToolTipOpen((curr) => !curr);
+              }}
+            />
+            {isTooltipOpen && (
+              <img
+                src={ToolTip}
+                alt="신선제품인증안내"
+                className="absolute right-[5px] top-[37px]"
+                onClick={() => setIsToolTipOpen(false)}
+              />
+            )}
           </button>
 
           <button
