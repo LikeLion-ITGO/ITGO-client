@@ -41,6 +41,8 @@ export default function SentRequestContent({
     return `${diffDays}일 전`;
   };
 
+  const visibleClaims = claims?.filter((c) => c.status !== "CANCELED");
+
   return (
     <div className="flex flex-col px-5 pt-6 gap-16">
       {receive_status === ShareStatus.NO_REQUEST ? (
@@ -91,17 +93,20 @@ export default function SentRequestContent({
             <div className="flex flex-col gap-6">
               <div className="w-full flex flex-col gap-6">
                 <div className="headline-02 flex flex-row gap-1">
-                  <span className="text-blue-normal-active">
-                    {wish?.claimTotalCount}명에게
-                  </span>
-                  <span className="">도움을 요청했어요</span>
+                  {visibleClaims.some((c) => c.status === "ACCEPTED") ? (
+                    <span>나눔이 성사됐어요!</span>
+                  ) : (
+                    <>
+                      <span className="text-blue-normal-active">
+                        {visibleClaims.length}명에게
+                      </span>
+                      <span>도움을 요청했어요</span>
+                    </>
+                  )}
                 </div>
               </div>
               {/* 거래 내역 */}
-              <SentRequestCardList
-                // receive_status={receive_status}
-                claims={claims}
-              />
+              <SentRequestCardList claims={visibleClaims} />
             </div>
           )}
         </>

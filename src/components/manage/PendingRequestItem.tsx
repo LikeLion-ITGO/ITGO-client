@@ -34,7 +34,6 @@ export const PendingRequestItem = ({
 
   useEffect(() => {
     if (awaitingAccept && claim.tradeId) {
-      console.log("claim trade id", claim.tradeId);
       navigate(ROUTES.SUCCESS.replace(":id", String(claim.tradeId)));
     }
   }, [awaitingAccept, claim.tradeId, navigate]);

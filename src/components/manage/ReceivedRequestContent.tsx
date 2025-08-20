@@ -31,6 +31,8 @@ export default function ReceivedRequestContent({
     staleTime: 30_000,
   });
 
+  const visibleClaims = data?.content.filter((c) => c.status !== "CANCELED");
+
   return (
     <div className="flex flex-col px-5 pt-6 gap-16">
       {give_status === ShareStatus.NO_REQUEST ? (
@@ -57,12 +59,12 @@ export default function ReceivedRequestContent({
           <div className="w-full flex flex-col gap-6">
             <div className="headline-02 flex flex-row gap-1">
               <span className="text-blue-normal-active">
-                {data?.content.length}명이
+                {visibleClaims?.length}명이
               </span>
               <span className="">도움을 필요로 해요</span>
             </div>
             <PendingRequestList
-              claims={data?.content}
+              claims={visibleClaims}
               shareId={activeShare?.shareId}
             />
           </div>

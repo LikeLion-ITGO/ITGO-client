@@ -8,7 +8,7 @@ export interface TradeParty {
   phoneNumber: string;
 }
 
-export type TradeStatus = "MATCHED" | "COMPLETED" | "CANCELLED";
+export type TradeStatus = "MATCHED" | "COMPLETED" | "CANCELED";
 
 export interface TradeDetail {
   tradeId: number;
