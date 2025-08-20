@@ -1,3 +1,4 @@
+import type { ShareItem } from "./share";
 import type { Store } from "./store";
 import type { WishItem } from "./wish";
 
@@ -10,4 +11,6 @@ export interface ClaimItem {
   regDate: string;
   wish: WishItem;
   store: Store;
+  share?: ShareItem;
+  distanceKm?: number;
 }

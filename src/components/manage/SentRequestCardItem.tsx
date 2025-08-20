@@ -1,10 +1,10 @@
 import { Clock } from "lucide-react";
 import { Button } from "../ui/button";
-
 import { ShareStatus } from "@/constants/status";
-
 import { useState } from "react";
 import Dot from "@/assets/icons/manage/dot.svg?react";
+import type { ClaimItem } from "@/types/claim";
+import DefaultImage from "@/assets/images/mail-milk.png"; // 기본 이미지
 import { formatLocalTime, type LocalTime } from "@/types/time";
 
 export const SentRequestCardItem = ({
@@ -35,9 +35,38 @@ export const SentRequestCardItem = ({
   const [requested, setRequested] = useState(false);
   const isRequested = isRecommend && requested;
 
+  const shareItem = claim?.share;
+
+  const getTimeAgo = (dateStr?: string) => {
+    if (!dateStr) return "";
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMinutes = Math.floor(diffMs / 1000 / 60);
+
+    if (diffMinutes < 60) {
+      return `${diffMinutes}분 전`;
+    }
+    const diffHours = Math.floor(diffMinutes / 60);
+    if (diffHours < 24) {
+      return `${diffHours}시간 전`;
+    }
+    const diffDays = Math.floor(diffHours / 24);
+    return `${diffDays}일 전`;
+  };
+
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return "";
+    const d = new Date(dateStr);
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    return `${yyyy}.${mm}.${dd}`;
+  };
+
   const renderStatusText = () => {
-    switch (status) {
-      case ShareStatus.ACCEPTED:
+    switch (claim?.status) {
+      case "ACCEPTED":
         return "나눔 내역 상세";
       default:
         return "요청 취소";
@@ -65,6 +94,7 @@ export const SentRequestCardItem = ({
       setRequested(true);
     }
   };
+
   return (
     <div
       className="relative flex flex-col p-5 bg-white border border-gray-100 rounded-3xl gap-6"
@@ -96,6 +126,7 @@ export const SentRequestCardItem = ({
             <div className="flex flex-row justify-between">
               <div className="flex flex-col gap-[6px]">
                 <span className="subhead-02 text-gray-500">
+
                   {brand ? `[${brand}]` : "[브랜드 없음]"}
                 </span>
                 <span className="headline-01 text-gray-900">

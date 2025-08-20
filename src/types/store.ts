@@ -5,6 +5,7 @@ export interface Store {
   openTime: string; // "09:00"
   closeTime: string; // "18:00"
   phone?: string;
+  name?: string;
 }
 
 export interface Address {
