@@ -3,9 +3,18 @@ import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
 import { useState } from "react";
 import { TimeInput } from "../common/TimeInput";
+import { formatLocalTime } from "@/types/time";
 
 interface ReceiveRegisterFormProps {
-  onSubmit: () => void;
+  onSubmit: (payload: {
+    title: string;
+    itemName: string;
+    brand?: string;
+    quantity: number;
+    description?: string;
+    openTime: ReturnType<typeof formatLocalTime>;
+    closeTime: ReturnType<typeof formatLocalTime>;
+  }) => void;
 }
 
 const STORE_OPEN_TIME = "09:00";
@@ -50,7 +59,19 @@ export const ReceiveRegisterForm = ({ onSubmit }: ReceiveRegisterFormProps) => {
       onSubmit={(e) => {
         e.preventDefault();
         if (!isValid) return;
-        onSubmit();
+        onSubmit({
+          title: title.trim(),
+          itemName: itemName.trim(),
+          brand: brand.trim() || undefined,
+          quantity: Number(quantity), // 숫자??? -> 나중에...
+          description: description.trim() || undefined,
+          openTime: formatLocalTime(
+            storeTimeChecked ? STORE_OPEN_TIME : startTime
+          ),
+          closeTime: formatLocalTime(
+            storeTimeChecked ? STORE_CLOSE_TIME : endTime
+          ),
+        });
       }}
     >
       {/* 제목 */}
