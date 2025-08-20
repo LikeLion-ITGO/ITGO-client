@@ -1,7 +1,7 @@
 import RegisterLayout from "@/components/layouts/RegisterLayout";
 import { AIMatchingModal } from "@/components/register/AiMatchingModal";
 import { ReceiveRegisterForm } from "@/components/register/ReceiveRegisterForm";
-import { postWishMatch } from "@/types/wish";
+import { postWishMatch } from "@/apis/wish";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
