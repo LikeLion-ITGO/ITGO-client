@@ -19,8 +19,13 @@ import { useQuery } from "@tanstack/react-query";
 import { getMyStore } from "@/apis/store";
 import type { Store } from "@/types/store";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { LogoutModal } from "../home/LogoutModal";
+
+import { useWishInfinite } from "@/hooks/useWishInfinite";
+import { useShareInfinite } from "@/hooks/useShareInfinite";
+import { fetchSentClaims } from "@/apis/claim";
+import { fetchReceivedClaims } from "@/apis/claim";
 
 export const AppSidebar = () => {
   const { toggleSidebar } = useSidebar();
@@ -28,6 +33,49 @@ export const AppSidebar = () => {
   const { data: store } = useQuery<Store>({
     queryKey: ["myStore"],
     queryFn: getMyStore,
+  });
+
+  // 내 wish / share 목록 (평탄화된 배열 사용)
+  const wishQ = useWishInfinite(20);
+  const shareQ = useShareInfinite(20);
+  const wishIds = useMemo(
+    () => (wishQ.data?.flat ?? []).map((w) => w.wishId),
+    [wishQ.data]
+  );
+  const shareIds = useMemo(
+    () => (shareQ.data?.flat ?? []).map((s) => s.shareId),
+    [shareQ.data]
+  );
+
+  // ✅ 총 카운트 모으기 (size=1로 호출해 totalElements 활용)
+  const { data: counts } = useQuery({
+    queryKey: ["sidebar-claim-counts", wishIds, shareIds],
+    enabled: (wishIds?.length ?? 0) + (shareIds?.length ?? 0) > 0,
+    staleTime: 30_000,
+    queryFn: async () => {
+      // 보낸 요청(내 wish 기준)
+      const sentPromises = wishIds.map(async (wishId) => {
+        const page = await fetchSentClaims(wishId, 0, 1);
+        const total = page.totalElements ?? 0;
+        return total;
+      });
+
+      // 받은 요청(내 share 기준)
+      const receivedPromises = shareIds.map(async (shareId) => {
+        const page = await fetchReceivedClaims(shareId, 0, 1);
+        const total = page.totalElements ?? 0;
+        return total;
+      });
+
+      const [sentParts, receivedParts] = await Promise.all([
+        Promise.all(sentPromises),
+        Promise.all(receivedPromises),
+      ]);
+
+      const sentCount = sentParts.reduce((a, b) => a + b, 0);
+      const receivedCount = receivedParts.reduce((a, b) => a + b, 0);
+      return { sentCount, receivedCount };
+    },
   });
 
   const [logoutOpen, setLogoutOpen] = useState(false);
@@ -57,7 +105,7 @@ export const AppSidebar = () => {
               </span>
               <span className="flex flex-row items-center tracking--2 gap-[6px]">
                 <Clock size={16} />
-                {store?.openTime} ~ {store?.closeTime}
+                {store?.openTime?.slice(0, 5)} ~ {store?.closeTime?.slice(0, 5)}
               </span>
             </div>
           </div>
@@ -75,13 +123,17 @@ export const AppSidebar = () => {
           </span>
           <div className="flex flex-row gap-10">
             <div className="flex flex-col">
-              <span className="text-xl font-semibold text-[#2695E8]">0</span>
+              <span className="text-xl font-semibold text-[#2695E8]">
+                {counts?.receivedCount ?? 0}
+              </span>
               <span className="text-xs font-medium text-[#8F9498]">
                 받은 요청
               </span>
             </div>
             <div className="flex flex-col">
-              <span className="text-xl font-semibold text-[#2695E8]">4</span>
+              <span className="text-xl font-semibold text-[#2695E8]">
+                {counts?.sentCount ?? 0}
+              </span>
               <span className="text-xs font-medium text-[#8F9498]">
                 보낸 요청
               </span>
