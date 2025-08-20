@@ -13,7 +13,7 @@ export const ROUTES = {
   HISTORY_RECEIVE: "/history/receive",
   HISTORY_GIVE: "/history/give",
   HISTORY_DETAIL: "/history/detail/:id",
-  SUCCESS: "/success",
+  SUCCESS: "/success/:id",
 } as const;
 
 export type RouteKey = keyof typeof ROUTES;

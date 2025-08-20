@@ -8,10 +8,15 @@ import { ShareStatus } from "@/constants/status";
 import { useState } from "react";
 import Dot from "@/assets/icons/manage/dot.svg?react";
 import { formatLocalTime, type LocalTime } from "@/types/time";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { cancelClaim } from "@/apis/claim";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "@/constants/routes";
 
 export const SentRequestCardItem = ({
   status,
   isRecommend,
+  claimId,
   brand,
   itemName,
   quantity,
@@ -21,9 +26,11 @@ export const SentRequestCardItem = ({
   closeTime,
   expirationDate,
   primaryImageUrl,
+  tradeId,
 }: {
   status?: string;
   isRecommend?: boolean;
+  claimId?: number;
   brand?: string;
   itemName?: string;
   quantity?: number;
@@ -33,9 +40,24 @@ export const SentRequestCardItem = ({
   closeTime?: string | LocalTime;
   expirationDate?: string;
   primaryImageUrl?: string;
+  tradeId?: number;
 }) => {
   const [requested, setRequested] = useState(false);
   const isRequested = isRecommend && requested;
+  const navigate = useNavigate();
+  const qc = useQueryClient();
+
+  const { mutate: doCancel } = useMutation({
+    mutationFn: (id: number) => cancelClaim(id),
+    onSuccess: () => {
+      console.log("취소 성공");
+      qc.invalidateQueries({ queryKey: ["sent-claims"] });
+      qc.invalidateQueries({ queryKey: ["received-claims"] });
+    },
+    onError: (err) => {
+      console.log(err);
+    },
+  });
 
   // const formatDate = (dateStr?: string) => {
   //   if (!dateStr) return "";
@@ -67,13 +89,21 @@ export const SentRequestCardItem = ({
       ? isRequested
         ? "bg-gray-50 border-gray-300 text-gray-300 pointer-events-none"
         : "bg-white hover:bg-gray-100 border-blue-normal text-blue-normal"
-      : status === ShareStatus.NO_REQUEST
+      : status === ShareStatus.NO_REQUEST || status === "REJECTED"
       ? "bg-gray-50 border-gray-300 text-gray-300 pointer-events-none"
       : "bg-white hover:bg-gray-100 border-blue-normal text-blue-normal");
 
   const handleButtonClick = () => {
+    if (status === "REJECTED") return;
     if (isRecommend && !requested) {
       setRequested(true);
+      return;
+    }
+    if (status === "PENDING" && claimId) {
+      doCancel(claimId);
+    }
+    if (status === "ACCEPTED" && tradeId) {
+      navigate(ROUTES.HISTORY_DETAIL.replace(":id", String(tradeId)));
     }
   };
 

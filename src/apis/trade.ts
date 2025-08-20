@@ -1,3 +1,6 @@
+import axiosInstance from "./axiosInstance";
+import type { TradeDetail } from "@/types/trade";
+
 /**
  * wish 목록 페이지네이션
  * @param page 0-based
@@ -38,7 +41,20 @@ export async function fetchSentTradePage(page: number, size = 20) {
   };
 }
 
+export async function getTradeDetail(tradeId: number): Promise<TradeDetail> {
+  const res = await axiosInstance.get(`/trade/${tradeId}`);
+  return res.data.data as TradeDetail;
+}
+
+export async function cancelTrade(tradeId: number) {
+  return axiosInstance.post(`/trade/cancel/${tradeId}`);
+}
+
 export const completeTrade = async (tradeId: number) => {
   const { data } = await axiosInstance.post(`/trade/complete/${tradeId}`);
   return data;
 };
+
+
+
+
