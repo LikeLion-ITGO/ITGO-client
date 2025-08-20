@@ -1,12 +1,22 @@
+import type { ClaimItem } from "@/types/claim";
 import { PendingRequestItem } from "./PendingRequestItem";
 
-export const PendingRequestList = () => {
+export const PendingRequestList = ({
+  claims = [],
+  shareId,
+}: {
+  claims?: ClaimItem[];
+  shareId?: number;
+}) => {
   return (
     <div className="flex flex-col gap-4">
-      <PendingRequestItem />
-      <PendingRequestItem />
-      <PendingRequestItem />
-      <PendingRequestItem />
+      {claims.map((claim) => (
+        <PendingRequestItem
+          key={claim.claimId}
+          claim={claim}
+          shareId={shareId}
+        />
+      ))}
     </div>
   );
 };

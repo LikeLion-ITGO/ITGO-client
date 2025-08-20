@@ -5,9 +5,8 @@ import type { ApiResponse } from "@/types/api";
 const BASE = "*/api/v1/store";
 
 const mockStore: Store = {
-  id: 1,
-  name: "테스트 가게",
-
+  storeId: 1,
+  storeName: "테스트 가게",
   address: {
     roadAddress: "서울 노원구 동일로192길 62 2층",
     dong: "공릉동",
@@ -16,8 +15,7 @@ const mockStore: Store = {
   },
   openTime: "09:00",
   closeTime: "18:00",
-
-  phone: "010-1234-5678",
+  phoneNumber: "010-1234-5678",
 };
 
 // 내 가게 조회

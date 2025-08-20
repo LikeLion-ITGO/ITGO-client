@@ -2,14 +2,39 @@ import ManageLayout from "@/components/layouts/ManageLayout";
 import { useEffect, useState } from "react";
 import ReceivedRequestContent from "@/components/manage/ReceivedRequestContent";
 import SentRequestContent from "@/components/manage/SentRequestContent";
-import { GiveShareStatus, ReceiveShareStatus } from "@/constants/status";
+import { ShareStatus } from "@/constants/status";
+import { useWishInfinite } from "@/hooks/useWishInfinite";
+import { useShareInfinite } from "@/hooks/useShareInfinite";
 
 export default function Manage({ status }: { status: string }) {
   const [selectedTab, setSelectedTab] = useState(0);
 
+  // wish 목록 조회
+  const {
+    data: wish,
+    isLoading: isWishLoading,
+    isError: isWishError,
+  } = useWishInfinite(1);
+
+  // share 목록 조회
+  const {
+    data: share,
+    isLoading: isShareLoading,
+    isError: isShareError,
+  } = useShareInfinite(20);
+
+  const wishItems = wish?.flat ?? [];
+  const shareItems = share?.flat ?? [];
+
   useEffect(() => {
     setSelectedTab(status === "receive" ? 0 : 1);
-  }, [status]); // ✅ status 바뀔 때도 동기화
+  }, [status]);
+
+  if (isWishLoading) return <div className="p-4">불러오는 중…</div>;
+  if (isWishError) return <div className="p-4">목록을 불러오지 못했어요.</div>;
+
+  if (isShareLoading) return <div className="p-4">불러오는 중…</div>;
+  if (isShareError) return <div className="p-4">목록을 불러오지 못했어요.</div>;
 
   return (
     <ManageLayout
@@ -20,15 +45,22 @@ export default function Manage({ status }: { status: string }) {
       setSelectedTab={setSelectedTab}
     >
       {selectedTab === 0 ? (
-        <ReceivedRequestContent give_status={GiveShareStatus.NO_REQUEST} />
-      ) : (
-        // <SentRequestContent
-        //   receive_status={ReceiveShareStatus.SHARING_CONFIRMED}
-        // />
-        // <SentRequestContent receive_status={ReceiveShareStatus.NO_REQUEST} />
+        shareItems.length ? (
+          <ReceivedRequestContent
+            give_status={ShareStatus.PENDING}
+            shareItems={shareItems}
+          />
+        ) : (
+          <ReceivedRequestContent give_status={ShareStatus.NO_REQUEST} />
+        )
+      ) : wishItems.length ? (
         <SentRequestContent
-          receive_status={ReceiveShareStatus.MATCHING_IN_PROGRESS}
+          wish={wishItems[0]}
+          receive_status={ShareStatus.PENDING}
+          wishId={wishItems[0].wishId}
         />
+      ) : (
+        <SentRequestContent receive_status={ShareStatus.NO_REQUEST} />
       )}
     </ManageLayout>
   );

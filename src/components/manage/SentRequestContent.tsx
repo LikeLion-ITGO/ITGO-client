@@ -1,20 +1,51 @@
-import { ReceiveShareStatus } from "@/constants/status";
+import { ShareStatus } from "@/constants/status";
 import { SentRequestCardList } from "./SentRequestCardList";
 import Heart from "@/assets/icons/manage/heart.svg?react";
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
+import { useSentClaims } from "@/hooks/useSentClaims";
+import type { WishItem } from "@/types/wish";
 
 export default function SentRequestContent({
+  wish,
   receive_status,
+  wishId,
 }: {
-  receive_status: ReceiveShareStatus;
+  wish?: WishItem;
+  receive_status: ShareStatus;
+  wishId?: number;
 }) {
   const navigate = useNavigate();
 
+  console.log(wish);
+  const { data } = useSentClaims(wishId, 0, 10);
+
+  const claims = data?.content ?? [];
+
+  const getTimeAgo = (dateStr?: string) => {
+    if (!dateStr) return "";
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMinutes = Math.floor(diffMs / 1000 / 60);
+
+    if (diffMinutes < 60) {
+      return `${diffMinutes}분 전`;
+    }
+    const diffHours = Math.floor(diffMinutes / 60);
+    if (diffHours < 24) {
+      return `${diffHours}시간 전`;
+    }
+    const diffDays = Math.floor(diffHours / 24);
+    return `${diffDays}일 전`;
+  };
+
+  const visibleClaims = claims?.filter((c) => c.status !== "CANCELED");
+
   return (
     <div className="flex flex-col px-5 pt-6 gap-16">
-      {receive_status === ReceiveShareStatus.NO_REQUEST ? (
+      {receive_status === ShareStatus.NO_REQUEST ? (
         <div className="flex flex-col items-center gap-4 pt-[171px]">
           <div className="flex flex-col items-center headline-long-02 text-gray-900">
             <span>아직 보낸 요청이</span>
@@ -39,46 +70,43 @@ export default function SentRequestContent({
             <div className="flex flex-1 flex-row justify-between">
               <div className="flex flex-col gap-3">
                 <div className="flex flex-col gap-[6px]">
-                  <span className="subhead-02 text-gray-500">요청 제목</span>
+                  <span className="subhead-02 text-gray-500">
+                    {wish?.title}
+                  </span>
                   <span className="headline-01 text-gray-900">
-                    요청 품목 수량
+                    {wish?.itemName}&nbsp;
+                    {wish?.quantity}개
                   </span>
                 </div>
                 <span className="body-long-01 text-gray-500">
-                  나눔 요청 내용나눔 요청 내용나눔 요청 내용나눔 요청 내용나눔
-                  요청 내용나눔 요청 내용나눔 요청 내용나내용나내용나
+                  {wish?.description}
                 </span>
               </div>
               <span className="caption text-gray-200 whitespace-nowrap">
-                5분 전
+                {getTimeAgo(wish?.regDate)}
               </span>
             </div>
           </div>
-          {receive_status === ReceiveShareStatus.MATCHING_IN_PROGRESS && (
+
+          {receive_status === ShareStatus.PENDING && (
             // 나눔 요청 상태
             <div className="flex flex-col gap-6">
               <div className="w-full flex flex-col gap-6">
                 <div className="headline-02 flex flex-row gap-1">
-                  <span className="text-blue-normal-active">3명에게</span>
-                  <span className="">도움을 요청했어요</span>
+                  {visibleClaims.some((c) => c.status === "ACCEPTED") ? (
+                    <span>나눔이 성사됐어요!</span>
+                  ) : (
+                    <>
+                      <span className="text-blue-normal-active">
+                        {visibleClaims.length}명에게
+                      </span>
+                      <span>도움을 요청했어요</span>
+                    </>
+                  )}
                 </div>
               </div>
               {/* 거래 내역 */}
-              <SentRequestCardList receive_status={receive_status} />
-            </div>
-          )}
-
-          {receive_status === ReceiveShareStatus.SHARING_CONFIRMED && (
-            // 나눔 요청 상태
-            <div className="flex flex-col gap-6">
-              <div className="w-full flex flex-col gap-6">
-                <div className="headline-02 flex flex-row gap-1">
-                  <span className="">나눔이 성사됐어요!</span>
-                </div>
-              </div>
-
-              {/* 거래 내역 */}
-              <SentRequestCardList receive_status={receive_status} />
+              <SentRequestCardList claims={visibleClaims} />
             </div>
           )}
         </>

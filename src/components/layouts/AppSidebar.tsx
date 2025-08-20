@@ -19,10 +19,16 @@ import { useQuery } from "@tanstack/react-query";
 import { getMyStore } from "@/apis/store";
 import type { Store } from "@/types/store";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LogoutModal } from "../home/LogoutModal";
+import { useStoreIdStore } from "@/stores/\bstore";
+
+import { useWishInfinite } from "@/hooks/useWishInfinite";
+import { useShareInfinite } from "@/hooks/useShareInfinite";
 
 export const AppSidebar = () => {
+  const [logoutOpen, setLogoutOpen] = useState(false);
+
   const { toggleSidebar } = useSidebar();
   const navigate = useNavigate();
   const { data: store } = useQuery<Store>({
@@ -30,8 +36,43 @@ export const AppSidebar = () => {
     queryFn: getMyStore,
   });
 
-  const [logoutOpen, setLogoutOpen] = useState(false);
+  const setStoreId = useStoreIdStore((s) => s.setStoreId);
 
+  useEffect(() => {
+    if (store?.storeId) {
+      setStoreId(store.storeId);
+    }
+  }, [store?.storeId, setStoreId]);
+
+  // wish 목록 조회
+  const {
+    data: wish,
+    isLoading: isWishLoading,
+    isError: isWishError,
+  } = useWishInfinite(1);
+  const wishItems = wish?.flat ?? [];
+  // share 목록 조회
+  const {
+    data: share,
+    isLoading: isShareLoading,
+    isError: isShareError,
+  } = useShareInfinite(20);
+  const shareItems = share?.flat ?? [];
+
+  if (isWishLoading) return <div className="p-4">불러오는 중…</div>;
+  if (isWishError) return <div className="p-4">목록을 불러오지 못했어요.</div>;
+
+  if (isShareLoading) return <div className="p-4">불러오는 중…</div>;
+  if (isShareError) return <div className="p-4">목록을 불러오지 못했어요.</div>;
+
+  const receivedCount = (shareItems ?? []).reduce(
+    (sum, s) => sum + (s.claimTotalCount ?? 0),
+    0
+  );
+  const sentCount = (wishItems ?? []).reduce(
+    (sum, w) => sum + (w.claimTotalCount ?? 0),
+    0
+  );
   const handleLogoutClick = () => {
     setLogoutOpen(true);
   };
@@ -48,16 +89,16 @@ export const AppSidebar = () => {
         <SidebarGroup className="flex flex-row justify-between p-0">
           <div className="flex flex-col gap-4">
             <span className="h-6 flex items-center text-xl font-semibold text-gray-900">
-              {store?.name}
+              {store?.storeName}
             </span>
             <div className="flex flex-col text-sm gap-[6px] text-gray-600">
               <span className="flex flex-row items-center tracking--2 gap-[6px]">
                 <MapPin size={16} />
-                {store?.address.roadAddress}
+                {store?.address?.roadAddress}
               </span>
               <span className="flex flex-row items-center tracking--2 gap-[6px]">
                 <Clock size={16} />
-                {store?.openTime} ~ {store?.closeTime}
+                {store?.openTime?.slice(0, 5)} ~ {store?.closeTime?.slice(0, 5)}
               </span>
             </div>
           </div>
@@ -75,13 +116,17 @@ export const AppSidebar = () => {
           </span>
           <div className="flex flex-row gap-10">
             <div className="flex flex-col">
-              <span className="text-xl font-semibold text-[#2695E8]">0</span>
+              <span className="text-xl font-semibold text-[#2695E8]">
+                {receivedCount}
+              </span>
               <span className="text-xs font-medium text-[#8F9498]">
                 받은 요청
               </span>
             </div>
             <div className="flex flex-col">
-              <span className="text-xl font-semibold text-[#2695E8]">4</span>
+              <span className="text-xl font-semibold text-[#2695E8]">
+                {sentCount}
+              </span>
               <span className="text-xs font-medium text-[#8F9498]">
                 보낸 요청
               </span>

@@ -1,21 +1,20 @@
 import axiosInstance from "@/apis/axiosInstance";
-import { login } from "@/apis/user";
+import { login } from "@/apis/auth";
 import { InputEdit } from "@/components/InputEdit";
 import MainLayout from "@/components/layouts/MainLayout";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/constants/routes";
-import { useUserStore } from "@/stores/user";
+import { useAuthStore } from "@/stores/auth";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export const Login = () => {
   const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
-  const { setLogin } = useUserStore(); // ✅ zustand login 함수 가져오기
+  const { setLogin } = useAuthStore(); // ✅ zustand login 함수 가져오기
 
   const handleSubmit = async () => {
     try {
@@ -31,11 +30,10 @@ export const Login = () => {
       if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
       setLogin();
       navigate(ROUTES.HOME, { replace: true });
-      console.log(loading);
     } catch (err) {
       console.error(err);
     } finally {
-      setLoading(false);
+      console.log("로딩");
     }
   };
 

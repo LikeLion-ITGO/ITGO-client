@@ -1,30 +1,64 @@
 import ChevronRight from "@/assets/icons/home/chevron-right.svg?react";
 import { Button } from "../ui/button";
-import { ReceiveShareStatus } from "@/constants/status";
+import { ShareStatus } from "@/constants/status";
 import { Clock } from "lucide-react";
 import { generatePath, useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
+import type { WishItem } from "@/types/wish";
+import { useSentClaims } from "@/hooks/useSentClaims";
+import { getTradeDetail } from "@/apis/trade";
+import type { TradeDetail } from "@/types/trade";
+import { useQuery } from "@tanstack/react-query";
 
 interface ShareReceiveContentProps {
-  receive_status: ReceiveShareStatus;
+  receive_status: ShareStatus;
+  wishItems?: WishItem[];
+  acceptedStoreIds?: Map<number, number[]>;
+  hasAnySentRequest?: boolean;
 }
 
 export const ShareReceiveContent = ({
   receive_status,
+  wishItems,
+  hasAnySentRequest = false,
 }: ShareReceiveContentProps) => {
   const navigate = useNavigate();
+  const activeWishId = wishItems?.[0]?.wishId;
+
+  const { data: sentClaimsPage } = useSentClaims(
+    activeWishId,
+    0, // page
+    50 // size 넉넉히
+  );
+  const sentClaims = sentClaimsPage?.content ?? [];
+
+  const acceptedTradeId = sentClaims.find(
+    (c) => c.status === "ACCEPTED"
+  )?.tradeId;
+
+  const { data: trade } = useQuery<TradeDetail>({
+    queryKey: ["trade-detail", acceptedTradeId],
+    queryFn: () => getTradeDetail(acceptedTradeId!),
+    enabled: !!acceptedTradeId, // tradeId 없으면 요청 안 보내도록
+    staleTime: 30_000,
+  });
 
   // 상태 → 라우트 생성 함수 (id 처리)
-  const getRouteByStatus = (status: ReceiveShareStatus) => {
+  const getRouteByStatus = (status: ShareStatus) => {
     switch (status) {
-      case ReceiveShareStatus.NO_REQUEST:
+      case ShareStatus.NO_REQUEST:
+        if (wishItems?.length && !hasAnySentRequest) {
+          return ROUTES.SHARELIST;
+        }
         return ROUTES.REGISTER_RECEIVE;
-      case ReceiveShareStatus.MATCHING_IN_PROGRESS:
+      case ShareStatus.PENDING:
         return ROUTES.MANAGE_GIVE;
-      case ReceiveShareStatus.SHARING_CONFIRMED:
-        return generatePath(ROUTES.SUCCESS);
+      case ShareStatus.ACCEPTED:
+        return acceptedTradeId
+          ? generatePath(ROUTES.HISTORY_DETAIL, { id: String(acceptedTradeId) })
+          : ROUTES.MANAGE_GIVE;
       default:
-        return ROUTES.HOME;
+        return ROUTES.REGISTER_RECEIVE;
     }
   };
 
@@ -35,19 +69,19 @@ export const ShareReceiveContent = ({
 
   const renderBannerHeaderContent = () => {
     switch (receive_status) {
-      case ReceiveShareStatus.NO_REQUEST:
+      case ShareStatus.NO_REQUEST:
         return (
           <span className="flex subhead-03 items-center text-white">
             재고 나눔을 부탁해요
           </span>
         );
-      case ReceiveShareStatus.MATCHING_IN_PROGRESS:
+      case ShareStatus.PENDING:
         return (
           <span className="flex subhead-03 items-center text-white">
             나눔을 요청 중...
           </span>
         );
-      case ReceiveShareStatus.SHARING_CONFIRMED:
+      case ShareStatus.ACCEPTED:
         return (
           <span className="flex subhead-03 items-center text-white">
             따스한 손길이 도착했어요!
@@ -60,31 +94,41 @@ export const ShareReceiveContent = ({
 
   const renderBannerContent = () => {
     switch (receive_status) {
-      case ReceiveShareStatus.NO_REQUEST:
+      case ShareStatus.NO_REQUEST:
         return (
           <>
             <span>재고가 충분한가요?</span>
             <span>부족하다면 나눔을 요청하세요!</span>
           </>
         );
-      case ReceiveShareStatus.MATCHING_IN_PROGRESS:
+      case ShareStatus.PENDING:
         return (
           <>
-            <span>[물품명]을 요청했어요!</span>
-            <span>조금만 기다려볼까요?</span>
+            {wishItems && (
+              <>
+                <span>{wishItems[0].itemName}을 요청했어요!</span>
+                <span>조금만 기다려볼까요?</span>
+              </>
+            )}
           </>
         );
-      case ReceiveShareStatus.SHARING_CONFIRMED:
+      case ShareStatus.ACCEPTED:
         return (
           <>
-            <span>[픽업 장소]로 가서 </span>
-            <span>[물품명]을 받아보세요!</span>
+            {wishItems && (
+              <>
+                <span>{trade?.giver.storeName}로 가서 </span>
+                <span>{wishItems[0].itemName}을 받아보세요!</span>
+              </>
+            )}
           </>
         );
       default:
         return null;
     }
   };
+
+  const toHHmm = (t?: string) => (t ? t.slice(0, 5) : "--:--");
 
   return (
     <div
@@ -100,13 +144,16 @@ export const ShareReceiveContent = ({
       </div>
       <div className="flex flex-col p-5 headline-long-02 bg-white active:bg-gray-100 rounded-[20px]">
         {renderBannerContent()}
-        {receive_status === ReceiveShareStatus.SHARING_CONFIRMED && (
+        {receive_status === ShareStatus.ACCEPTED && (
           <div className="flex flex-row font-normal items-center text-sm text-gray-500 mt-2 gap-2">
             <span>1km</span>
             <span className="w-[1px] h-[10px] bg-[#D9D9D9]"></span>
             <span className="flex flex-row items-center gap-1">
               <Clock size={16} />
-              <span>00:00 ~ 00:00</span>
+              <span>
+                {toHHmm(trade?.giver.openTime)} ~{" "}
+                {toHHmm(trade?.giver.closeTime)}
+              </span>
             </span>
           </div>
         )}
