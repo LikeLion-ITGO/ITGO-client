@@ -3,8 +3,6 @@ import { Button } from "../ui/button";
 import { ShareStatus } from "@/constants/status";
 import { useState } from "react";
 import Dot from "@/assets/icons/manage/dot.svg?react";
-import type { ClaimItem } from "@/types/claim";
-import DefaultImage from "@/assets/images/mail-milk.png"; // 기본 이미지
 import { formatLocalTime, type LocalTime } from "@/types/time";
 
 export const SentRequestCardItem = ({
@@ -20,7 +18,7 @@ export const SentRequestCardItem = ({
   expirationDate,
   primaryImageUrl,
 }: {
-  status?: ShareStatus;
+  status?: string;
   isRecommend?: boolean;
   brand?: string;
   itemName?: string;
@@ -35,26 +33,6 @@ export const SentRequestCardItem = ({
   const [requested, setRequested] = useState(false);
   const isRequested = isRecommend && requested;
 
-  const shareItem = claim?.share;
-
-  const getTimeAgo = (dateStr?: string) => {
-    if (!dateStr) return "";
-    const date = new Date(dateStr);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMinutes = Math.floor(diffMs / 1000 / 60);
-
-    if (diffMinutes < 60) {
-      return `${diffMinutes}분 전`;
-    }
-    const diffHours = Math.floor(diffMinutes / 60);
-    if (diffHours < 24) {
-      return `${diffHours}시간 전`;
-    }
-    const diffDays = Math.floor(diffHours / 24);
-    return `${diffDays}일 전`;
-  };
-
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return "";
     const d = new Date(dateStr);
@@ -65,7 +43,7 @@ export const SentRequestCardItem = ({
   };
 
   const renderStatusText = () => {
-    switch (claim?.status) {
+    switch (status) {
       case "ACCEPTED":
         return "나눔 내역 상세";
       default:
@@ -126,7 +104,6 @@ export const SentRequestCardItem = ({
             <div className="flex flex-row justify-between">
               <div className="flex flex-col gap-[6px]">
                 <span className="subhead-02 text-gray-500">
-
                   {brand ? `[${brand}]` : "[브랜드 없음]"}
                 </span>
                 <span className="headline-01 text-gray-900">
@@ -146,7 +123,7 @@ export const SentRequestCardItem = ({
                   </span>
                 </span>
               </div>
-              <span>{expirationDate}까지</span>
+              <span>{formatDate(expirationDate)}까지</span>
             </div>
           </div>
         </div>
