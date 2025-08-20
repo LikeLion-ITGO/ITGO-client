@@ -2,6 +2,7 @@ import { Button } from "../ui/button";
 // import sampleImg from "../../assets/images/sampleMilk.png";
 import timeIcon from "../../assets/icons/home/timeIcon.svg";
 import type { ShareResponse } from "@/types/share";
+import { formatLocalTime } from "@/types/time";
 
 interface productType {
   type?: "default" | "simple" | "noBtn";
@@ -58,7 +59,8 @@ export const ProductBox = ({ item, type = "default" }: productType) => {
                 <span className="bg-[#D9D9D9] w-[1px] h-[10px]  mx-[8px] inline-block"></span>
                 <img src={timeIcon} className="w-[16px] h-[16px] mr-[4px]" />
                 <p>
-                  {item.openTime}~{item.closeTime}
+                  {formatLocalTime(item.openTime)}~
+                  {formatLocalTime(item.closeTime)}
                 </p>
               </div>
             )}
