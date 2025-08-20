@@ -2,7 +2,6 @@ import { Clock } from "lucide-react";
 import { Button } from "../ui/button";
 import { ShareStatus } from "@/constants/status";
 
-
 // import MailMilk from "@/assets/images/mail-milk.png";
 //import { ReceiveShareStatus } from "@/constants/status";
 
@@ -38,14 +37,14 @@ export const SentRequestCardItem = ({
   const [requested, setRequested] = useState(false);
   const isRequested = isRecommend && requested;
 
-  const formatDate = (dateStr?: string) => {
-    if (!dateStr) return "";
-    const d = new Date(dateStr);
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, "0");
-    const dd = String(d.getDate()).padStart(2, "0");
-    return `${yyyy}.${mm}.${dd}`;
-  };
+  // const formatDate = (dateStr?: string) => {
+  //   if (!dateStr) return "";
+  //   const d = new Date(dateStr);
+  //   const yyyy = d.getFullYear();
+  //   const mm = String(d.getMonth() + 1).padStart(2, "0");
+  //   const dd = String(d.getDate()).padStart(2, "0");
+  //   return `${yyyy}.${mm}.${dd}`;
+  // };
 
   const renderStatusText = () => {
     switch (status) {
@@ -132,7 +131,6 @@ export const SentRequestCardItem = ({
               <span>
                 {expirationDate?.replace("-", ".").replace("-", ".")}까지
               </span>
-
             </div>
           </div>
         </div>
