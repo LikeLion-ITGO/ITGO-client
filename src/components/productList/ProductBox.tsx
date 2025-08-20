@@ -62,7 +62,7 @@ export const ProductBox = ({ item, type = "default" }: productType) => {
                 </p>
               </div>
             )}
-            <p>{item.expirationDate}까지</p>
+            <p>{item.expirationDate.replace("-", ".").replace("-", ".")}까지</p>
           </div>
         </div>
       </div>
