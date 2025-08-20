@@ -5,13 +5,31 @@ import { ShareStatus } from "@/constants/status";
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
+import type { ShareItem } from "@/types/share";
+import { useState } from "react";
+import { fetchReceivedClaims } from "@/apis/claim";
+import { useQuery } from "@tanstack/react-query";
 
 export default function ReceivedRequestContent({
   give_status,
+  shareItems = [],
 }: {
   give_status: ShareStatus;
+  shareItems?: ShareItem[];
 }) {
   const navigate = useNavigate();
+
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const activeShare = shareItems[activeIndex];
+
+  // 활성 shareId의 클레임 조회
+  const { data } = useQuery({
+    queryKey: ["received-claims", activeShare?.shareId],
+    queryFn: () => fetchReceivedClaims(activeShare!.shareId, 0, 50),
+    enabled: !!activeShare?.shareId,
+    staleTime: 30_000,
+  });
 
   return (
     <div className="flex flex-col px-5 pt-6 gap-16">
@@ -31,14 +49,19 @@ export default function ReceivedRequestContent({
         </div>
       ) : (
         <>
-          <ConfirmedCardSlider />
+          <ConfirmedCardSlider
+            shareItems={shareItems}
+            onActiveIndexChange={(i) => setActiveIndex(i)}
+          />
           {/* pending request section */}
           <div className="w-full flex flex-col gap-6">
             <div className="headline-02 flex flex-row gap-1">
-              <span className="text-blue-normal-active">3명이</span>
+              <span className="text-blue-normal-active">
+                {data?.content.length}명이
+              </span>
               <span className="">도움을 필요로 해요</span>
             </div>
-            <PendingRequestList />
+            <PendingRequestList claims={data?.content} />
           </div>
         </>
       )}

@@ -1,28 +1,36 @@
-import { ShareStatus } from "@/constants/status";
 import { SentRequestCardItem } from "./SentRequestCardItem";
+import type { ClaimItem } from "@/types/claim";
 
-export const SentRequestCardList = ({
-  receive_status,
-}: {
-  receive_status: ShareStatus;
-}) => {
+export const SentRequestCardList = ({ claims }: { claims?: ClaimItem[] }) => {
+  const getTimeAgo = (dateStr?: string): number => {
+    if (!dateStr) return 0;
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMinutes = Math.floor(diffMs / 1000 / 60);
+
+    return diffMinutes;
+  };
+
   return (
     <>
-      {receive_status === ShareStatus.PENDING ? (
-        <div className="flex flex-col gap-4">
-          <SentRequestCardItem />
-          <SentRequestCardItem />
-          <SentRequestCardItem />
-          <SentRequestCardItem />
-        </div>
-      ) : (
-        <div className="flex flex-col gap-4">
-          <SentRequestCardItem status={ShareStatus.ACCEPTED} />
-          <SentRequestCardItem status={ShareStatus.PENDING} />
-          <SentRequestCardItem status={ShareStatus.PENDING} />
-          <SentRequestCardItem status={ShareStatus.PENDING} />
-        </div>
-      )}
+      <div className="flex flex-col gap-4">
+        {claims?.map((claim) => (
+          <SentRequestCardItem
+            key={claim.claimId}
+            brand={claim.share?.brand}
+            itemName={claim.share?.itemName}
+            quantity={claim.share?.quantity}
+            minutesAgo={getTimeAgo(claim.share?.regDate)}
+            distanceKm={claim.distanceKm}
+            openTime={claim.share?.openTime}
+            closeTime={claim.share?.closeTime}
+            expirationDate={claim.share?.expirationDate}
+            primaryImageUrl={claim.share?.primaryImageUrl}
+            status={claim.status}
+          />
+        ))}
+      </div>
     </>
   );
 };

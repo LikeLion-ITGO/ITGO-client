@@ -1,7 +1,7 @@
 import { Clock } from "lucide-react";
 import { Button } from "../ui/button";
-
 import { ShareStatus } from "@/constants/status";
+
 
 // import MailMilk from "@/assets/images/mail-milk.png";
 //import { ReceiveShareStatus } from "@/constants/status";
@@ -23,7 +23,7 @@ export const SentRequestCardItem = ({
   expirationDate,
   primaryImageUrl,
 }: {
-  status?: ShareStatus;
+  status?: string;
   isRecommend?: boolean;
   brand?: string;
   itemName?: string;
@@ -38,9 +38,18 @@ export const SentRequestCardItem = ({
   const [requested, setRequested] = useState(false);
   const isRequested = isRecommend && requested;
 
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return "";
+    const d = new Date(dateStr);
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    return `${yyyy}.${mm}.${dd}`;
+  };
+
   const renderStatusText = () => {
     switch (status) {
-      case ShareStatus.ACCEPTED:
+      case "ACCEPTED":
         return "나눔 내역 상세";
       default:
         return "요청 취소";
@@ -68,6 +77,7 @@ export const SentRequestCardItem = ({
       setRequested(true);
     }
   };
+
   return (
     <div
       className="relative flex flex-col p-5 bg-white border border-gray-100 rounded-3xl gap-6"
@@ -86,7 +96,6 @@ export const SentRequestCardItem = ({
         <div className="w-full flex flex-row gap-4">
           {primaryImageUrl ? (
             <img
-              // src={MailMilk}
               src={primaryImageUrl}
               alt={itemName}
               className="h-[90px] w-[90px] rounded-full object-cover "
@@ -119,9 +128,11 @@ export const SentRequestCardItem = ({
                   </span>
                 </span>
               </div>
+
               <span>
                 {expirationDate?.replace("-", ".").replace("-", ".")}까지
               </span>
+
             </div>
           </div>
         </div>

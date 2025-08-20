@@ -12,7 +12,6 @@ import { useNavigate } from "react-router-dom";
 export const Login = () => {
   const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -33,11 +32,10 @@ export const Login = () => {
       setLogin();
 
       navigate(ROUTES.HOME, { replace: true });
-      console.log(loading);
     } catch (err) {
       console.error(err);
     } finally {
-      setLoading(false);
+      console.log("로딩");
     }
   };
 
