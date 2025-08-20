@@ -1,11 +1,7 @@
 import { Clock } from "lucide-react";
 import { Button } from "../ui/button";
-
-import { ShareStatus } from "@/constants/status";
-
 // import MailMilk from "@/assets/images/mail-milk.png";
 import { ReceiveShareStatus } from "@/constants/status";
-
 import { useState } from "react";
 import Dot from "@/assets/icons/manage/dot.svg?react";
 import { formatLocalTime, type LocalTime } from "@/types/time";
@@ -23,7 +19,7 @@ export const SentRequestCardItem = ({
   expirationDate,
   primaryImageUrl,
 }: {
-  status?: ShareStatus;
+  status?: ReceiveShareStatus;
   isRecommend?: boolean;
   brand?: string;
   itemName?: string;
@@ -40,7 +36,7 @@ export const SentRequestCardItem = ({
 
   const renderStatusText = () => {
     switch (status) {
-      case ShareStatus.ACCEPTED:
+      case ReceiveShareStatus.SHARING_CONFIRMED:
         return "나눔 내역 상세";
       default:
         return "요청 취소";
@@ -59,7 +55,7 @@ export const SentRequestCardItem = ({
       ? isRequested
         ? "bg-gray-50 border-gray-300 text-gray-300 pointer-events-none"
         : "bg-white hover:bg-gray-100 border-blue-normal text-blue-normal"
-      : status === ShareStatus.NO_REQUEST
+      : status === ReceiveShareStatus.NO_REQUEST
       ? "bg-gray-50 border-gray-300 text-gray-300 pointer-events-none"
       : "bg-white hover:bg-gray-100 border-blue-normal text-blue-normal");
 

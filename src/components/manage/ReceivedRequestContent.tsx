@@ -1,7 +1,7 @@
 import { PendingRequestList } from "./PendingRequestList";
 import { ConfirmedCardSlider } from "./ConfirmedCardSlider";
 import Present from "@/assets/icons/manage/present.svg?react";
-import { ShareStatus } from "@/constants/status";
+import { GiveShareStatus } from "@/constants/status";
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
@@ -9,16 +9,16 @@ import { ROUTES } from "@/constants/routes";
 export default function ReceivedRequestContent({
   give_status,
 }: {
-  give_status: ShareStatus;
+  give_status: GiveShareStatus;
 }) {
   const navigate = useNavigate();
 
   return (
     <div className="flex flex-col px-5 pt-6 gap-16">
-      {give_status === ShareStatus.NO_REQUEST ? (
+      {give_status === GiveShareStatus.NO_REQUEST ? (
         <div className="flex flex-col items-center gap-4 pt-[171px]">
           <div className="flex flex-col items-center headline-long-02 text-gray-900">
-            <span>아직 받은 요청이</span>
+            <span>아직 보낸 요청이</span>
             <span>없습니다</span>
           </div>
           <Present />

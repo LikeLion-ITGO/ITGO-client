@@ -1,15 +1,3 @@
-
-export interface WishItem {
-  wishId: number;
-  title: string;
-  itemName: string;
-  brand: string;
-  quantity: number;
-  description: string;
-  regDate: string; // ISO string
-  claimTotalCount: number;
-}
-
 import axiosInstance from "@/apis/axiosInstance";
 import type { LocalTime } from "./time";
 
@@ -55,4 +43,3 @@ export const postWishMatch = (
   axiosInstance.post<WishCreateAndMatchResponse>("/wish/match", payload, {
     params: { radiusKm: params?.radiusKm ?? 3, size: params?.size ?? 10 },
   });
-

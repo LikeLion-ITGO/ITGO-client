@@ -126,7 +126,7 @@ export const Success = () => {
         <Button
           className="h-12 subhead-03 flex-1 text-blue-darker bg-blue-light rounded-full"
           onClick={() => {
-            navigate(ROUTES.HISTORY_GIVE);
+            navigate(ROUTES.HISTORY);
           }}
         >
           나눔 내역 상세

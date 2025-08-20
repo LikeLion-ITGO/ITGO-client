@@ -1,14 +1,14 @@
-import { ShareStatus } from "@/constants/status";
+import { ReceiveShareStatus } from "@/constants/status";
 import { SentRequestCardItem } from "./SentRequestCardItem";
 
 export const SentRequestCardList = ({
   receive_status,
 }: {
-  receive_status: ShareStatus;
+  receive_status: ReceiveShareStatus;
 }) => {
   return (
     <>
-      {receive_status === ShareStatus.PENDING ? (
+      {receive_status === ReceiveShareStatus.MATCHING_IN_PROGRESS ? (
         <div className="flex flex-col gap-4">
           <SentRequestCardItem />
           <SentRequestCardItem />
@@ -17,10 +17,16 @@ export const SentRequestCardList = ({
         </div>
       ) : (
         <div className="flex flex-col gap-4">
-          <SentRequestCardItem status={ShareStatus.ACCEPTED} />
-          <SentRequestCardItem status={ShareStatus.PENDING} />
-          <SentRequestCardItem status={ShareStatus.PENDING} />
-          <SentRequestCardItem status={ShareStatus.PENDING} />
+          <SentRequestCardItem status={ReceiveShareStatus.SHARING_CONFIRMED} />
+          <SentRequestCardItem
+            status={ReceiveShareStatus.MATCHING_IN_PROGRESS}
+          />
+          <SentRequestCardItem
+            status={ReceiveShareStatus.MATCHING_IN_PROGRESS}
+          />
+          <SentRequestCardItem
+            status={ReceiveShareStatus.MATCHING_IN_PROGRESS}
+          />
         </div>
       )}
     </>

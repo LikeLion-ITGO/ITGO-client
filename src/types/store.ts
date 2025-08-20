@@ -1,6 +1,6 @@
 export interface Store {
   id: number;
-  storeName: string;
+  name: string;
   address: Address;
   openTime: string; // "09:00"
   closeTime: string; // "18:00"
