@@ -12,7 +12,6 @@ export interface ShareItem {
   claimTotalCount: number;
 }
 
-
 //ShareList용...
 export interface ShareResponse {
   shareId: number;
@@ -77,4 +76,3 @@ export type ShareDetail = {
   roadAddress: string;
   regDate: string;
 };
-

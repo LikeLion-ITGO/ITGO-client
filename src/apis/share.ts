@@ -2,17 +2,14 @@
 import axiosInstance from "@/apis/axiosInstance";
 import type { PageData } from "@/types/api";
 
-// import type { ShareItem, ShareResponse } from "@/types/share";
-
 import type {
   PresignRequestItem,
   PresignResponseItem,
   RecieveRegisterRequest,
   ShareDetail,
   ShareItem,
-  ShareResponse
+  ShareResponse,
 } from "@/types/share";
-
 
 /**
  * wish 목록 페이지네이션
@@ -31,7 +28,6 @@ export async function fetchSharePage(page: number, size = 20) {
     page,
   };
 }
-
 
 //ShareList용....
 export async function fetchShareList(page: number, size = 20) {
@@ -95,3 +91,9 @@ export async function confirmShareImages(
   return data;
 }
 
+// 가게 정보 조회
+export async function getShareById(shareId: number): Promise<ShareDetail> {
+  const { data } = await axiosInstance.get<ShareDetail>(`/share/${shareId}`);
+
+  return data;
+}
