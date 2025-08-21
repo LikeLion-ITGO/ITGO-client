@@ -1,4 +1,5 @@
 export interface Store {
+  id?: number;
   storeId: number;
   storeName: string;
   address: Address;
