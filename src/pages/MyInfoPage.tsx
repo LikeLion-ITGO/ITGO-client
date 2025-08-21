@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import MainLayout from "@/components/layouts/MainLayout";
 import backIcon from "@/assets/icons/back.svg";
 import PRF_IMG from "@/assets/icons/storeInfoPage/PRF_IMG.svg";
@@ -13,19 +13,86 @@ import {
   type Address, // 주소 타입
 } from "react-daum-postcode";
 import { TimeInput } from "@/components/common/TimeInput";
+import { useQuery } from "@tanstack/react-query";
+import type { Store } from "@/types/store";
+import {
+  confirmStoreImage,
+  getMyStore,
+  presignStoreImage,
+  updateStore,
+  uploadToS3,
+} from "@/apis/store";
+import { loadKakaoMaps } from "@/hooks/loadKakao";
 
 export const MyInfoPage = () => {
+  const { data: store } = useQuery<Store>({
+    queryKey: ["myStore"],
+    queryFn: getMyStore,
+  });
+
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [profileImage, setProfileImage] = useState<string | null>(null); // 선택된 이미지 URL
+  const [profilePreview, setProfilePreview] = useState<string | null>(null);
+  const [profileFile, setProfileFile] = useState<File | null>(null);
 
+  const [storeName, setStoreName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
-
   const [description, setDescription] = useState("");
 
   // 주소 상태
   const [address, setAddress] = useState("");
+  const [dong, setDong] = useState("");
+  const [latitude, setLatitude] = useState<number | undefined>(undefined);
+  const [longitude, setLongitude] = useState<number | undefined>(undefined);
+
+  const [originalStore, setOriginalStore] = useState<Store | null>(null);
+
+  useEffect(() => {
+    if (!store) return;
+    setStoreName(store.storeName ?? "");
+    setPhoneNumber(store.phoneNumber ?? "");
+    setStartTime((store.openTime ?? "").slice(0, 5));
+    setEndTime((store.closeTime ?? "").slice(0, 5));
+    setDescription(store?.description ?? "");
+    setProfilePreview(store.storeImageUrl ?? null);
+
+    setAddress(store.address?.roadAddress ?? "");
+    setDong(store.address?.dong ?? "");
+    setLatitude(store.address?.latitude);
+    setLongitude(store.address?.longitude);
+
+    setOriginalStore(store); // 기준 저장
+  }, [store]);
+
+  // 3) 최초 로딩 시 store → 폼에 주입
+  useEffect(() => {
+    if (!store) return;
+    setStoreName(store.storeName ?? "");
+    setPhoneNumber(store.phoneNumber ?? "");
+    setStartTime((store.openTime ?? "").slice(0, 5));
+    setEndTime((store.closeTime ?? "").slice(0, 5));
+    setDescription(store?.description ?? "");
+    setProfilePreview(store.storeImageUrl ?? null);
+
+    // 주소
+    setAddress(store.address?.roadAddress ?? "");
+    setDong(store.address?.dong ?? "");
+    setLatitude(store.address?.latitude);
+    setLongitude(store.address?.longitude);
+  }, [store]);
+
+  useEffect(() => {
+    loadKakaoMaps().then(() => {
+      const geocoder = new window.kakao.maps.services.Geocoder();
+      geocoder.addressSearch("서울특별시 강남구", (result, status) => {
+        if (status === window.kakao.maps.services.Status.OK) {
+          console.log(result[0]);
+        }
+      });
+    });
+  }, []);
 
   const scriptUrl =
     "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
@@ -40,6 +107,7 @@ export const MyInfoPage = () => {
       if (extras.length) full += ` (${extras.join(", ")})`;
     }
     setAddress(full);
+    setDong(data.bname || "");
   };
 
   const handleOpenPostcode = () => {
@@ -48,20 +116,74 @@ export const MyInfoPage = () => {
     });
   };
 
-  const handleSave = () => {
-    navigate(ROUTES.HOME, { state: { showToast: true } });
-  };
-
   const handleImageClick = () => {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const imageURL = URL.createObjectURL(file);
-      setProfileImage(imageURL);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    setProfileFile(f);
+    setProfilePreview(URL.createObjectURL(f));
+  };
+
+  // 7) 저장(수정) 로직
+  const handleSave = async () => {
+    try {
+      // (1) 가게 기본정보 수정
+      const payload = {
+        storeName,
+        address: {
+          roadAddress: address,
+          dong: dong || undefined,
+          latitude,
+          longitude,
+        },
+        openTime: startTime, // HH:mm
+        closeTime: endTime, // HH:mm
+        phoneNumber,
+        description,
+      };
+
+      await updateStore(payload);
+
+      // (2) 이미지가 변경된 경우에만 업로드
+      if (profileFile && store?.storeId) {
+        const ext = (profileFile.name.split(".").pop() || "jpg").toLowerCase();
+        const { putUrl, objectKey } = await presignStoreImage(store.storeId, {
+          ext,
+          contentType: profileFile.type || "image/jpeg",
+        });
+
+        await uploadToS3(putUrl, profileFile);
+
+        await confirmStoreImage({ storeId: store.storeId, objectKey });
+      }
+
+      // 완료
+      navigate(ROUTES.HOME, { state: { showToast: true } });
+    } catch (e) {
+      console.error("❌ 저장 실패:", e);
     }
+  };
+
+  const hasChanges = () => {
+    if (!originalStore) return false;
+
+    const basicChanged =
+      storeName !== (originalStore.storeName ?? "") ||
+      phoneNumber !== (originalStore.phoneNumber ?? "") ||
+      startTime !== (originalStore.openTime ?? "").slice(0, 5) ||
+      endTime !== (originalStore.closeTime ?? "").slice(0, 5) ||
+      description !== (originalStore.description ?? "") ||
+      address !== (originalStore.address?.roadAddress ?? "") ||
+      dong !== (originalStore.address?.dong ?? "") ||
+      latitude !== originalStore.address?.latitude ||
+      longitude !== originalStore.address?.longitude;
+
+    const imageChanged = !!profileFile;
+
+    return basicChanged || imageChanged;
   };
 
   return (
@@ -77,8 +199,12 @@ export const MyInfoPage = () => {
           onClick={() => navigate(-1)}
         />
         <div
-          className="absolute right-[20px] text-[20px] text-[#3CADFF] font-semibold z-3"
-          onClick={handleSave}
+          className={`absolute right-[20px] text-[20px] font-semibold z-3 ${
+            hasChanges()
+              ? "text-[#3CADFF] cursor-pointer"
+              : "text-gray-300 cursor-not-allowed"
+          }`}
+          onClick={hasChanges() ? handleSave : undefined}
         >
           저장
         </div>
@@ -90,7 +216,7 @@ export const MyInfoPage = () => {
         >
           {
             <img
-              src={profileImage || PRF_IMG}
+              src={profilePreview || PRF_IMG}
               alt="프로필 이미지"
               className="w-[112px] h-[112px] bg-[#F5F7FA] rounded-[112px]"
             />
@@ -113,7 +239,11 @@ export const MyInfoPage = () => {
       <form className="flex flex-col gap-[40px]">
         <div className="gap-4 flex flex-col">
           <label className="subhead-02 text-[#47484B] text-[14px]">이름</label>
-          <InputEdit placeholder="가게 이름을 적어주세요." />
+          <InputEdit
+            placeholder="가게 이름을 적어주세요."
+            value={storeName}
+            onChange={(e) => setStoreName(e.target.value)}
+          />
         </div>
         <div className="gap-4 flex flex-col">
           <label className="subhead-02 text-[#47484B] text-[14px]">위치</label>
@@ -153,7 +283,11 @@ export const MyInfoPage = () => {
           <label className="subhead-02 text-[#47484B] text-[14px]">
             연락처
           </label>
-          <InputEdit placeholder="010-0000-0000" />
+          <InputEdit
+            placeholder="010-0000-0000"
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
+          />
         </div>
         <div className="gap-4 flex flex-col mb-[70px]">
           <label className="flex flex-row justify-between subhead-02 text-[#47484B] text-[14px]">
@@ -165,6 +299,7 @@ export const MyInfoPage = () => {
 
           <textarea
             placeholder={"우리 가게를 소개해봐요!"}
+            value={description}
             onChange={(e) => setDescription(e.target.value)}
             maxLength={500}
             className="h-[138px]  w-full text-[16px]  rounded-[8px] border-[1px] border-[#BCC3CE] px-4 py-4 focus:border-[#3CADFF] focus:outline-none resize-none "

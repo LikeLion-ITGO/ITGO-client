@@ -6,12 +6,45 @@ import storeInfoIcon1 from "@/assets/icons/storeInfoPage/storeInfoIcon1.svg";
 import storeInfoIcon2 from "@/assets/icons/storeInfoPage/storeInfoIcon2.svg";
 import storeInfoIcon3 from "@/assets/icons/storeInfoPage/storeInfoIcon3.svg";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import sampleImg from "@/assets/images/samplestoreimg.png";
+import { useQuery } from "@tanstack/react-query";
+import type { Store } from "@/types/store";
+import { getStoreById } from "@/apis/store";
 
 export const StoreInfoPage = () => {
   const navigate = useNavigate();
+  const { storeId } = useParams<{ storeId: string }>();
+
+  const {
+    data: store,
+    isLoading,
+    isError,
+  } = useQuery<Store>({
+    queryKey: ["store", storeId],
+    queryFn: () => getStoreById(Number(storeId)),
+    enabled: !!storeId, // storeId 있을 때만 요청
+  });
+
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <div className="p-6">불러오는 중...</div>
+      </MainLayout>
+    );
+  }
+
+  if (isError || !store) {
+    return (
+      <MainLayout>
+        <div className="p-6">가게 정보를 불러오지 못했습니다.</div>
+      </MainLayout>
+    );
+  }
+
+  const open = (store.openTime || "").slice(0, 5);
+  const close = (store.closeTime || "").slice(0, 5);
 
   return (
     <MainLayout>
@@ -29,11 +62,11 @@ export const StoreInfoPage = () => {
       <div className="flex flex-col gap-5">
         <div className="flex flex-col items-center gap-3">
           <img
-            src={sampleImg}
-            alt="store"
+            src={store.storeImageUrl || sampleImg}
+            alt={store.storeName}
             className="w-[112px] h-[112px] rounded-[112px]"
           />
-          <h3 className="display-01">여기 꼬치네</h3>
+          <h3 className="display-01">{store.storeName}</h3>
         </div>
         <div className="rounded-[24px] h-[68px] bg-[#DDF0FF] py-[13px] px-[33px] flex align-center ">
           <div className="flex gap-3  items-center">
@@ -66,24 +99,24 @@ export const StoreInfoPage = () => {
           <div className="text-[#47484B] body-long-02 flex flex-col gap-2">
             <div className="flex items-center gap-2">
               <img src={storeInfoIcon1} alt="가게주소" />
-              <span>노원구 공릉동 99로</span>
+              <span>{store.address.roadAddress}</span>
             </div>
             <div className="flex items-center gap-2">
               <img src={storeInfoIcon2} alt="영업시간" />
-              <span>10:00~ 19:00</span>
+              <span>
+                {open} ~ {close}
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <img src={storeInfoIcon3} alt="연락처" />
-              <span>010-8634-0405</span>
+              <span>{store.phoneNumber}</span>
             </div>
           </div>
         </div>
         <div className="flex flex-col gap-3 bg-white rounded-[24px] p-5 w-full h-auto mb-[70px] min-h-[100px]">
           <h4 className=" text-[#A7ACB2] subhead-02">가게 소개</h4>
           <p className="text-[#47484B] body-long-02  whitespace-pre-line">
-            {`안녕하세요! 다들 장사 잘되길 바래요~ 
-            잇고에서 저희 가게 보고 오시면 
-            서비스 드릴게요..! 화이팅`}
+            {store.description || "소개 문구가 없습니다."}
           </p>
         </div>
       </div>
