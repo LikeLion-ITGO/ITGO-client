@@ -21,7 +21,6 @@ import type { Store } from "@/types/store";
 import { useEffect, useState } from "react";
 import { LogoutModal } from "../home/LogoutModal";
 import { useStoreIdStore } from "@/stores/store";
-
 import { useWishInfinite } from "@/hooks/useWishInfinite";
 import { useShareInfinite } from "@/hooks/useShareInfinite";
 
@@ -35,6 +34,14 @@ export const AppSidebar = () => {
     queryFn: getMyStore,
   });
   console.log(store);
+  const setStoreId = useStoreIdStore((s) => s.setStoreId);
+
+  useEffect(() => {
+    if (store?.storeId) {
+      setStoreId(store.storeId);
+    }
+  }, [store?.storeId, setStoreId]);
+
   const setStoreId = useStoreIdStore((s) => s.setStoreId);
 
   useEffect(() => {

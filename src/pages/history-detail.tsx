@@ -18,7 +18,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { TradeDetail } from "@/types/trade";
 import { useStoreIdStore } from "@/stores/store";
 
-
 export const HistoryDetail = () => {
   const [modalOpen, setModalOpen] = useState(false);
 
