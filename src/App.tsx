@@ -18,6 +18,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HistoryDetail } from "./pages/history-detail";
 import { Toaster } from "./components/ui/sonner";
 import { ProtectedRoute } from "./pages/ProtectRoute";
+import { RegisterStore } from "./pages/register-store";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ function App() {
             <Route path={ROUTES.SHARELIST} element={<ShareListPage />} />
             <Route path={ROUTES.SHAREDETAIL} element={<ShareDetailPage />} />
             <Route path={ROUTES.REGISTER_GIVE} element={<RegisterGive />} />
+            <Route path={ROUTES.REGISTER_STORE} element={<RegisterStore />} />
             <Route
               path={ROUTES.REGISTER_RECEIVE}
               element={<RegisterReceive />}

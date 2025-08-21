@@ -5,6 +5,7 @@ export const ROUTES = {
   SHARELIST: "/sharelist",
   SHAREDETAIL: "/sharelist/:id",
   LOGIN: "/login",
+  REGISTER_STORE: "/register/store",
   REGISTER_RECEIVE: "/register/receive",
   REGISTER_GIVE: "/register/give",
   AI_RECOMMEND: "/ai-recommend",

@@ -2,7 +2,7 @@ import sampleStore from "@/assets/images/sampleStore.png";
 
 import grayArrow from "@/assets/icons/ShareListPage/grayArrow.svg";
 import backIcon from "@/assets/icons/back.svg";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import MainLayout from "@/components/layouts/MainLayout";
 import { ShareSection } from "@/components/home/bottom/ShareSection";
 import { Button } from "@/components/ui/button";
@@ -10,25 +10,30 @@ import { ShareImageSwiper } from "@/components/shareDetailPage/ShareImageSwiper"
 import { useEffect, useMemo, useState } from "react";
 import { ShareDeleteModal } from "@/components/shareDetailPage/ShareDeleteModal";
 import { ROUTES } from "@/constants/routes";
+import { useQuery } from "@tanstack/react-query";
+import type { ShareDetail } from "@/types/share";
+import { getShareById } from "@/apis/share";
 
 type ShareStatus = "open" | "closed" | "requested";
 
 export const ShareDetailPage = () => {
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  const shareId = Number(id);
 
   const [status, setStatus] = useState<ShareStatus>("open");
   const [openDeleteModal, setOpenDeleteModal] = useState<boolean>(false);
 
   const isOwner: boolean = true; //나중에
-  useEffect(() => setStatus("open"), []); // 나중에 연결할때 수정하깅
 
-  const sampleData = {
-    브랜드: "매일",
-    유통기한: "오늘까지",
-    보관방식: "냉장",
-    거래장소: "노원구 공릉동 99로",
-    운영시간: "10:00~19:00",
-  };
+  const { data: share } = useQuery<ShareDetail>({
+    queryKey: ["share", shareId],
+    queryFn: () => getShareById(shareId),
+    enabled: !!shareId,
+  });
+
+  console.log(share);
+  useEffect(() => setStatus("open"), []); // 나중에 연결할때 수정하깅
 
   const requestButton = useMemo<{ label: string; disabled: boolean }>(() => {
     switch (status) {
@@ -72,12 +77,37 @@ export const ShareDetailPage = () => {
           설명상품 설명
         </p>
         <div className="flex flex-col gap-y-[16px]">
-          {Object.entries(sampleData).map(([key, value]) => (
-            <div key={key} className="flex  gap-x-[28px]">
-              <span className="w-[55px] body-02 text-[#8F9498]">{key}</span>
-              <span className="subhead-03 text-[#47484B]">{value}</span>
-            </div>
-          ))}
+          <div className="flex  gap-x-[28px]">
+            <span className="w-[55px] body-02 text-[#8F9498]">브랜드</span>
+            <span className="subhead-03 text-[#47484B]">{share?.brand}</span>
+          </div>
+          <div className="flex  gap-x-[28px]">
+            <span className="w-[55px] body-02 text-[#8F9498]">유통기한</span>
+            <span className="subhead-03 text-[#47484B]">
+              {share?.expirationDate
+                ? share.expirationDate.replace(/-/g, ".")
+                : "-"}
+              까지
+            </span>
+          </div>
+          <div className="flex  gap-x-[28px]">
+            <span className="w-[55px] body-02 text-[#8F9498]">보관방식</span>
+            <span className="subhead-03 text-[#47484B]">
+              {share?.storageType}
+            </span>
+          </div>
+          <div className="flex  gap-x-[28px]">
+            <span className="w-[55px] body-02 text-[#8F9498]">거래장소</span>
+            <span className="subhead-03 text-[#47484B]">
+              {share?.roadAddress}
+            </span>
+          </div>
+          <div className="flex  gap-x-[28px]">
+            <span className="w-[55px] body-02 text-[#8F9498]">운영시간</span>
+            <span className="subhead-03 text-[#47484B]">
+              {share?.openTime?.slice(0, 5)} ~ {share?.closeTime?.slice(0, 5)}
+            </span>
+          </div>
         </div>
 
         <div className="mb-[90px]">
@@ -111,7 +141,6 @@ export const ShareDetailPage = () => {
               {requestButton.label}
             </Button>
           )}
-
         </div>
       </div>
       <ShareDeleteModal
