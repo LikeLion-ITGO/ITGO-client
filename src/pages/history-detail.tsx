@@ -16,7 +16,8 @@ import { useParams } from "react-router-dom";
 import { cancelTrade, completeTrade, getTradeDetail } from "@/apis/trade";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { TradeDetail } from "@/types/trade";
-import { useStoreIdStore } from "@/stores/\bstore";
+import { useStoreIdStore } from "@/stores/store";
+
 
 export const HistoryDetail = () => {
   const [modalOpen, setModalOpen] = useState(false);

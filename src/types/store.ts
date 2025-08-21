@@ -1,4 +1,5 @@
 export interface Store {
+  id?: number;
   storeId: number;
   storeName: string;
   address: Address;
@@ -7,6 +8,7 @@ export interface Store {
   phoneNumber?: string;
   name?: string;
   storeImageUrl?: string;
+  description?: string;
 }
 
 export interface Address {
@@ -15,3 +17,31 @@ export interface Address {
   longitude: number;
   roadAddress: string;
 }
+
+export type CreateStoreReq = {
+  storeName: string;
+  address: {
+    roadAddress: string;
+    dong?: string;
+    latitude?: number;
+    longitude?: number;
+  };
+  openTime: string;
+  closeTime: string;
+  phoneNumber: string;
+  description?: string;
+};
+
+export type UpdateStoreReq = {
+  storeName: string;
+  address: {
+    roadAddress: string;
+    dong?: string;
+    latitude?: number;
+    longitude?: number;
+  };
+  openTime: string;
+  closeTime: string;
+  phoneNumber: string;
+  description: string;
+};

@@ -5,7 +5,6 @@ import MainLayout from "@/components/layouts/MainLayout";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/constants/routes";
 import { useAuthStore } from "@/stores/auth";
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -30,7 +29,6 @@ export const Login = () => {
       }
       if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
       setLogin();
-
       navigate(ROUTES.HOME, { replace: true });
     } catch (err) {
       console.error(err);

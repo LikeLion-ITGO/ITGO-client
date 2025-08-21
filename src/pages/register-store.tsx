@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import MainLayout from "@/components/layouts/MainLayout";
 import backIcon from "@/assets/icons/back.svg";
 import PRF_IMG from "@/assets/icons/storeInfoPage/PRF_IMG.svg";
@@ -8,33 +8,54 @@ import { useNavigate } from "react-router-dom";
 import { InputEdit } from "@/components/InputEdit";
 import { ROUTES } from "@/constants/routes";
 import { Input } from "@/components/ui/input";
-import {
-  useDaumPostcodePopup,
-  type Address, // 주소 타입
-} from "react-daum-postcode";
+import { useDaumPostcodePopup, type Address } from "react-daum-postcode";
 import { TimeInput } from "@/components/common/TimeInput";
-import { useQuery } from "@tanstack/react-query";
-import type { Store } from "@/types/store";
 import {
   confirmStoreImage,
-  getMyStore,
+  createStore,
   presignStoreImage,
-  updateStore,
   uploadToS3,
 } from "@/apis/store";
-import { loadKakaoMaps } from "@/hooks/loadKakao";
+import type { CreateStoreReq } from "@/types/store";
+import type {
+  KakaoAddressSearchResult,
+  KakaoStatus,
+} from "@/types/kakao-address";
 
-export const MyInfoPage = () => {
-  const { data: store } = useQuery<Store>({
-    queryKey: ["myStore"],
-    queryFn: getMyStore,
-  });
+declare global {
+  interface Window {
+    kakao: {
+      maps: {
+        services: {
+          Geocoder: new () => {
+            addressSearch(
+              keyword: string,
+              callback: (
+                result: KakaoAddressSearchResult,
+                status: KakaoStatus
+              ) => void
+            ): void;
+          };
+          Status: {
+            OK: KakaoStatus;
+            ZERO_RESULT: KakaoStatus;
+            ERROR: KakaoStatus;
+          };
+        };
+      };
+    };
+  }
+}
 
+export {};
+
+export const RegisterStore = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [profilePreview, setProfilePreview] = useState<string | null>(null);
   const [profileFile, setProfileFile] = useState<File | null>(null);
 
+  // 폼 필드
   const [storeName, setStoreName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [startTime, setStartTime] = useState("");
@@ -43,71 +64,47 @@ export const MyInfoPage = () => {
 
   // 주소 상태
   const [address, setAddress] = useState("");
-  const [dong, setDong] = useState("");
-  const [latitude, setLatitude] = useState<number | undefined>(undefined);
-  const [longitude, setLongitude] = useState<number | undefined>(undefined);
-
-  const [originalStore, setOriginalStore] = useState<Store | null>(null);
-
-  useEffect(() => {
-    if (!store) return;
-    setStoreName(store.storeName ?? "");
-    setPhoneNumber(store.phoneNumber ?? "");
-    setStartTime((store.openTime ?? "").slice(0, 5));
-    setEndTime((store.closeTime ?? "").slice(0, 5));
-    setDescription(store?.description ?? "");
-    setProfilePreview(store.storeImageUrl ?? null);
-
-    setAddress(store.address?.roadAddress ?? "");
-    setDong(store.address?.dong ?? "");
-    setLatitude(store.address?.latitude);
-    setLongitude(store.address?.longitude);
-
-    setOriginalStore(store); // 기준 저장
-  }, [store]);
-
-  // 3) 최초 로딩 시 store → 폼에 주입
-  useEffect(() => {
-    if (!store) return;
-    setStoreName(store.storeName ?? "");
-    setPhoneNumber(store.phoneNumber ?? "");
-    setStartTime((store.openTime ?? "").slice(0, 5));
-    setEndTime((store.closeTime ?? "").slice(0, 5));
-    setDescription(store?.description ?? "");
-    setProfilePreview(store.storeImageUrl ?? null);
-
-    // 주소
-    setAddress(store.address?.roadAddress ?? "");
-    setDong(store.address?.dong ?? "");
-    setLatitude(store.address?.latitude);
-    setLongitude(store.address?.longitude);
-  }, [store]);
-
-  useEffect(() => {
-    loadKakaoMaps().then(() => {
-      const geocoder = new window.kakao.maps.services.Geocoder();
-      geocoder.addressSearch("서울특별시 강남구", (result, status) => {
-        if (status === window.kakao.maps.services.Status.OK) {
-          console.log(result[0]);
-        }
-      });
-    });
-  }, []);
+  const [dong, setDong] = useState(""); // 동(법정동)
+  const [latitude, setLatitude] = useState<number | null>(null);
+  const [longitude, setLongitude] = useState<number | null>(null);
 
   const scriptUrl =
     "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
   const openPostcode = useDaumPostcodePopup(scriptUrl);
 
-  const onComplete = (data: Address) => {
-    let full = data.address;
-    const extras: string[] = [];
-    if (data.addressType === "R") {
-      if (data.bname) extras.push(data.bname);
-      if (data.buildingName) extras.push(data.buildingName);
-      if (extras.length) full += ` (${extras.join(", ")})`;
+  const onComplete = async (data: Address) => {
+    try {
+      // 1) 도로명 주소 조립
+      let full = data.address;
+      const extras: string[] = [];
+      if (data.addressType === "R") {
+        if (data.bname) extras.push(data.bname);
+        if (data.buildingName) extras.push(data.buildingName);
+        if (extras.length) full += ` (${extras.join(", ")})`;
+      }
+
+      // 2) 주소/동 상태 저장
+      setAddress(full);
+      setDong(data.bname || "");
+
+      // 3) Kakao Geocoder 로드 후 지오코딩
+      const geocoder = new window.kakao.maps.services.Geocoder();
+      geocoder.addressSearch(
+        full,
+        (result: KakaoAddressSearchResult, status: string) => {
+          if (status === window.kakao.maps.services.Status.OK && result?.[0]) {
+            const lat = parseFloat(result[0].y);
+            const lng = parseFloat(result[0].x);
+            setLatitude(lat);
+            setLongitude(lng);
+          } else {
+            console.error("❌ 좌표 변환 실패:", status, result);
+          }
+        }
+      );
+    } catch (err) {
+      console.error("❌ onComplete 에러:", err);
     }
-    setAddress(full);
-    setDong(data.bname || "");
   };
 
   const handleOpenPostcode = () => {
@@ -120,18 +117,29 @@ export const MyInfoPage = () => {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const f = e.target.files?.[0];
-    if (!f) return;
-    setProfileFile(f);
-    setProfilePreview(URL.createObjectURL(f));
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setProfileFile(file);
+      setProfilePreview(URL.createObjectURL(file));
+    }
   };
 
-  // 7) 저장(수정) 로직
+  /** 저장(등록) */
   const handleSave = async () => {
     try {
-      // (1) 가게 기본정보 수정
-      const payload = {
+      // 1) 필수값 검증
+      if (!storeName) return console.log("가게 이름을 입력해 주세요.");
+      if (!address) return console.log("주소를 선택해 주세요.");
+      if (!startTime || !endTime)
+        return console.log("가게 운영시간을 입력해주세요.");
+      if (latitude == null || longitude == null)
+        return console.log(
+          "좌표가 아직 없습니다. 주소 선택 후 잠시만 기다렸다가 다시 시도하세요."
+        );
+
+      // 2) 가게 등록
+      const payload: CreateStoreReq = {
         storeName,
         address: {
           roadAddress: address,
@@ -139,58 +147,49 @@ export const MyInfoPage = () => {
           latitude,
           longitude,
         },
-        openTime: startTime, // HH:mm
-        closeTime: endTime, // HH:mm
+        openTime: startTime,
+        closeTime: endTime,
         phoneNumber,
         description,
       };
 
-      await updateStore(payload);
+      const { storeId } = await createStore(payload);
 
-      // (2) 이미지가 변경된 경우에만 업로드
-      if (profileFile && store?.storeId) {
+      // 3) 이미지가 있으면 presign → PUT → confirm
+      if (profileFile) {
         const ext = (profileFile.name.split(".").pop() || "jpg").toLowerCase();
-        const { putUrl, objectKey } = await presignStoreImage(store.storeId, {
+
+        const { putUrl, objectKey } = await presignStoreImage(storeId, {
           ext,
           contentType: profileFile.type || "image/jpeg",
         });
 
         await uploadToS3(putUrl, profileFile);
 
-        await confirmStoreImage({ storeId: store.storeId, objectKey });
+        await confirmStoreImage({ storeId, objectKey });
       }
 
-      // 완료
       navigate(ROUTES.HOME, { state: { showToast: true } });
     } catch (e) {
-      console.error("❌ 저장 실패:", e);
+      console.error(e);
     }
   };
 
-  const hasChanges = () => {
-    if (!originalStore) return false;
-
-    const basicChanged =
-      storeName !== (originalStore.storeName ?? "") ||
-      phoneNumber !== (originalStore.phoneNumber ?? "") ||
-      startTime !== (originalStore.openTime ?? "").slice(0, 5) ||
-      endTime !== (originalStore.closeTime ?? "").slice(0, 5) ||
-      description !== (originalStore.description ?? "") ||
-      address !== (originalStore.address?.roadAddress ?? "") ||
-      dong !== (originalStore.address?.dong ?? "") ||
-      latitude !== originalStore.address?.latitude ||
-      longitude !== originalStore.address?.longitude;
-
-    const imageChanged = !!profileFile;
-
-    return basicChanged || imageChanged;
-  };
+  const isFormValid =
+    storeName.trim() &&
+    address.trim() &&
+    startTime.trim() &&
+    endTime.trim() &&
+    phoneNumber.trim() &&
+    description.trim() &&
+    latitude !== null &&
+    longitude !== null;
 
   return (
     <MainLayout bgcolor="white">
       <header className="w-full h-11 flex flex-row items-center justify-center py-[14px] mb-[44px]">
         <div className="flex flex-row items-center text-xl font-semibold ]">
-          내 가게 정보
+          내 가게 등록
         </div>
         <img
           src={backIcon}
@@ -200,11 +199,11 @@ export const MyInfoPage = () => {
         />
         <div
           className={`absolute right-[20px] text-[20px] font-semibold z-3 ${
-            hasChanges()
+            isFormValid
               ? "text-[#3CADFF] cursor-pointer"
               : "text-gray-300 cursor-not-allowed"
           }`}
-          onClick={hasChanges() ? handleSave : undefined}
+          onClick={isFormValid ? handleSave : undefined}
         >
           저장
         </div>
