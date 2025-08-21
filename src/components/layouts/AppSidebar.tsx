@@ -10,7 +10,6 @@ import {
 import ChevronRight from "@/assets/icons/home/chevron-right.svg?react";
 import XIcon from "@/assets/icons/home/x-icon.svg?react";
 import EditIcon from "@/assets/icons/home/edit-icon.svg?react";
-import sample from "@/assets/images/sample.png";
 import { Separator } from "@radix-ui/react-separator";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
@@ -21,7 +20,7 @@ import type { Store } from "@/types/store";
 
 import { useEffect, useState } from "react";
 import { LogoutModal } from "../home/LogoutModal";
-import { useStoreIdStore } from "@/stores/\bstore";
+import { useStoreIdStore } from "@/stores/store";
 
 import { useWishInfinite } from "@/hooks/useWishInfinite";
 import { useShareInfinite } from "@/hooks/useShareInfinite";
@@ -35,7 +34,7 @@ export const AppSidebar = () => {
     queryKey: ["myStore"],
     queryFn: getMyStore,
   });
-
+  console.log(store);
   const setStoreId = useStoreIdStore((s) => s.setStoreId);
 
   useEffect(() => {
@@ -102,7 +101,11 @@ export const AppSidebar = () => {
               </span>
             </div>
           </div>
-          <img src={sample} alt="여기꼬치네" className="h-[78px] w-[78px]" />
+          <img
+            src={store?.storeImageUrl}
+            alt="여기꼬치네"
+            className="h-[78px] w-[78px] rounded-full object-cover"
+          />
         </SidebarGroup>
         <Separator className="h-[1px] w-full bg-[#F5F7FA]" />
         <SidebarGroup className="flex flex-col p-0 gap-2">

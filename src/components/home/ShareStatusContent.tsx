@@ -5,8 +5,12 @@ import { useWishInfinite } from "@/hooks/useWishInfinite";
 import { useShareInfinite } from "@/hooks/useShareInfinite";
 import { useShareClaimsStatusMap } from "@/hooks/useShareClaimsAcceptedMap";
 import { useWishSentClaimsStatusMap } from "@/hooks/useWishSentClaimsStatusMap";
+import { useWishIdStore } from "@/stores/wish";
+import { useEffect } from "react";
 
 export const ShareStatusContent = () => {
+  const { setWishId } = useWishIdStore();
+
   // wish 목록 조회
   const {
     data: wish,
@@ -35,6 +39,12 @@ export const ShareStatusContent = () => {
   } = useShareClaimsStatusMap(shareIds);
 
   const wishIds = wishItems.map((w) => w.wishId);
+
+  useEffect(() => {
+    if (wishItems?.length > 0) {
+      setWishId(wishItems[0].wishId);
+    }
+  }, [wishItems]);
 
   // 내가 보낸 요청들 중, accepted를 받은 요청이 존재하는 지 확인
   const {
