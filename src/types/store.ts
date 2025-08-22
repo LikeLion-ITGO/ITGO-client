@@ -3,12 +3,14 @@ export interface Store {
   storeId: number;
   storeName: string;
   address: Address;
-  openTime: string; // "09:00"
-  closeTime: string; // "18:00"
+  openTime: string;
+  closeTime: string;
   phoneNumber?: string;
   name?: string;
   storeImageUrl?: string;
   description?: string;
+  giveTimes?: number;
+  receivedTimes?: number;
 }
 
 export interface Address {
