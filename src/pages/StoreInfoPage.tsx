@@ -26,6 +26,8 @@ export const StoreInfoPage = () => {
     queryFn: () => getStoreById(Number(storeId)),
     enabled: !!storeId, // storeId 있을 때만 요청
   });
+  
+  console.log(store);
 
   if (isLoading) {
     return (
@@ -72,7 +74,9 @@ export const StoreInfoPage = () => {
           <div className="flex gap-3  items-center">
             <img src={shareIcon_1} alt="나눔" />
             <div className="flex align-center flex-col">
-              <h4 className="text-[#171818] text-[20px] font-semibold">25</h4>
+              <h4 className="text-[#171818] text-[20px] font-semibold">
+                {store.giveTimes}
+              </h4>
               <p className="text-[12px] w-[55px]">나눔한 횟수</p>
             </div>
           </div>
@@ -89,7 +93,9 @@ export const StoreInfoPage = () => {
           <div className="flex gap-3  items-center">
             <img src={shareIcon_2} alt="나눔" />
             <div className="flex align-center flex-col">
-              <h4 className="text-[#171818] text-[20px] font-semibold">23</h4>
+              <h4 className="text-[#171818] text-[20px] font-semibold">
+                {store.receivedTimes}
+              </h4>
               <p className="text-[12px] w-[55px]">도움준 횟수</p>
             </div>
           </div>

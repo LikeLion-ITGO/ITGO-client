@@ -36,7 +36,7 @@ export function useShareClaimsStatusMap(shareIds: number[]) {
       const list = r.data?.content ?? [];
       const acceptedIds = list
         .filter((c) => c.status === "ACCEPTED")
-        .map((c) => c.store?.storeId)
+        .map((c) => c.store?.id)
         .filter((v): v is number => Number.isFinite(v));
 
       const hasAccepted = list.some((c) => c.status === "ACCEPTED");

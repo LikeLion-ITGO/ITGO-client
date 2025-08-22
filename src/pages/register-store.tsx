@@ -138,6 +138,15 @@ export const RegisterStore = () => {
           "좌표가 아직 없습니다. 주소 선택 후 잠시만 기다렸다가 다시 시도하세요."
         );
 
+      // ✅ 전화번호 정규식 체크
+      const phoneRegex = /^(?:\d{2,3}-\d{3,4}-\d{4})$/;
+      if (!phoneRegex.test(phoneNumber)) {
+        alert(
+          "전화번호는 010-1234-5678 또는 02-123-4567 형식으로 입력해주세요."
+        );
+        return;
+      }
+
       // 2) 가게 등록
       const payload: CreateStoreReq = {
         storeName,
