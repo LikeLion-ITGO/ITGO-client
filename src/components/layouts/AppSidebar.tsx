@@ -21,8 +21,9 @@ import type { Store } from "@/types/store";
 import { useEffect, useState } from "react";
 import { LogoutModal } from "../home/LogoutModal";
 import { useStoreIdStore } from "@/stores/store";
-import { useWishInfinite } from "@/hooks/useWishInfinite";
 import { useShareInfinite } from "@/hooks/useShareInfinite";
+import { fetchActiveWishPage } from "@/apis/wish";
+import type { WishItem } from "@/types/wish";
 
 export const AppSidebar = () => {
   const [logoutOpen, setLogoutOpen] = useState(false);
@@ -33,7 +34,7 @@ export const AppSidebar = () => {
     queryKey: ["myStore"],
     queryFn: getMyStore,
   });
-  
+
   console.log(store);
   
   const setStoreId = useStoreIdStore((s) => s.setStoreId);
@@ -46,11 +47,15 @@ export const AppSidebar = () => {
 
   // wish 목록 조회
   const {
-    data: wish,
+    data: activeWishPage,
     isLoading: isWishLoading,
     isError: isWishError,
-  } = useWishInfinite(1);
-  const wishItems = wish?.flat ?? [];
+  } = useQuery({
+    queryKey: ["activeWish", 1], // 첫 페이지
+    queryFn: () => fetchActiveWishPage(0, 20),
+  });
+
+  const wishItems: WishItem[] = activeWishPage?.content ?? [];
   // share 목록 조회
   const {
     data: share,
@@ -69,10 +74,12 @@ export const AppSidebar = () => {
     (sum, s) => sum + (s.claimTotalCount ?? 0),
     0
   );
-  const sentCount = (wishItems ?? []).reduce(
-    (sum, w) => sum + (w.claimTotalCount ?? 0),
-    0
-  );
+
+  const sentCount =
+    wishItems.length > 0
+      ? wishItems.reduce((sum, w) => sum + (w.claimTotalCount ?? 0), 0)
+      : 0;
+
   const handleLogoutClick = () => {
     setLogoutOpen(true);
   };
