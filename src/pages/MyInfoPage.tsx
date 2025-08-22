@@ -53,7 +53,7 @@ export const MyInfoPage = () => {
 
   const isPhoneChanged =
     originalStore && phoneNumber !== (originalStore.phoneNumber ?? "");
-
+  
   useEffect(() => {
     if (!store) return;
     setStoreName(store.storeName ?? "");

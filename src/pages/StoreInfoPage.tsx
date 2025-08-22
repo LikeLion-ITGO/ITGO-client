@@ -26,8 +26,9 @@ export const StoreInfoPage = () => {
     queryFn: () => getStoreById(Number(storeId)),
     enabled: !!storeId, // storeId 있을 때만 요청
   });
-
+  
   console.log(store);
+
   if (isLoading) {
     return (
       <MainLayout>
