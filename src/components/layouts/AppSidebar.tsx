@@ -91,8 +91,10 @@ export const AppSidebar = () => {
             </span>
             <div className="flex flex-col text-sm gap-[6px] text-gray-600">
               <span className="flex flex-row items-center tracking--2 gap-[6px]">
-                <MapPin size={16} />
-                {store?.address?.roadAddress}
+                <MapPin size={16} className="w-[16px] h-[16px] " />
+                <span className="text-sm whitespace-pre-line">
+                  {(store?.address?.roadAddress ?? "").replace(/\s*\(.*/, "")}
+                </span>
               </span>
               <span className="flex flex-row items-center tracking--2 gap-[6px]">
                 <Clock size={16} />
