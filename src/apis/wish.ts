@@ -35,3 +35,18 @@ export const postWishMatch = (
   axiosInstance.post<WishCreateAndMatchResponse>("/wish/match", payload, {
     params: { radiusKm: params?.radiusKm ?? 3, size: params?.size ?? 10 },
   });
+
+export async function fetchActiveWishPage(page: number, size = 20) {
+  const res = await axiosInstance.get<ApiResponse<PageData<WishItem>>>(
+    "/wish/active",
+    {
+      params: { page, size },
+    }
+  );
+
+  const pageData = res.data.data;
+  return {
+    ...pageData,
+    page,
+  };
+}
