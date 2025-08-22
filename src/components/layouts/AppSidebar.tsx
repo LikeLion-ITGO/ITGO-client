@@ -34,22 +34,7 @@ export const AppSidebar = () => {
     queryFn: getMyStore,
   });
   console.log(store);
-  const setStoreId = useStoreIdStore((s) => s.setStoreId);
-
-  useEffect(() => {
-    if (store?.storeId) {
-      setStoreId(store.storeId);
-    }
-  }, [store?.storeId, setStoreId]);
-
-  const setStoreId = useStoreIdStore((s) => s.setStoreId);
-
-  useEffect(() => {
-    if (store?.storeId) {
-      setStoreId(store.storeId);
-    }
-  }, [store?.storeId, setStoreId]);
-
+  
   const setStoreId = useStoreIdStore((s) => s.setStoreId);
 
   useEffect(() => {

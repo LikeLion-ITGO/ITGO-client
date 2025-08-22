@@ -24,6 +24,8 @@ import {
 } from "@/apis/store";
 import { loadKakaoMaps } from "@/hooks/loadKakao";
 
+const PHONE_REGEX = /^(?:\d{2,3}-\d{3,4}-\d{4})$/;
+
 export const MyInfoPage = () => {
   const { data: store } = useQuery<Store>({
     queryKey: ["myStore"],
@@ -49,6 +51,9 @@ export const MyInfoPage = () => {
 
   const [originalStore, setOriginalStore] = useState<Store | null>(null);
 
+  const isPhoneChanged =
+    originalStore && phoneNumber !== (originalStore.phoneNumber ?? "");
+  
   useEffect(() => {
     if (!store) return;
     setStoreName(store.storeName ?? "");
@@ -130,6 +135,14 @@ export const MyInfoPage = () => {
   // 7) 저장(수정) 로직
   const handleSave = async () => {
     try {
+      // ✅ 전화번호를 수정했고 형식이 틀리면 막기
+      if (isPhoneChanged && !PHONE_REGEX.test(phoneNumber)) {
+        alert(
+          "전화번호는 010-1234-5678 또는 02-123-4567 형식으로 입력해주세요."
+        );
+        return;
+      }
+
       // (1) 가게 기본정보 수정
       const payload = {
         storeName,
