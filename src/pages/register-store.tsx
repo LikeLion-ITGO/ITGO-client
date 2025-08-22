@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import MainLayout from "@/components/layouts/MainLayout";
-import backIcon from "@/assets/icons/back.svg";
+
 import PRF_IMG from "@/assets/icons/storeInfoPage/PRF_IMG.svg";
 import imageIcon from "@/assets/icons/storeInfoPage/imageIcon.svg";
 
@@ -191,12 +191,7 @@ export const RegisterStore = () => {
         <div className="flex flex-row items-center text-xl font-semibold ]">
           내 가게 등록
         </div>
-        <img
-          src={backIcon}
-          alt="<"
-          className="absolute left-[20px] top-[12px] z-3"
-          onClick={() => navigate(-1)}
-        />
+
         <div
           className={`absolute right-[20px] text-[20px] font-semibold z-3 ${
             isFormValid

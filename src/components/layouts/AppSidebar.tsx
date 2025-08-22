@@ -29,17 +29,18 @@ export const AppSidebar = () => {
 
   const { toggleSidebar } = useSidebar();
   const navigate = useNavigate();
-  const { data: store } = useQuery<Store>({
+  const { data: store, isLoading } = useQuery<Store>({
     queryKey: ["myStore"],
     queryFn: getMyStore,
   });
   const setStoreId = useStoreIdStore((s) => s.setStoreId);
 
   useEffect(() => {
+    if (isLoading) return;
     if (store?.storeId) {
       setStoreId(store.storeId);
     }
-  }, [store?.storeId, setStoreId]);
+  }, [isLoading, store?.storeId, setStoreId]);
 
   // wish 목록 조회
   const {
