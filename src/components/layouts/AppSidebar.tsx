@@ -33,6 +33,7 @@ export const AppSidebar = () => {
     queryKey: ["myStore"],
     queryFn: getMyStore,
   });
+  
   console.log(store);
   
   const setStoreId = useStoreIdStore((s) => s.setStoreId);
