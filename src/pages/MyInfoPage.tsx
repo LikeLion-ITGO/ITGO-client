@@ -22,9 +22,9 @@ import {
   updateStore,
   uploadToS3,
 } from "@/apis/store";
-import { loadKakaoMaps } from "@/hooks/loadKakao";
 
 const PHONE_REGEX = /^(?:\d{2,3}-\d{3,4}-\d{4})$/;
+
 
 export const MyInfoPage = () => {
   const { data: store } = useQuery<Store>({
@@ -67,7 +67,6 @@ export const MyInfoPage = () => {
     setDong(store.address?.dong ?? "");
     setLatitude(store.address?.latitude);
     setLongitude(store.address?.longitude);
-
     setOriginalStore(store); // 기준 저장
   }, [store]);
 
@@ -87,17 +86,6 @@ export const MyInfoPage = () => {
     setLatitude(store.address?.latitude);
     setLongitude(store.address?.longitude);
   }, [store]);
-
-  useEffect(() => {
-    loadKakaoMaps().then(() => {
-      const geocoder = new window.kakao.maps.services.Geocoder();
-      geocoder.addressSearch("서울특별시 강남구", (result, status) => {
-        if (status === window.kakao.maps.services.Status.OK) {
-          console.log(result[0]);
-        }
-      });
-    });
-  }, []);
 
   const scriptUrl =
     "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
