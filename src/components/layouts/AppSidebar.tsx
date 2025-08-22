@@ -43,14 +43,6 @@ export const AppSidebar = () => {
     }
   }, [store?.storeId, setStoreId]);
 
-  const setStoreId = useStoreIdStore((s) => s.setStoreId);
-
-  useEffect(() => {
-    if (store?.storeId) {
-      setStoreId(store.storeId);
-    }
-  }, [store?.storeId, setStoreId]);
-
   // wish 목록 조회
   const {
     data: wish,
