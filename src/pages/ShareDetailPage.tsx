@@ -57,7 +57,7 @@ export const ShareDetailPage = () => {
   return (
     <MainLayout bgcolor="#fff">
       <div className="relative -mx-[20px] h-[400px]">
-        <ShareImageSwiper />
+        <ShareImageSwiper imgs={share?.images ?? []} />
         {/* 위에부분 사진-> 어떻게 나오는지 체크하고 수정 */}
         <img
           src={backIcon}
@@ -79,12 +79,10 @@ export const ShareDetailPage = () => {
         <img src={grayArrow} alt=">" />
       </div>
       <div>
-        <h4 className="headline-02 mb-4">오리지널우유 1L 2팩</h4>
-        <p className="text-[#47484B] body-long-02 mb-8">
-          상품 설명상품 설명상품 설명상품 설명상품 설명상품 설명상품 설명상품
-          설명상품 설명상품 설명상품 설명상품 설명상품 설명상품 설명상품
-          설명상품 설명
-        </p>
+        <h4 className="headline-02 mb-4">
+          {share?.itemName} {share?.quantity}개
+        </h4>
+        <p className="text-[#47484B] body-long-02 mb-8">{share?.description}</p>
         <div className="flex flex-col gap-y-[16px]">
           <div className="flex  gap-x-[28px]">
             <span className="w-[55px] body-02 text-[#8F9498]">브랜드</span>

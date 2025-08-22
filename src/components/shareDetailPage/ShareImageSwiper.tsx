@@ -5,11 +5,12 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "@/index.css";
 
-import sampleBigMilk from "@/assets/images/sampleBigMilk.png";
+import type { ShareImage } from "@/types/share";
+type ShareImageSwiperProps = {
+  imgs: ShareImage[];
+};
 
-const images = [sampleBigMilk, sampleBigMilk, sampleBigMilk, sampleBigMilk];
-
-export const ShareImageSwiper = () => {
+export const ShareImageSwiper = ({ imgs }: ShareImageSwiperProps) => {
   return (
     <div className="relative w-full h-full overflow-hidden">
       <Swiper
@@ -23,15 +24,25 @@ export const ShareImageSwiper = () => {
         slidesPerView={1}
         className="w-full h-full"
       >
-        {images.map((img, idx) => (
-          <SwiperSlide key={idx}>
-            <img
-              src={img}
-              alt={`img${idx}`}
-              className=" w-full h-[400px] object-cover"
-            />
+        {imgs.length > 0 ? (
+          imgs.map((img: ShareImage) => (
+            <SwiperSlide key={img.seq}>
+              <img
+                src={img.publicUrl}
+                alt={`share-image-${img.seq}`}
+                className="w-full h-[400px] object-cover"
+                loading="lazy"
+              />
+            </SwiperSlide>
+          ))
+        ) : (
+          <SwiperSlide>
+            {/* 폴백 이미지/빈 상태 */}
+            <div className="w-full h-[400px] flex items-center justify-center bg-gray-100 text-gray-400">
+              No Image
+            </div>
           </SwiperSlide>
-        ))}
+        )}
       </Swiper>
     </div>
   );
