@@ -9,6 +9,8 @@ export interface Store {
   name?: string;
   storeImageUrl?: string;
   description?: string;
+  giveTimes?: number;
+  receivedTimes?: number;
 }
 
 export interface Address {
