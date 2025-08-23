@@ -8,11 +8,34 @@ import { ShareSection } from "@/components/home/bottom/ShareSection";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ShareStatusContent } from "@/components/home/ShareStatusContent";
+import { ROUTES } from "@/constants/routes";
 
 export default function Home() {
   const location = useLocation();
   const navigate = useNavigate();
   const [showToast, setShowToast] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      try {
+        const raw = localStorage.getItem("store-id-storage");
+        const parsed = raw ? JSON.parse(raw) : null;
+        const storeId = parsed?.state?.storeId;
+        const hasValid =
+          (typeof storeId === "number" && storeId > 0) ||
+          (typeof storeId === "string" && storeId.length > 0);
+
+        if (!hasValid && location.pathname !== ROUTES.REGISTER_STORE) {
+          navigate(ROUTES.REGISTER_STORE, { replace: true });
+        }
+      } catch {
+        if (location.pathname !== ROUTES.REGISTER_STORE) {
+          navigate(ROUTES.REGISTER_STORE, { replace: true });
+        }
+      }
+    }, 800);
+    return () => clearTimeout(timer);
+  }, [navigate, location.pathname]);
 
   useEffect(() => {
     if (location.state?.showToast) {

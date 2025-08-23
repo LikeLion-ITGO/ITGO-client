@@ -3,6 +3,7 @@ import { Button } from "../ui/button";
 import timeIcon from "../../assets/icons/home/timeIcon.svg";
 import type { ShareResponse } from "@/types/share";
 import { formatLocalTime } from "@/types/time";
+import { useNavigate } from "react-router-dom";
 
 interface productType {
   type?: "default" | "simple" | "noBtn";
@@ -10,8 +11,11 @@ interface productType {
 }
 
 export const ProductBox = ({ item, type = "default" }: productType) => {
+  const navigate = useNavigate();
+  const id = item.shareId;
   return (
     <div
+      onClick={() => navigate(`/sharelist/${id}`)}
       className={`${
         type == "simple"
           ? "h-[104px]"
@@ -75,7 +79,12 @@ export const ProductBox = ({ item, type = "default" }: productType) => {
         </div>
       </div>
       {type == "default" && (
-        <Button className="w-full h-[44px] rounded-[76px] subhead-03 text-blue-normal bg-white border-[#3CADFF] border-[1px] active:bg-[#DDF0FF] hover:bg-[#fff]">
+        <Button
+          className="w-full h-[44px] rounded-[76px] subhead-03 text-blue-normal bg-white border-[#3CADFF] border-[1px] active:bg-[#DDF0FF] hover:bg-[#fff]"
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
           요청하기
         </Button>
       )}

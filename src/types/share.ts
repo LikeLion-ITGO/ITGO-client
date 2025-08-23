@@ -75,4 +75,8 @@ export type ShareDetail = {
   images: ShareImage[];
   roadAddress: string;
   regDate: string;
+
+  storeName: string;
+  storeImageUrl: string;
+  storeId: number;
 };

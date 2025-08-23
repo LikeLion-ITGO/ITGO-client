@@ -30,7 +30,7 @@ export const AppSidebar = () => {
 
   const { toggleSidebar } = useSidebar();
   const navigate = useNavigate();
-  const { data: store } = useQuery<Store>({
+  const { data: store, isLoading } = useQuery<Store>({
     queryKey: ["myStore"],
     queryFn: getMyStore,
   });
@@ -40,10 +40,11 @@ export const AppSidebar = () => {
   const setStoreId = useStoreIdStore((s) => s.setStoreId);
 
   useEffect(() => {
+    if (isLoading) return;
     if (store?.storeId) {
       setStoreId(store.storeId);
     }
-  }, [store?.storeId, setStoreId]);
+  }, [isLoading, store?.storeId, setStoreId]);
 
   // wish 목록 조회
   const {
@@ -100,8 +101,10 @@ export const AppSidebar = () => {
             </span>
             <div className="flex flex-col text-sm gap-[6px] text-gray-600">
               <span className="flex flex-row items-center tracking--2 gap-[6px]">
-                <MapPin size={16} />
-                {store?.address?.roadAddress}
+                <MapPin size={16} className="w-[16px] h-[16px] " />
+                <span className="text-sm whitespace-pre-line">
+                  {(store?.address?.roadAddress ?? "").replace(/\s*\(.*/, "")}
+                </span>
               </span>
               <span className="flex flex-row items-center tracking--2 gap-[6px]">
                 <Clock size={16} />
