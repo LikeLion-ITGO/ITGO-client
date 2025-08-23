@@ -63,7 +63,7 @@ export const SentRequestCardItem = ({
     },
   });
 
-  const { mutate: doCreate, isPending: creating } = useMutation({
+  const { mutate: doCreate } = useMutation({
     mutationFn: () => {
       if (!wishId || !shareId) throw new Error("error");
       return createClaim({ wishId, shareId });
