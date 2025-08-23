@@ -14,35 +14,23 @@ export async function createStore(payload: CreateStoreReq): Promise<{
   return data.data;
 }
 
-export async function presignStoreImage(
-  storeId: number,
-  body: { ext: string; contentType: string }
-): Promise<{ putUrl: string; objectKey: string; publicURL: string }> {
-  const { data } = await axiosInstance.post(
-    `/store-image/presign/${storeId}`,
-    body
-  );
+export async function presignStoreImageDraft(body: {
+  ext: string;
+  contentType: string;
+  sizeBytes: number;
+}) {
+  const { data } = await axiosInstance.post("/store-image/draft/presign", body);
   return data.data;
-}
-
-export async function confirmStoreImage(params: {
-  storeId: number;
-  objectKey: string;
-}): Promise<void> {
-  await axiosInstance.post("/store-image/confirm", params);
 }
 
 export async function uploadToS3(putUrl: string, file: File): Promise<void> {
   const res = await fetch(putUrl, {
     method: "PUT",
-    headers: {
-      "Content-Type": file.type,
-    },
+    headers: { "Content-Type": file.type || "application/octet-stream" },
     body: file,
   });
-  if (!res.ok) {
+  if (!res.ok)
     throw new Error(`S3 업로드 실패: ${res.status} ${res.statusText}`);
-  }
 }
 
 // 가게 정보 수정
@@ -59,6 +47,5 @@ export async function getStoreById(storeId: number): Promise<Store> {
   const { data } = await axiosInstance.get<ApiResponse<Store>>(
     `/store/${storeId}`
   );
-
   return data.data;
 }

@@ -16,11 +16,10 @@ import { TimeInput } from "@/components/common/TimeInput";
 import { useQuery } from "@tanstack/react-query";
 import type { Store } from "@/types/store";
 import {
-  confirmStoreImage,
-  getMyStore,
-  presignStoreImage,
-  updateStore,
+  presignStoreImageDraft,
   uploadToS3,
+  updateStore,
+  getMyStore,
 } from "@/apis/store";
 
 const PHONE_REGEX = /^(?:\d{2,3}-\d{3,4}-\d{4})$/;
@@ -52,7 +51,7 @@ export const MyInfoPage = () => {
 
   const isPhoneChanged =
     originalStore && phoneNumber !== (originalStore.phoneNumber ?? "");
-  
+
   useEffect(() => {
     if (!store) return;
     setStoreName(store.storeName ?? "");
@@ -129,9 +128,21 @@ export const MyInfoPage = () => {
         );
         return;
       }
+      // 1) 이미지 변경 시: 먼저 presign(draft)→PUT
+      let imageDraftKey: string | undefined;
+      if (profileFile) {
+        const ext = (profileFile.name.split(".").pop() || "jpg").toLowerCase();
+        const draft = await presignStoreImageDraft({
+          ext,
+          contentType: profileFile.type || "image/jpeg",
+          sizeBytes: profileFile.size,
+        });
+        await uploadToS3(draft.putUrl, profileFile);
+        imageDraftKey = draft.draftKey; // 🔑 업데이트 바디에 포함
+      }
 
-      // (1) 가게 기본정보 수정
-      const payload = {
+      // 2) 가게 정보 업데이트 (이미지 변경 없으면 imageDraftKey 생략)
+      await updateStore({
         storeName,
         address: {
           roadAddress: address,
@@ -139,28 +150,13 @@ export const MyInfoPage = () => {
           latitude,
           longitude,
         },
-        openTime: startTime, // HH:mm
-        closeTime: endTime, // HH:mm
+        openTime: startTime,
+        closeTime: endTime,
         phoneNumber,
         description,
-      };
+        imageDraftKey, // 옵션
+      });
 
-      await updateStore(payload);
-
-      // (2) 이미지가 변경된 경우에만 업로드
-      if (profileFile && store?.storeId) {
-        const ext = (profileFile.name.split(".").pop() || "jpg").toLowerCase();
-        const { putUrl, objectKey } = await presignStoreImage(store.storeId, {
-          ext,
-          contentType: profileFile.type || "image/jpeg",
-        });
-
-        await uploadToS3(putUrl, profileFile);
-
-        await confirmStoreImage({ storeId: store.storeId, objectKey });
-      }
-
-      // 완료
       navigate(ROUTES.HOME, { state: { showToast: true } });
     } catch (e) {
       console.error("❌ 저장 실패:", e);
