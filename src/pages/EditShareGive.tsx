@@ -192,26 +192,24 @@ export const EditShareGive = () => {
         return;
       }
 
+      const existingCount = images.filter((p) => !p.isNew).length;
+
       const newDrafts = images
         .filter((p) => p.isNew)
-        .map((p, idx) => ({
-          seq: idx,
-          draftKey: p.draftKey!,
+        .map((p, i) => ({
+          seq: existingCount + i, // 핵심: 기존 뒤에 이어 붙이기
+          draftKey: p.draftKey!, // presign에서 받은 draftKey만 보냄
         }));
 
-      const imageItems = images.map((p, idx) => ({
-        seq: idx,
-        draftKey: p.draftKey!, // 기존은 objectKey, 신규는 presign draftKey
-      }));
+      // const imageItems = images.map((p, idx) => ({
+      //   seq: idx,
+      //   draftKey: p.draftKey!, // 기존은 objectKey, 신규는 presign draftKey
+      // }));
 
       // console.log(imageItems);
-      // const payload: ShareCreateReq = { ...values, images: newDrafts };
-
       const payload: ShareCreateReq =
-        newDrafts.length > 0
-          ? { ...values, images: imageItems }
-          : { ...values };
-      console.log(payload);
+        newDrafts.length > 0 ? { ...values, images: newDrafts } : { ...values };
+
       await updateShare(shareId, payload);
 
       toast("나눔이 성공적으로 업로드되었어요!", {

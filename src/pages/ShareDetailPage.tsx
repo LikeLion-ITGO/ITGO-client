@@ -12,7 +12,9 @@ import { ShareDeleteModal } from "@/components/shareDetailPage/ShareDeleteModal"
 
 import { useQuery } from "@tanstack/react-query";
 import type { ShareDetail } from "@/types/share";
-import { getShareById } from "@/apis/share";
+import { deleteShare, getShareById } from "@/apis/share";
+import { ROUTES } from "@/constants/routes";
+import { toast } from "sonner";
 
 type ShareStatus = "open" | "closed" | "requested";
 
@@ -155,7 +157,15 @@ export const ShareDetailPage = () => {
       <ShareDeleteModal
         open={openDeleteModal}
         onClose={() => setOpenDeleteModal(false)}
-        onConfirm={() => navigate(-1)} //지우는거 추가하기
+        onConfirm={async () => {
+          try {
+            await deleteShare(shareId);
+            toast.success("나눔이 삭제되었습니다!");
+            navigate(ROUTES.HOME);
+          } catch (err) {
+            console.error(err);
+          }
+        }}
       />
     </MainLayout>
   );

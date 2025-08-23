@@ -52,7 +52,7 @@ export const ProductBox = ({ item, type = "default" }: productType) => {
         </div>
         <div className="flex w-full flex-col justify-between">
           <div className="flex  justify-between">
-            <div className="gap-[6px] flex flex-col">
+            <div className="gap-[6px] flex flex-1 flex-col">
               <p className="leading-[100%] font-medium tracking-[-0.4px] text-[14px] text-[#47484B]">
                 [{item.brand}]
               </p>
@@ -60,7 +60,7 @@ export const ProductBox = ({ item, type = "default" }: productType) => {
                 {item.itemName} {item.quantity}개
               </p>
             </div>
-            <div className="caption text-[#BCC3CE]">5분 전</div>
+            <div className="caption text-[#BCC3CE] w-[30px]">5분 전</div>
           </div>
           <div className=" flex flex-col body-01 gap-[8px] text-[#777A7F]">
             {type != "simple" && (

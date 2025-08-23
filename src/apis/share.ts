@@ -109,3 +109,9 @@ export async function updateShare(shareId: number, body: ShareCreateReq) {
   const { data } = await axiosInstance.put(`/share/${shareId}`, body);
   return data;
 }
+
+//삭제
+export const deleteShare = async (shareId: number) => {
+  const res = await axiosInstance.delete(`/share/${shareId}`);
+  return res.data;
+};
