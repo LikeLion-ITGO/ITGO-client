@@ -18,6 +18,7 @@ export const ShareProductList = () => {
         아직 나눔중인 재고가 없습니다.
       </div>
     );
+
   return (
     <div className="flex flex-col  h-[100vh] gap-4 mb-[19px] w-full ">
       {list.map((item) => (

@@ -9,7 +9,7 @@ import { useState } from "react";
 import Dot from "@/assets/icons/manage/dot.svg?react";
 import { formatLocalTime, type LocalTime } from "@/types/time";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { cancelClaim } from "@/apis/claim";
+import { cancelClaim, createClaim } from "@/apis/claim";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 
@@ -27,6 +27,8 @@ export const SentRequestCardItem = ({
   expirationDate,
   primaryImageUrl,
   tradeId,
+  wishId,
+  shareId,
 }: {
   status?: string;
   isRecommend?: boolean;
@@ -41,6 +43,8 @@ export const SentRequestCardItem = ({
   expirationDate?: string;
   primaryImageUrl?: string;
   tradeId?: number;
+  wishId?: number;
+  shareId?: number;
 }) => {
   const [requested, setRequested] = useState(false);
   const isRequested = isRecommend && requested;
@@ -53,6 +57,20 @@ export const SentRequestCardItem = ({
       console.log("취소 성공");
       qc.invalidateQueries({ queryKey: ["sent-claims"] });
       qc.invalidateQueries({ queryKey: ["received-claims"] });
+    },
+    onError: (err) => {
+      console.log(err);
+    },
+  });
+
+  const { mutate: doCreate, isPending: creating } = useMutation({
+    mutationFn: () => {
+      if (!wishId || !shareId) throw new Error("error");
+      return createClaim({ wishId, shareId });
+    },
+    onSuccess: () => {
+      setRequested(true);
+      qc.invalidateQueries({ queryKey: ["sent-claims"] });
     },
     onError: (err) => {
       console.log(err);
@@ -95,8 +113,10 @@ export const SentRequestCardItem = ({
 
   const handleButtonClick = () => {
     if (status === "REJECTED") return;
-    if (isRecommend && !requested) {
-      setRequested(true);
+    if (isRecommend) {
+      if (requested) return;
+      if (!wishId || !shareId) return;
+      doCreate();
       return;
     }
     if (status === "PENDING" && claimId) {

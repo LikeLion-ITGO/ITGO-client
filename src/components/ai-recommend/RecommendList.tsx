@@ -2,7 +2,13 @@ import type { WishMatchItem } from "@/types/wish";
 import { SentRequestCardItem } from "../manage/SentRequestCardItem";
 import { formatLocalTime } from "@/types/time";
 
-export const RecommendList = ({ matches }: { matches: WishMatchItem[] }) => {
+export const RecommendList = ({
+  matches,
+  wishId,
+}: {
+  matches: WishMatchItem[];
+  wishId?: number;
+}) => {
   if (!matches || matches.length === 0) return null;
   return (
     <div className="flex flex-col gap-4">
@@ -27,6 +33,8 @@ export const RecommendList = ({ matches }: { matches: WishMatchItem[] }) => {
           }
           expirationDate={m.expirationDate}
           primaryImageUrl={m.primaryImageUrl}
+          wishId={wishId}
+          shareId={m.shareId}
         />
       ))}
     </div>

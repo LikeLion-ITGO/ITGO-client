@@ -15,6 +15,7 @@ export const AIRecommend = () => {
 
   const matches = state?.matches ?? [];
   const isRecommended = matches.length > 0;
+  const wishId = state?.wishId;
 
   console.log(matches);
   return (
@@ -34,7 +35,7 @@ export const AIRecommend = () => {
               </div>
               <div className="flex flex-col mb-[23px]">
                 {/* 추천 리스트 */}
-                <RecommendList matches={matches} />
+                <RecommendList matches={matches} wishId={wishId} />
               </div>
             </div>
             <div className="fixed bottom-0 flex flex-row pt-3 pb-4 px-5 gap-2 bg-white">

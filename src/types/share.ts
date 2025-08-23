@@ -11,6 +11,13 @@ export interface ShareItem {
   primaryImageUrl?: string;
   claimTotalCount: number;
 }
+export interface SharePage {
+  content: ShareItem[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+}
 
 //ShareList용...
 export interface ShareResponse {
