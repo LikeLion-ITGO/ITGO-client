@@ -104,3 +104,8 @@ export async function getShareById(shareId: number): Promise<ShareDetail> {
     images,
   } as ShareDetail;
 }
+
+export async function updateShare(shareId: number, body: ShareCreateReq) {
+  const { data } = await axiosInstance.put(`/share/${shareId}`, body);
+  return data;
+}

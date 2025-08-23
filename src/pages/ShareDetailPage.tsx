@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { ShareImageSwiper } from "@/components/shareDetailPage/ShareImageSwiper";
 import { useEffect, useMemo, useState } from "react";
 import { ShareDeleteModal } from "@/components/shareDetailPage/ShareDeleteModal";
-import { ROUTES } from "@/constants/routes";
+
 import { useQuery } from "@tanstack/react-query";
 import type { ShareDetail } from "@/types/share";
 import { getShareById } from "@/apis/share";
@@ -133,7 +133,7 @@ export const ShareDetailPage = () => {
               </Button>
               <Button
                 className="w-[162px] h-[48px] rounded-[76px] bg-[#3CADFF] subhead-03 text-[#fff]"
-                onClick={() => navigate(ROUTES.REGISTER_GIVE)}
+                onClick={() => navigate(`/sharelist-edit/${id}`)}
               >
                 수정하기
               </Button>
