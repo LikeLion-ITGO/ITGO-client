@@ -1,22 +1,30 @@
 import { ShareReceiveContent } from "./ShareReceiveContent";
 import { ShareGiveContent } from "./ShareGiveContent";
 import { ShareStatus } from "@/constants/status";
-import { useWishInfinite } from "@/hooks/useWishInfinite";
+
 import { useShareInfinite } from "@/hooks/useShareInfinite";
 import { useShareClaimsStatusMap } from "@/hooks/useShareClaimsAcceptedMap";
 import { useWishSentClaimsStatusMap } from "@/hooks/useWishSentClaimsStatusMap";
 import { useWishIdStore } from "@/stores/wish";
 import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { fetchActiveWishPage } from "@/apis/wish";
+import type { WishItem } from "@/types/wish";
 
 export const ShareStatusContent = () => {
   const { setWishId } = useWishIdStore();
 
-  // wish 목록 조회
+  // ✅ active인 wish 한 페이지 조회 (첫 페이지)
   const {
-    data: wish,
+    data: activeWishPage,
     isLoading: isWishLoading,
     isError: isWishError,
-  } = useWishInfinite(1);
+  } = useQuery({
+    queryKey: ["activeWish", 0, 20],
+    queryFn: () => fetchActiveWishPage(0, 20),
+  });
+
+  const wishItems: WishItem[] = activeWishPage?.content ?? [];
 
   // share 목록 조회
   const {
@@ -25,7 +33,6 @@ export const ShareStatusContent = () => {
     isError: isShareError,
   } = useShareInfinite(20);
 
-  const wishItems = wish?.flat ?? [];
   const shareItems = share?.flat ?? [];
   const shareIds = shareItems.map((s) => s.shareId);
 
@@ -40,18 +47,16 @@ export const ShareStatusContent = () => {
 
   const wishIds = wishItems.map((w) => w.wishId);
 
+  // 첫 번째 active wishId를 전역 저장
   useEffect(() => {
-    if (wishItems?.length > 0) {
-      setWishId(wishItems[0].wishId);
-    }
-  }, [wishItems]);
+    if (wishItems.length > 0) setWishId(wishItems[0].wishId);
+  }, [wishItems, setWishId]);
 
   // 내가 보낸 요청들 중, accepted를 받은 요청이 존재하는 지 확인
   const {
     anyAccepted: anyWishAccepted,
     anySent: anyWishSent, // ✅ 추가
     isLoading: isSentLoading,
-
     isError: isSentError,
   } = useWishSentClaimsStatusMap(wishIds);
 
