@@ -13,7 +13,7 @@ export const ProductList = () => {
     (async () => {
       try {
         const { content } = await fetchShareList(0, 3);
-        setList(Array.isArray(content) ? content : []); // ⬅️ 한번 더 방어
+        setList(Array.isArray(content) ? content : []);
       } catch (e) {
         console.error(e);
         setList([]);
