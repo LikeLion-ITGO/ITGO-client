@@ -1,4 +1,4 @@
-import sampleStore from "@/assets/images/sampleStore.png";
+// import sampleStore from "@/assets/images/sampleStore.png";
 
 import grayArrow from "@/assets/icons/ShareListPage/grayArrow.svg";
 import backIcon from "@/assets/icons/back.svg";
@@ -15,6 +15,12 @@ import type { ShareDetail } from "@/types/share";
 import { getShareById } from "@/apis/share";
 
 type ShareStatus = "open" | "closed" | "requested";
+
+const storageTypeMap: Record<string, string> = {
+  REFRIGERATED: "냉장",
+  FROZEN: "냉동",
+  ROOM_TEMPERATURE: "상온",
+};
 
 export const ShareDetailPage = () => {
   const navigate = useNavigate();
@@ -51,7 +57,7 @@ export const ShareDetailPage = () => {
   return (
     <MainLayout bgcolor="#fff">
       <div className="relative -mx-[20px] h-[400px]">
-        <ShareImageSwiper />
+        <ShareImageSwiper imgs={share?.images ?? []} />
         {/* 위에부분 사진-> 어떻게 나오는지 체크하고 수정 */}
         <img
           src={backIcon}
@@ -60,22 +66,23 @@ export const ShareDetailPage = () => {
           onClick={() => navigate(-1)}
         />
       </div>
-      <div className="w-full bg-[#F5F7FA] h-[80px] rounded-[24px] p-4 flex items-center gap-2 mt-5 mb-8">
+      <div
+        className="w-full bg-[#F5F7FA] h-[80px] rounded-[24px] p-4 flex items-center gap-2 mt-5 mb-8"
+        onClick={() => navigate(`/store-info/${share?.storeId}`)}
+      >
         <img
-          src={sampleStore}
+          src={share?.storeImageUrl}
           alt="가게 이미지"
           className="w-[48px] h-[48px] rounded-full mr-1 object-cover"
         />
-        <p className="headline-01">스무 하루</p>
+        <p className="headline-01">{share?.storeName}</p>
         <img src={grayArrow} alt=">" />
       </div>
       <div>
-        <h4 className="headline-02 mb-4">오리지널우유 1L 2팩</h4>
-        <p className="text-[#47484B] body-long-02 mb-8">
-          상품 설명상품 설명상품 설명상품 설명상품 설명상품 설명상품 설명상품
-          설명상품 설명상품 설명상품 설명상품 설명상품 설명상품 설명상품
-          설명상품 설명
-        </p>
+        <h4 className="headline-02 mb-4">
+          {share?.itemName} {share?.quantity}개
+        </h4>
+        <p className="text-[#47484B] body-long-02 mb-8">{share?.description}</p>
         <div className="flex flex-col gap-y-[16px]">
           <div className="flex  gap-x-[28px]">
             <span className="w-[55px] body-02 text-[#8F9498]">브랜드</span>
@@ -93,7 +100,9 @@ export const ShareDetailPage = () => {
           <div className="flex  gap-x-[28px]">
             <span className="w-[55px] body-02 text-[#8F9498]">보관방식</span>
             <span className="subhead-03 text-[#47484B]">
-              {share?.storageType}
+              {share?.storageType
+                ? storageTypeMap[share.storageType] ?? share.storageType
+                : "-"}
             </span>
           </div>
           <div className="flex  gap-x-[28px]">

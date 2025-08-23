@@ -1,13 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
 import { TimeInput } from "../common/TimeInput";
 import clsx from "clsx";
 import type { RecieveRegisterRequest, StorageType } from "@/types/share";
-
-const STORE_OPEN_TIME = "09:00";
-const STORE_CLOSE_TIME = "18:00";
+import { getMyStore } from "@/apis/store";
+import { formatLocalTime } from "@/types/time";
 
 const METHOD_TO_STORAGE: Record<string, StorageType> = {
   냉장: "REFRIGERATED",
@@ -21,6 +20,9 @@ type Props = {
 export const GiveRegisterForm = ({ onSubmit }: Props) => {
   const [selectedMethod, setSelectedMethod] = useState("냉장");
 
+  const [storeOpenTime, setStoreOpenTime] = useState("");
+  const [storeCloseTime, setStoreCloseTime] = useState("");
+
   const [itemName, setItemName] = useState("");
   const [brand, setBrand] = useState("");
   const [quantity, setQuantity] = useState("");
@@ -31,12 +33,35 @@ export const GiveRegisterForm = ({ onSubmit }: Props) => {
   const [endTime, setEndTime] = useState("");
   const [storeTimeChecked, setStoreTimeChecked] = useState(false);
 
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const store = await getMyStore();
+        if (!mounted) return;
+        const open = formatLocalTime(store.openTime);
+        const close = formatLocalTime(store.closeTime);
+        setStoreOpenTime(open);
+        setStoreCloseTime(close);
+        if (storeTimeChecked) {
+          setStartTime(open);
+          setEndTime(close);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, [storeTimeChecked]);
+
   const handleStoreTimeToggle = (checked: boolean) => {
     setStoreTimeChecked(checked);
 
     if (checked) {
-      setStartTime(STORE_OPEN_TIME);
-      setEndTime(STORE_CLOSE_TIME);
+      setStartTime(storeOpenTime || "");
+      setEndTime(storeCloseTime || "");
     } else {
       setStartTime("");
       setEndTime("");
@@ -67,8 +92,8 @@ export const GiveRegisterForm = ({ onSubmit }: Props) => {
       expirationDate: expiry.trim(),
       storageType: METHOD_TO_STORAGE[selectedMethod],
       freshCertified: false, // 신선인증 결과-> 상위에서 바꾸기
-      openTime: storeTimeChecked ? STORE_OPEN_TIME : startTime,
-      closeTime: storeTimeChecked ? STORE_CLOSE_TIME : endTime,
+      openTime: storeTimeChecked ? storeOpenTime : startTime,
+      closeTime: storeTimeChecked ? storeCloseTime : endTime,
     };
 
     onSubmit?.(payload);
