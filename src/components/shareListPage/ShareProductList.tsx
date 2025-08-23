@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { ProductBox } from "../productList/ProductBox";
 import type { ShareResponse } from "@/types/share";
-import { fetchShareList } from "@/apis/share";
+import { fetchShareDongList } from "@/apis/share";
 
 export const ShareProductList = () => {
   const [list, setList] = useState<ShareResponse[]>([]);
 
   useEffect(() => {
-    fetchShareList(0, 20).then((data) => {
+    fetchShareDongList(0, 20).then((data) => {
       setList(data.content);
     });
   }, []);
@@ -19,7 +19,7 @@ export const ShareProductList = () => {
       </div>
     );
   return (
-    <div className="flex flex-col gap-4 mb-[19px] w-full ">
+    <div className="flex flex-col  h-[100vh] gap-4 mb-[19px] w-full ">
       {list.map((item) => (
         <ProductBox key={item.shareId} item={item} />
       ))}

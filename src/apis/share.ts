@@ -115,3 +115,20 @@ export const deleteShare = async (shareId: number) => {
   const res = await axiosInstance.delete(`/share/${shareId}`);
   return res.data;
 };
+
+export async function fetchShareDongList(
+  page: number,
+  size = 20
+): Promise<{ content: ShareResponse[] }> {
+  const { data } = await axiosInstance.get(`/share/dong`, {
+    params: { page, size },
+  });
+
+  const content = Array.isArray(data?.data?.content)
+    ? data.data.content
+    : Array.isArray(data?.content)
+    ? data.content
+    : [];
+
+  return { content };
+}
