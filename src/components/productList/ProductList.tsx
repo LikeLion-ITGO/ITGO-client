@@ -10,10 +10,17 @@ export const ProductList = () => {
   const [list, setList] = useState<ShareResponse[]>([]);
 
   useEffect(() => {
-    fetchShareList(0, 3).then((data) => {
-      setList(data.content);
-    });
+    (async () => {
+      try {
+        const { content } = await fetchShareList(0, 3);
+        setList(Array.isArray(content) ? content : []); // ⬅️ 한번 더 방어
+      } catch (e) {
+        console.error(e);
+        setList([]);
+      }
+    })();
   }, []);
+
   return (
     <div className="flex flex-col ">
       <p className="py-[6px] w-[66px] h-[29px] px-[12px] bg-[#DDF0FF] text-[14px] rounded-[48px] flex items-center justify-center text-[#3CADFF] font-bold mb-2">

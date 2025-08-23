@@ -7,6 +7,8 @@ import type {
   PresignResponseItem,
   RecieveRegisterRequest,
   ShareDetail,
+  ShareDetailApi,
+  ShareImage,
   ShareItem,
   ShareResponse,
 } from "@/types/share";
@@ -30,16 +32,21 @@ export async function fetchSharePage(page: number, size = 20) {
 }
 
 //ShareList용....
-export async function fetchShareList(page: number, size = 20) {
-  const res = await axiosInstance.get<PageData<ShareResponse>>("/share", {
+export async function fetchShareList(
+  page: number,
+  size = 20
+): Promise<{ content: ShareResponse[] }> {
+  const { data } = await axiosInstance.get(`/share`, {
     params: { page, size },
   });
 
-  const data = res.data;
-  return {
-    ...data,
-    page,
-  };
+  const content = Array.isArray(data?.data?.content)
+    ? data.data.content
+    : Array.isArray(data?.content)
+    ? data.content
+    : [];
+
+  return { content };
 }
 //
 
@@ -93,7 +100,19 @@ export async function confirmShareImages(
 
 // 가게 정보 조회
 export async function getShareById(shareId: number): Promise<ShareDetail> {
-  const { data } = await axiosInstance.get<ShareDetail>(`/share/${shareId}`);
+  const { data } = await axiosInstance.get<{ data: ShareDetailApi }>(
+    `/share/${shareId}`
+  );
+  const raw = data.data;
 
-  return data;
+  const images: ShareImage[] = Array.isArray(raw.images)
+    ? raw.images
+    : raw.images
+    ? [raw.images]
+    : [];
+
+  return {
+    ...raw,
+    images,
+  } as ShareDetail;
 }

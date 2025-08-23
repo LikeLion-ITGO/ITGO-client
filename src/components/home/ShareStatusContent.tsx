@@ -34,7 +34,9 @@ export const ShareStatusContent = () => {
   } = useShareInfinite(20);
 
   const shareItems = share?.flat ?? [];
-  const shareIds = shareItems.map((s) => s.shareId);
+  const shareIds = shareItems
+    .filter((s) => s && typeof s.shareId !== "undefined")
+    .map((s) => s.shareId);
 
   // 나눔 상품에 대한 요청 중, accepted 상태가 있는 지 확인 + accepted인 상대 가게 리스트 조회
   const {

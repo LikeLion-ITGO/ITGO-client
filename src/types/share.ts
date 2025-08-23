@@ -61,6 +61,27 @@ export type ShareImage = {
   publicUrl: string;
 };
 
+// API 원본 응답(Detail)
+export interface ShareDetailApi {
+  shareId: number;
+  itemName: string;
+  brand: string;
+  quantity: number;
+  description: string;
+  expirationDate: string;
+  storageType: "REFRIGERATED" | "FROZEN" | "ROOM_TEMPERATURE";
+  freshCertified: boolean;
+  openTime: string;
+  closeTime: string;
+  images?: ShareImage | ShareImage[]; // 단건 또는 배열
+  roadAddress: string;
+  regDate: string;
+
+  storeName: string;
+  storeImageUrl: string;
+  storeId: number;
+}
+
 export type ShareDetail = {
   shareId: number;
   itemName: string;
