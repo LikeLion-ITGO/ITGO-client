@@ -10,19 +10,20 @@ import FreshIcon from "@/assets/icons/register/fresh-icon.svg?react";
 import { X } from "lucide-react";
 import { toast } from "sonner";
 import { FreshResultModal } from "@/components/register/FreshResultModal";
-import type { RecieveRegisterRequest } from "@/types/share";
-import {
-  confirmShareImages,
-  createShare,
-  presignShareImages,
-  putToS3,
-} from "@/apis/share";
+import type { PresignRequestItem, ShareCreateReq } from "@/types/share";
+import { createShare, presignShareImageDrafts, putToS3 } from "@/apis/share";
 import { getExtAndType } from "@/lib/utils";
 import ToolTip from "@/assets/icons/register/tooltip.svg";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 
-type Preview = { id: string; file: File; url: string };
+type Preview = {
+  id: string;
+  file: File;
+  url: string;
+  draftKey?: string;
+  uploading?: boolean;
+};
 
 export const RegisterGive = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -39,28 +40,66 @@ export const RegisterGive = () => {
 
   const openPicker = () => fileInputRef.current?.click();
 
-  const onPickFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // 선택 즉시: presign(draft) → PUT → draftKey 저장
+  const onPickFiles = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
+    e.target.value = "";
     if (!files.length) return;
 
     const remain = MAX - images.length;
     const picked = files.slice(0, Math.max(0, remain));
+    if (!picked.length) return;
 
-    const next: Preview[] = picked.map((f) => ({
+    // 우선 미리보기 붙이고 uploading=true로 표시
+    const startIndex = images.length;
+    const pending: Preview[] = picked.map((f) => ({
       id: `${f.name}-${f.size}-${crypto.randomUUID?.() ?? Math.random()}`,
       file: f,
       url: URL.createObjectURL(f),
+      uploading: true,
     }));
-
-    setImages((prev) => [...prev, ...next]);
-    e.target.value = "";
+    setImages((prev) => [...prev, ...pending]);
     setIsToolTipOpen(true);
+
+    try {
+      // presign(draft) – 여러장 한 번에
+      const presignItems: PresignRequestItem[] = picked.map((f, i) => {
+        const { ext, contentType } = getExtAndType(f);
+        // seq는 임시로 현재 배열 순서를 부여 (응답 매칭용)
+        return { seq: startIndex + i, ext, contentType, sizeBytes: f.size };
+      });
+
+      const signed = await presignShareImageDrafts(presignItems); // [{seq, putUrl, draftKey, ...}]
+      const bySeq = new Map(signed.map((s) => [s.seq, s]));
+
+      // S3 PUT 업로드
+      await Promise.all(
+        picked.map(async (f, i) => {
+          const seq = startIndex + i;
+          const s = bySeq.get(seq);
+          if (!s) throw new Error(`No presign for seq=${seq}`);
+          const { contentType } = getExtAndType(f);
+          await putToS3(s.putUrl, f, contentType);
+          // 업로드 성공 → 해당 이미지에 draftKey 저장 + uploading=false
+          setImages((prev) =>
+            prev.map((p, idx) =>
+              idx === seq ? { ...p, draftKey: s.draftKey, uploading: false } : p
+            )
+          );
+        })
+      );
+    } catch (err) {
+      console.error("presign/upload 실패:", err);
+      // 실패난 것들은 제거
+      setImages((prev) => prev.filter((p) => !p.uploading));
+      toast.error("이미지 업로드에 실패했어요. 다시 시도해 주세요.");
+    }
   };
 
   const removeImage = (id: string) => {
     setImages((prev) => {
-      const target = prev.find((p) => p.id === id);
-      if (target) URL.revokeObjectURL(target.url);
+      const t = prev.find((p) => p.id === id);
+      if (t) URL.revokeObjectURL(t.url);
       return prev.filter((p) => p.id !== id);
     });
   };
@@ -101,49 +140,32 @@ export const RegisterGive = () => {
   };
 
   //
-  const handleSubmit = async (values: RecieveRegisterRequest) => {
-    try {
-      // 1) 메타데이터 생성
-      const created = await createShare(values);
-      const shareId: number =
-        created.shareId ?? created.data?.shareId ?? created?.id;
 
-      // 이미지 없으면 종료
-      if (!images.length) {
-        toast.success("나눔이 등록되었어요!");
+  // 제출: draftKey만 모아 서버로 전송
+  const handleSubmit = async (values: Omit<ShareCreateReq, "images">) => {
+    try {
+      // 업로드 중이거나 draftKey 없는 항목 있으면 막기
+      if (images.some((p) => p.uploading)) {
+        toast("이미지 업로드가 끝나길 기다려주세요.");
+        return;
+      }
+      if (images.some((p) => !p.draftKey)) {
+        toast.error("일부 이미지의 업로드가 완료되지 않았어요.");
         return;
       }
 
-      // 2) presign 발급용 payload
-      const presignItems = images.map((p, idx) => {
-        const { ext, contentType } = getExtAndType(p.file);
-        return { seq: idx, ext, contentType, sizeBytes: p.file.size };
-      });
+      const payload: ShareCreateReq = {
+        ...values,
+        images:
+          images.length === 0
+            ? []
+            : images.map((p, idx) => ({
+                seq: idx, // 현재 진열 순서를 서버 seq로 사용 (0이 대표)
+                draftKey: p.draftKey!, // presign 때 받은 키
+              })),
+      };
 
-      // 2-1) presign 요청
-      const signed = await presignShareImages(shareId, presignItems);
-
-      // 3) S3로 PUT 업로드 (presign 응답의 seq로 파일 매칭)
-      await Promise.all(
-        signed.map(async (s) => {
-          const f = images[s.seq]?.file;
-          if (!f) return; // 혹시 배열 불일치 방어
-          const { contentType } = getExtAndType(f);
-          await putToS3(s.putUrl, f, contentType);
-        })
-      );
-
-      // 4) confirm(커밋) -> 서버가 최종 Share 데이터(이미지 포함) 반환
-      const finalShare = await confirmShareImages(
-        shareId,
-        signed.map((s) => ({ seq: s.seq, objectKey: s.objectKey }))
-      );
-
-      // 대표 이미지 publicUrl (seq=0 규칙)
-      const primary =
-        finalShare?.images?.find((i) => i.seq === 0)?.publicUrl ?? null;
-
-      console.log("최종 등록", finalShare, primary);
+      await createShare(payload);
 
       toast("나눔이 성공적으로 업로드되었어요!", {
         icon: <FreshIcon className="w-[20px] h-[20px]" />,
@@ -154,13 +176,13 @@ export const RegisterGive = () => {
           title: "subhead-03 text-white",
         },
       });
-
       navigate(ROUTES.HOME);
     } catch (err) {
       console.error(err);
-      toast.error("업로드 중 문제가 발생했어요."); //
+      toast.error("업로드 중 문제가 발생했어요.");
     }
   };
+
   return (
     <RegisterLayout header={"나눠주기"}>
       <div className="flex flex-col px-5 pt-11 gap-5">

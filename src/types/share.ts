@@ -51,8 +51,21 @@ export type PresignRequestItem = {
 export type PresignResponseItem = {
   seq: number;
   putUrl: string;
-  objectKey: string; // shares/{shareId}/images/{seq}.{uuid}.{ext}
-  publicUrl: string; // CDN 접근 URL
+  previewUrl: string;
+  draftKey: string;
+};
+
+export type ShareCreateReq = {
+  itemName: string;
+  brand?: string;
+  quantity: number;
+  description?: string;
+  expirationDate: string;
+  storageType: "REFRIGERATED" | "FROZEN" | "ROOM_TEMPERATURE";
+  freshCertified: boolean;
+  openTime: string;
+  closeTime: string;
+  images?: { seq: number; draftKey: string }[];
 };
 
 export type ShareImage = {

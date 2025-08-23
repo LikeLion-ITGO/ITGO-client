@@ -5,7 +5,7 @@ import type { PageData } from "@/types/api";
 import type {
   PresignRequestItem,
   PresignResponseItem,
-  RecieveRegisterRequest,
+  ShareCreateReq,
   ShareDetail,
   ShareDetailApi,
   ShareImage,
@@ -50,53 +50,41 @@ export async function fetchShareList(
 }
 //
 
-// 1) 메타데이터 생성
-export async function createShare(body: RecieveRegisterRequest) {
-  const { data } = await axiosInstance.post("/share", body);
-  return data;
-}
-// 2) presign 발급
-export async function presignShareImages(
-  shareId: number,
+// 1 여러 장 draft presign
+export async function presignShareImageDrafts(
   items: PresignRequestItem[]
-) {
+): Promise<PresignResponseItem[]> {
   const { data } = await axiosInstance.post<{
-    shareId: number;
-    items: PresignResponseItem[];
-  }>(`/share-image/presign/${shareId}`, { items, seqsValid: true });
-  return data.items;
+    data: { memberId: number; items: PresignResponseItem[] };
+  }>("/share-image/draft/presign", { items, seqsValid: true });
+
+  return data.data.items ?? [];
 }
 
-// 3) S3 PUT 업로드 (presigned URL 사용: 인증 헤더 x)
+// 2 S3 PUT 업로드 (인증 헤더 X)
 export async function putToS3(putUrl: string, file: File, contentType: string) {
   const res = await fetch(putUrl, {
     method: "PUT",
     headers: { "Content-Type": contentType },
     body: file,
     cache: "no-store",
-    // mode: "cors" // 기본이 cors라 생략 가능
   });
   if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`S3 PUT failed: ${res.status} ${text}`);
+    const msg = await res.text().catch(() => "");
+    throw new Error(`S3 PUT failed: ${res.status} ${msg}`);
   }
 }
 
-// 4) 업로드 확정(커밋)
-export async function confirmShareImages(
-  shareId: number,
-  items: { seq: number; objectKey: string }[]
-) {
-  const { data } = await axiosInstance.post<ShareDetail>(
-    "/share-image/confirm",
-    {
-      shareId,
-      items,
-      seqsValid: true,
-    }
+// 3 나눔 등록 (draftKey만 보냄)
+export async function createShare(body: ShareCreateReq) {
+  const { data } = await axiosInstance.post<{ data: ShareDetail }>(
+    "/share",
+    body
   );
-  return data;
+  return data.data;
 }
+
+///////////
 
 // 가게 정보 조회
 export async function getShareById(shareId: number): Promise<ShareDetail> {

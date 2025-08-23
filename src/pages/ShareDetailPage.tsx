@@ -85,11 +85,11 @@ export const ShareDetailPage = () => {
         <p className="text-[#47484B] body-long-02 mb-8">{share?.description}</p>
         <div className="flex flex-col gap-y-[16px]">
           <div className="flex  gap-x-[28px]">
-            <span className="w-[55px] body-02 text-[#8F9498]">브랜드</span>
+            <span className="w-[60px] body-02 text-[#8F9498]">브랜드</span>
             <span className="subhead-03 text-[#47484B]">{share?.brand}</span>
           </div>
           <div className="flex  gap-x-[28px]">
-            <span className="w-[55px] body-02 text-[#8F9498]">유통기한</span>
+            <span className="w-[60px] body-02 text-[#8F9498]">유통기한</span>
             <span className="subhead-03 text-[#47484B]">
               {share?.expirationDate
                 ? share.expirationDate.replace(/-/g, ".")
@@ -98,7 +98,7 @@ export const ShareDetailPage = () => {
             </span>
           </div>
           <div className="flex  gap-x-[28px]">
-            <span className="w-[55px] body-02 text-[#8F9498]">보관방식</span>
+            <span className="w-[60px] body-02 text-[#8F9498]">보관방식</span>
             <span className="subhead-03 text-[#47484B]">
               {share?.storageType
                 ? storageTypeMap[share.storageType] ?? share.storageType
@@ -106,13 +106,13 @@ export const ShareDetailPage = () => {
             </span>
           </div>
           <div className="flex  gap-x-[28px]">
-            <span className="w-[55px] body-02 text-[#8F9498]">거래장소</span>
+            <span className="w-[60px] body-02 text-[#8F9498]">거래장소</span>
             <span className="subhead-03 text-[#47484B]">
               {share?.roadAddress}
             </span>
           </div>
           <div className="flex  gap-x-[28px]">
-            <span className="w-[55px] body-02 text-[#8F9498]">운영시간</span>
+            <span className="w-[60px] body-02 text-[#8F9498]">운영시간</span>
             <span className="subhead-03 text-[#47484B]">
               {share?.openTime?.slice(0, 5)} ~ {share?.closeTime?.slice(0, 5)}
             </span>
