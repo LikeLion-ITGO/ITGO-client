@@ -4,7 +4,11 @@ import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
 import { TimeInput } from "../common/TimeInput";
 import clsx from "clsx";
-import type { RecieveRegisterRequest, StorageType } from "@/types/share";
+import type {
+  RecieveRegisterRequest,
+  ShareCreateReq,
+  StorageType,
+} from "@/types/share";
 import { getMyStore } from "@/apis/store";
 import { formatLocalTime } from "@/types/time";
 
@@ -13,11 +17,25 @@ const METHOD_TO_STORAGE: Record<string, StorageType> = {
   냉동: "FROZEN",
   상온: "ROOM_TEMPERATURE",
 };
+const STORAGE_TO_METHOD: Record<StorageType, string> = {
+  REFRIGERATED: "냉장",
+  FROZEN: "냉동",
+  ROOM_TEMPERATURE: "상온",
+};
+
+type BaseValues = Omit<ShareCreateReq, "images">;
 
 type Props = {
   onSubmit?: (payload: RecieveRegisterRequest) => void;
+  initialValues?: Partial<BaseValues>;
+  buttonText?: string;
 };
-export const GiveRegisterForm = ({ onSubmit }: Props) => {
+
+export const GiveRegisterForm = ({
+  onSubmit,
+  initialValues,
+  buttonText = "업로드",
+}: Props) => {
   const [selectedMethod, setSelectedMethod] = useState("냉장");
 
   const [storeOpenTime, setStoreOpenTime] = useState("");
@@ -33,6 +51,27 @@ export const GiveRegisterForm = ({ onSubmit }: Props) => {
   const [endTime, setEndTime] = useState("");
   const [storeTimeChecked, setStoreTimeChecked] = useState(false);
 
+  /** 초기값 (수정 화면) */
+  useEffect(() => {
+    if (!initialValues) return;
+
+    if (initialValues.itemName) setItemName(initialValues.itemName);
+    if (initialValues.brand) setBrand(initialValues.brand);
+    if (typeof initialValues.quantity === "number")
+      setQuantity(String(initialValues.quantity));
+    if (initialValues.description) setDesc(initialValues.description);
+    if (initialValues.expirationDate) setExpiry(initialValues.expirationDate);
+
+    if (initialValues.openTime)
+      setStartTime(initialValues.openTime.slice(0, 5));
+    if (initialValues.closeTime)
+      setEndTime(initialValues.closeTime.slice(0, 5));
+
+    if (initialValues.storageType)
+      setSelectedMethod(STORAGE_TO_METHOD[initialValues.storageType]);
+  }, [initialValues]);
+
+  /** 가게 운영시간 로드 (체크박스 켜져있는 경우 폼에도 반영) */
   useEffect(() => {
     let mounted = true;
     (async () => {
@@ -234,7 +273,7 @@ export const GiveRegisterForm = ({ onSubmit }: Props) => {
           )}
           onClick={handleSubmit}
         >
-          업로드
+          {buttonText}
         </Button>
       </div>
     </form>

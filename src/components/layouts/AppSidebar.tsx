@@ -21,9 +21,9 @@ import type { Store } from "@/types/store";
 import { useEffect, useState } from "react";
 import { LogoutModal } from "../home/LogoutModal";
 import { useStoreIdStore } from "@/stores/store";
-import { useShareInfinite } from "@/hooks/useShareInfinite";
+// import { useShareInfinite } from "@/hooks/useShareInfinite";
 import { fetchActiveWishPage } from "@/apis/wish";
-import type { WishItem } from "@/types/wish";
+// import type { WishItem } from "@/types/wish";
 
 export const AppSidebar = () => {
   const [logoutOpen, setLogoutOpen] = useState(false);
@@ -36,7 +36,7 @@ export const AppSidebar = () => {
   });
 
   console.log(store);
-  
+
   const setStoreId = useStoreIdStore((s) => s.setStoreId);
 
   useEffect(() => {
@@ -48,7 +48,7 @@ export const AppSidebar = () => {
 
   // wish 목록 조회
   const {
-    data: activeWishPage,
+    // data: activeWishPage,
     isLoading: isWishLoading,
     isError: isWishError,
   } = useQuery({
@@ -56,30 +56,30 @@ export const AppSidebar = () => {
     queryFn: () => fetchActiveWishPage(0, 20),
   });
 
-  const wishItems: WishItem[] = activeWishPage?.content ?? [];
-  // share 목록 조회
-  const {
-    data: share,
-    isLoading: isShareLoading,
-    isError: isShareError,
-  } = useShareInfinite(20);
-  const shareItems = share?.flat ?? [];
+  // const wishItems: WishItem[] = activeWishPage?.content ?? [];
+  // // share 목록 조회
+  // const {
+  //   data: share,
+  //   isLoading: isShareLoading,
+  //   isError: isShareError,
+  // } = useShareInfinite(20);
+  // const shareItems = share?.flat ?? [];
 
   if (isWishLoading) return <div className="p-4">불러오는 중…</div>;
   if (isWishError) return <div className="p-4">목록을 불러오지 못했어요.</div>;
 
-  if (isShareLoading) return <div className="p-4">불러오는 중…</div>;
-  if (isShareError) return <div className="p-4">목록을 불러오지 못했어요.</div>;
+  // if (isShareLoading) return <div className="p-4">불러오는 중…</div>;
+  // if (isShareError) return <div className="p-4">목록을 불러오지 못했어요.</div>;
 
-  const receivedCount = (shareItems ?? []).reduce(
-    (sum, s) => sum + (s.claimTotalCount ?? 0),
-    0
-  );
+  // const receivedCount = (shareItems ?? []).reduce(
+  //   (sum, s) => sum + (s.claimTotalCount ?? 0),
+  //   0
+  // );
 
-  const sentCount =
-    wishItems.length > 0
-      ? wishItems.reduce((sum, w) => sum + (w.claimTotalCount ?? 0), 0)
-      : 0;
+  // const sentCount =
+  //   wishItems.length > 0
+  //     ? wishItems.reduce((sum, w) => sum + (w.claimTotalCount ?? 0), 0)
+  //     : 0;
 
   const handleLogoutClick = () => {
     setLogoutOpen(true);
@@ -131,7 +131,7 @@ export const AppSidebar = () => {
           <div className="flex flex-row gap-10">
             <div className="flex flex-col">
               <span className="text-xl font-semibold text-[#2695E8]">
-                {receivedCount}
+                {store?.receivedTimes}
               </span>
               <span className="text-xs font-medium text-[#8F9498]">
                 받은 요청
@@ -139,7 +139,7 @@ export const AppSidebar = () => {
             </div>
             <div className="flex flex-col">
               <span className="text-xl font-semibold text-[#2695E8]">
-                {sentCount}
+                {store?.giveTimes}
               </span>
               <span className="text-xs font-medium text-[#8F9498]">
                 보낸 요청

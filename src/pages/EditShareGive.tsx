@@ -1,3 +1,4 @@
+// src/pages/EditShareGive.tsx
 import RegisterLayout from "@/components/layouts/RegisterLayout";
 import { GiveRegisterForm } from "@/components/register/GiveRegisterForm";
 import Camera from "@/assets/icons/register/camera.svg?react";
@@ -10,37 +11,81 @@ import FreshIcon from "@/assets/icons/register/fresh-icon.svg?react";
 import { X } from "lucide-react";
 import { toast } from "sonner";
 import { FreshResultModal } from "@/components/register/FreshResultModal";
-import type { PresignRequestItem, ShareCreateReq } from "@/types/share";
-import { createShare, presignShareImageDrafts, putToS3 } from "@/apis/share";
+import type {
+  PresignRequestItem,
+  ShareCreateReq,
+  ShareDetail,
+  ShareImage,
+} from "@/types/share";
+import {
+  presignShareImageDrafts,
+  putToS3,
+  updateShare,
+  getShareById,
+} from "@/apis/share";
 import { getExtAndType } from "@/lib/utils";
 import ToolTip from "@/assets/icons/register/tooltip.svg";
-import { useNavigate } from "react-router-dom";
-import { ROUTES } from "@/constants/routes";
+import { useNavigate, useParams } from "react-router-dom";
+
+import { useQuery } from "@tanstack/react-query";
 
 type Preview = {
   id: string;
-  file: File;
-  url: string;
-  draftKey?: string;
+  file?: File; // 기존 이미지는 file 없음
+  url: string; // 기존: publicUrl, 신규: ObjectURL
+  draftKey?: string; // 신규: draftKey, 기존: objectKey를 여기 넣어 보냄(서버 합의)
   uploading?: boolean;
+  isNew?: boolean;
 };
 
-export const RegisterGive = () => {
+export const EditShareGive = () => {
+  const { id } = useParams<{ id: string }>();
+  const shareId = Number(id);
+  const navigate = useNavigate();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isTooltipOpen, setIsToolTipOpen] = useState(false);
   const [isFreshModalOpen, setIsFreshModalOpen] = useState(false);
   const [images, setImages] = useState<Preview[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const MAX = 5;
-  const navigate = useNavigate();
+
+  // 기존 데이터
+  const {
+    data: share,
+    isLoading,
+    isError,
+  } = useQuery<ShareDetail>({
+    queryKey: ["shareDetail", shareId],
+    queryFn: () => getShareById(shareId),
+    enabled: !!shareId,
+  });
+
+  // 기존 이미지 --> 썸네일 채우기
+  useEffect(() => {
+    if (!share) return;
+    const previews: Preview[] = (share.images ?? []).map(
+      (img: ShareImage, i: number) => ({
+        id: `existing-${i}`,
+        url: img.publicUrl,
+        draftKey: img.objectKey,
+        uploading: false,
+        isNew: false,
+      })
+    );
+    setImages(previews);
+  }, [share]);
 
   useEffect(() => {
-    return () => images.forEach((p) => URL.revokeObjectURL(p.url));
+    return () =>
+      images.forEach((p) => {
+        if (p.isNew && p.url?.startsWith("blob:")) URL.revokeObjectURL(p.url);
+      });
   }, [images]);
 
   const openPicker = () => fileInputRef.current?.click();
 
-  // 선택 즉시: presign(draft) → PUT → draftKey 저장
+  // 새 파일 선택 → presign → S3 PUT → draftKey 저장
   const onPickFiles = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
     e.target.value = "";
@@ -50,47 +95,46 @@ export const RegisterGive = () => {
     const picked = files.slice(0, Math.max(0, remain));
     if (!picked.length) return;
 
-    // 우선 미리보기 붙이고 uploading=true로 표시
-    const startIndex = images.length;
+    // 기존 이미지 개수부터 시작
+    const existingCount = images.filter((p) => !p.isNew).length;
+
     const pending: Preview[] = picked.map((f) => ({
       id: `${f.name}-${f.size}-${crypto.randomUUID?.() ?? Math.random()}`,
       file: f,
       url: URL.createObjectURL(f),
       uploading: true,
+      isNew: true,
     }));
     setImages((prev) => [...prev, ...pending]);
-    setIsToolTipOpen(true);
 
     try {
-      // presign(draft) – 여러장 한 번에
-      const presignItems: PresignRequestItem[] = picked.map((f, i) => {
+      const reqItems: PresignRequestItem[] = picked.map((f, i) => {
         const { ext, contentType } = getExtAndType(f);
-        // seq는 임시로 현재 배열 순서를 부여 (응답 매칭용)
-        return { seq: startIndex + i, ext, contentType, sizeBytes: f.size };
+        return { seq: existingCount + i, ext, contentType, sizeBytes: f.size };
       });
 
-      const signed = await presignShareImageDrafts(presignItems); // [{seq, putUrl, draftKey, ...}]
+      const signed = await presignShareImageDrafts(reqItems);
       const bySeq = new Map(signed.map((s) => [s.seq, s]));
 
-      // S3 PUT 업로드
       await Promise.all(
         picked.map(async (f, i) => {
-          const seq = startIndex + i;
+          const seq = existingCount + i;
           const s = bySeq.get(seq);
           if (!s) throw new Error(`No presign for seq=${seq}`);
           const { contentType } = getExtAndType(f);
           await putToS3(s.putUrl, f, contentType);
-          // 업로드 성공 → 해당 이미지에 draftKey 저장 + uploading=false
+
           setImages((prev) =>
-            prev.map((p, idx) =>
-              idx === seq ? { ...p, draftKey: s.draftKey, uploading: false } : p
+            prev.map((p) =>
+              p.id === pending[i].id
+                ? { ...p, draftKey: s.draftKey, uploading: false }
+                : p
             )
           );
         })
       );
     } catch (err) {
       console.error("presign/upload 실패:", err);
-      // 실패난 것들은 제거
       setImages((prev) => prev.filter((p) => !p.uploading));
       toast.error("이미지 업로드에 실패했어요. 다시 시도해 주세요.");
     }
@@ -99,7 +143,7 @@ export const RegisterGive = () => {
   const removeImage = (id: string) => {
     setImages((prev) => {
       const t = prev.find((p) => p.id === id);
-      if (t) URL.revokeObjectURL(t.url);
+      if (t?.isNew && t.url?.startsWith("blob:")) URL.revokeObjectURL(t.url);
       return prev.filter((p) => p.id !== id);
     });
   };
@@ -115,7 +159,6 @@ export const RegisterGive = () => {
           title: "subhead-03 text-white",
         },
       });
-      console.log("클릭");
       return;
     }
     setIsModalOpen(true);
@@ -132,40 +175,42 @@ export const RegisterGive = () => {
           title: "subhead-03 text-white",
         },
       });
-
-      console.log("클릭");
       return;
     }
     setIsFreshModalOpen(true);
   };
 
-  //
-
-  // 제출: draftKey만 모아 서버로 전송
+  // 제출: draftKey 들만 모아 PUT
   const handleSubmit = async (values: Omit<ShareCreateReq, "images">) => {
     try {
-      // 업로드 중이거나 draftKey 없는 항목 있으면 막기
       if (images.some((p) => p.uploading)) {
         toast("이미지 업로드가 끝나길 기다려주세요.");
         return;
       }
-      if (images.some((p) => !p.draftKey)) {
-        toast.error("일부 이미지의 업로드가 완료되지 않았어요.");
+      if (images.some((p) => p.isNew && !p.draftKey)) {
+        toast.error("일부 새 이미지의 업로드가 완료되지 않았어요.");
         return;
       }
 
-      const payload: ShareCreateReq = {
-        ...values,
-        images:
-          images.length === 0
-            ? []
-            : images.map((p, idx) => ({
-                seq: idx, // 현재 진열 순서를 서버 seq로 사용 (0이 대표)
-                draftKey: p.draftKey!, // presign 때 받은 키
-              })),
-      };
+      const existingCount = images.filter((p) => !p.isNew).length;
 
-      await createShare(payload);
+      const newDrafts = images
+        .filter((p) => p.isNew)
+        .map((p, i) => ({
+          seq: existingCount + i, // 핵심: 기존 뒤에 이어 붙이기
+          draftKey: p.draftKey!, // presign에서 받은 draftKey만 보냄
+        }));
+
+      // const imageItems = images.map((p, idx) => ({
+      //   seq: idx,
+      //   draftKey: p.draftKey!, // 기존은 objectKey, 신규는 presign draftKey
+      // }));
+
+      // console.log(imageItems);
+      const payload: ShareCreateReq =
+        newDrafts.length > 0 ? { ...values, images: newDrafts } : { ...values };
+
+      await updateShare(shareId, payload);
 
       toast("나눔이 성공적으로 업로드되었어요!", {
         icon: <FreshIcon className="w-[20px] h-[20px]" />,
@@ -176,20 +221,43 @@ export const RegisterGive = () => {
           title: "subhead-03 text-white",
         },
       });
-      navigate(ROUTES.HOME);
-    } catch (err) {
-      console.error(err);
-      toast.error("업로드 중 문제가 발생했어요.");
+      navigate(`/sharelist/${id}`);
+    } catch (e) {
+      console.log(e);
+      toast.error("수정 중 문제가 발생했어요.");
     }
+  };
+  if (isLoading)
+    return (
+      <RegisterLayout header={"나눔 수정하기"}>
+        <div className="p-5">불러오는 중…</div>
+      </RegisterLayout>
+    );
+  if (isError || !share)
+    return (
+      <RegisterLayout header={"나눔 수정하기"}>
+        <div className="p-5">데이터를 불러오지 못했어요.</div>
+      </RegisterLayout>
+    );
+
+  const initialValues: Omit<ShareCreateReq, "images"> = {
+    itemName: share.itemName ?? "",
+    brand: share.brand ?? "",
+    quantity: share.quantity ?? 0,
+    description: share.description ?? "",
+    expirationDate: share.expirationDate ?? "",
+    storageType: share.storageType,
+    freshCertified: share.freshCertified ?? false,
+    openTime: share.openTime ?? "",
+    closeTime: share.closeTime ?? "",
   };
 
   return (
-    <RegisterLayout header={"나눠주기"}>
+    <RegisterLayout header={"나눔 수정하기"}>
       <div className="flex flex-col px-5 pt-11 gap-5">
-        {/* 사진 section */}
+        {/* 사진 영역 */}
         <div className="flex flex-col gap-4">
           <div className="flex flex-row gap-2 relative">
-            {/* 카메라 버튼 */}
             <button
               type="button"
               onClick={openPicker}
@@ -201,8 +269,8 @@ export const RegisterGive = () => {
                 <span>/{MAX}</span>
               </div>
             </button>
+
             <div className="flex flex-row gap-2 overflow-x-auto flex-nowrap pb-1">
-              {/* 선택된 사진 썸네일들 */}
               {images.map((img) => (
                 <div
                   key={img.id}
@@ -226,7 +294,7 @@ export const RegisterGive = () => {
             </div>
           </div>
 
-          {/* 이미지 파일 입력 */}
+          {/* 파일 입력 */}
           <input
             ref={fileInputRef}
             type="file"
@@ -255,6 +323,7 @@ export const RegisterGive = () => {
               onClick={() => setIsToolTipOpen(false)}
             />
           )}
+
           <button
             className="w-fit flex flex-row px-[14px] py-[7px] mt-3 subhead-03 items-center bg-blue-light text-blue-normal rounded-xl gap-[6px]"
             onClick={handleAIClick}
@@ -263,9 +332,15 @@ export const RegisterGive = () => {
             AI로 작성하기
           </button>
         </div>
-        {/* 입력폼 */}
-        <GiveRegisterForm onSubmit={handleSubmit} />
+
+        {/* 폼 */}
+        <GiveRegisterForm
+          onSubmit={handleSubmit}
+          initialValues={initialValues}
+          buttonText="수정하기"
+        />
       </div>
+
       <AIGeneratingModal
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}

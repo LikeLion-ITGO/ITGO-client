@@ -4,7 +4,6 @@ import type { ShareItem } from "@/types/share";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 
-
 export const ConfirmedCardSlider = ({
   shareItems = [],
   onActiveIndexChange,
@@ -69,46 +68,48 @@ export const ConfirmedCardSlider = ({
         onScroll={handleScroll}
         className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar scroll-smooth gap-4"
       >
-        {shareItems?.map((share) => (
-          <div
-            key={share.shareId}
-            className="min-w-full flex-shrink-0 snap-center "
-            onClick={() => {
-              navigate(
-                ROUTES.SHAREDETAIL.replace(":id", String(share.shareId))
-              );
-            }}
-          >
+        {shareItems
+          ?.filter((share) => !!share && typeof share.shareId !== "undefined")
+          .map((share) => (
             <div
-              className="flex flex-row p-5 bg-white border border-gray-100 rounded-3xl gap-4"
-              style={{ boxShadow: "0px 2px 12px rgba(0, 0, 0, 0.05)" }}
+              key={share.shareId}
+              className="min-w-full flex-shrink-0 snap-center "
+              onClick={() => {
+                navigate(
+                  ROUTES.SHAREDETAIL.replace(":id", String(share.shareId))
+                );
+              }}
             >
-              <img
-                src={share.primaryImageUrl || MailMilk}
-                alt={share.itemName}
-                className="w-16 h-16 rounded-full object-cover"
-              />
-              <div className="flex flex-row flex-1 justify-between">
-                <div className="flex flex-col gap-3">
-                  <div className="flex flex-col gap-[6px]">
-                    <span className="subhead-02 text-gray-700">
-                      {share.brand}
-                    </span>
-                    <span className="headline-01 text-gray-900">
-                      {share.itemName} {share.quantity}개
+              <div
+                className="flex flex-row p-5 bg-white border border-gray-100 rounded-3xl gap-4"
+                style={{ boxShadow: "0px 2px 12px rgba(0, 0, 0, 0.05)" }}
+              >
+                <img
+                  src={share.primaryImageUrl || MailMilk}
+                  alt={share.itemName}
+                  className="w-16 h-16 rounded-full object-cover"
+                />
+                <div className="flex flex-row flex-1 justify-between">
+                  <div className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-[6px]">
+                      <span className="subhead-02 text-gray-700">
+                        {share.brand}
+                      </span>
+                      <span className="headline-01 text-gray-900">
+                        {share.itemName} {share.quantity}개
+                      </span>
+                    </div>
+                    <span className="body-01 text-gray-500">
+                      {formatDate(share.expirationDate)}까지
                     </span>
                   </div>
-                  <span className="body-01 text-gray-500">
-                    {formatDate(share.expirationDate)}까지
+                  <span className="caption text-gray-200">
+                    {getTimeAgo(share.regDate)}
                   </span>
                 </div>
-                <span className="caption text-gray-200">
-                  {getTimeAgo(share.regDate)}
-                </span>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
       </div>
       {shareItems?.length > 1 && (
         <>

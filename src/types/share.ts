@@ -11,6 +11,13 @@ export interface ShareItem {
   primaryImageUrl?: string;
   claimTotalCount: number;
 }
+export interface SharePage {
+  content: ShareItem[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+}
 
 //ShareList용...
 export interface ShareResponse {
@@ -51,8 +58,21 @@ export type PresignRequestItem = {
 export type PresignResponseItem = {
   seq: number;
   putUrl: string;
-  objectKey: string; // shares/{shareId}/images/{seq}.{uuid}.{ext}
-  publicUrl: string; // CDN 접근 URL
+  previewUrl: string;
+  draftKey: string;
+};
+
+export type ShareCreateReq = {
+  itemName: string;
+  brand?: string;
+  quantity: number;
+  description?: string;
+  expirationDate: string;
+  storageType: "REFRIGERATED" | "FROZEN" | "ROOM_TEMPERATURE";
+  freshCertified: boolean;
+  openTime: string;
+  closeTime: string;
+  images?: { seq: number; draftKey: string }[];
 };
 
 export type ShareImage = {
@@ -60,6 +80,27 @@ export type ShareImage = {
   objectKey: string;
   publicUrl: string;
 };
+
+// API 원본 응답(Detail)
+export interface ShareDetailApi {
+  shareId: number;
+  itemName: string;
+  brand: string;
+  quantity: number;
+  description: string;
+  expirationDate: string;
+  storageType: "REFRIGERATED" | "FROZEN" | "ROOM_TEMPERATURE";
+  freshCertified: boolean;
+  openTime: string;
+  closeTime: string;
+  images?: ShareImage | ShareImage[]; // 단건 또는 배열
+  roadAddress: string;
+  regDate: string;
+
+  storeName: string;
+  storeImageUrl: string;
+  storeId: number;
+}
 
 export type ShareDetail = {
   shareId: number;
