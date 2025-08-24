@@ -37,7 +37,6 @@ export default function Manage({ status }: { status: string }) {
 
   useEffect(() => {
     setSelectedTab(status === "receive" ? 0 : 1);
-    console.log(shareItems);
   }, [status]);
 
   if (isWishLoading) return <div className="p-4">불러오는 중…</div>;

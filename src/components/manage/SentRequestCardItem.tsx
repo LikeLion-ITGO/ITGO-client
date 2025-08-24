@@ -36,7 +36,7 @@ export const SentRequestCardItem = ({
   brand?: string;
   itemName?: string;
   quantity?: number;
-  minutesAgo?: number;
+  minutesAgo?: string;
   distanceKm?: number;
   openTime?: string | LocalTime;
   closeTime?: string | LocalTime;
@@ -164,7 +164,7 @@ export const SentRequestCardItem = ({
                   {itemName} {quantity && ` ${quantity}개`}
                 </span>
               </div>
-              <span className="caption text-gray-200">{minutesAgo}분 전</span>
+              <span className="caption text-gray-200">{minutesAgo}</span>
             </div>
             <div className="flex flex-col gap-2 body-01 text-gray-500">
               <div className="flex flex-row gap-2">
