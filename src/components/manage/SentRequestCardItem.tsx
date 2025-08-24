@@ -36,7 +36,7 @@ export const SentRequestCardItem = ({
   brand?: string;
   itemName?: string;
   quantity?: number;
-  minutesAgo?: number;
+  minutesAgo?: string;
   distanceKm?: number;
   openTime?: string | LocalTime;
   closeTime?: string | LocalTime;
@@ -131,6 +131,7 @@ export const SentRequestCardItem = ({
     <div
       className="relative flex flex-col p-5 bg-white border border-gray-100 rounded-3xl gap-6"
       style={{ boxShadow: "0px 2px 12px rgba(0, 0, 0, 0.05)" }}
+      onClick={() => navigate(`/sharelist/${shareId}`)}
     >
       <span
         className="absolute top-0 left-0 w-[81px] h-[25px] flex flex-row items-center justify-center text-[10px] font-bold text-white rounded-br-lg rounded-tl-[24px] gap-1"
@@ -164,7 +165,7 @@ export const SentRequestCardItem = ({
                   {itemName} {quantity && ` ${quantity}개`}
                 </span>
               </div>
-              <span className="caption text-gray-200">{minutesAgo}분 전</span>
+              <span className="caption text-gray-200">{minutesAgo}</span>
             </div>
             <div className="flex flex-col gap-2 body-01 text-gray-500">
               <div className="flex flex-row gap-2">

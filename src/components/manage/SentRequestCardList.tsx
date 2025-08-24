@@ -1,16 +1,17 @@
+import { formatTimeAgo } from "@/types/time";
 import { SentRequestCardItem } from "./SentRequestCardItem";
 import type { ClaimItem } from "@/types/claim";
 
 export const SentRequestCardList = ({ claims }: { claims?: ClaimItem[] }) => {
-  const getTimeAgo = (dateStr?: string): number => {
-    if (!dateStr) return 0;
-    const date = new Date(dateStr);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMinutes = Math.floor(diffMs / 1000 / 60);
+  // const getTimeAgo = (dateStr?: string): number => {
+  //   if (!dateStr) return 0;
+  //   const date = new Date(dateStr);
+  //   const now = new Date();
+  //   const diffMs = now.getTime() - date.getTime();
+  //   const diffMinutes = Math.floor(diffMs / 1000 / 60);
 
-    return diffMinutes;
-  };
+  //   return diffMinutes;
+  // };
 
   return (
     <>
@@ -22,7 +23,7 @@ export const SentRequestCardList = ({ claims }: { claims?: ClaimItem[] }) => {
             brand={claim.share?.brand}
             itemName={claim.share?.itemName}
             quantity={claim.share?.quantity}
-            minutesAgo={getTimeAgo(claim.share?.regDate)}
+            minutesAgo={formatTimeAgo(claim?.regDate)}
             distanceKm={claim.distanceKm}
             openTime={claim.share?.openTime}
             closeTime={claim.share?.closeTime}
@@ -30,6 +31,7 @@ export const SentRequestCardList = ({ claims }: { claims?: ClaimItem[] }) => {
             primaryImageUrl={claim.share?.primaryImageUrl}
             status={claim.status}
             tradeId={claim.tradeId}
+            shareId={claim.share?.shareId}
           />
         ))}
       </div>
