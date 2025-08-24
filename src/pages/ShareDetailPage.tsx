@@ -32,13 +32,18 @@ export const ShareDetailPage = () => {
   const [status, setStatus] = useState<ShareStatus>("open");
   const [openDeleteModal, setOpenDeleteModal] = useState<boolean>(false);
 
-  const isOwner: boolean = true; //나중에
-
   const { data: share } = useQuery<ShareDetail>({
     queryKey: ["share", shareId],
     queryFn: () => getShareById(shareId),
     enabled: !!shareId,
   });
+
+  const storeRaw = localStorage.getItem("store-id-storage");
+  const myStoreId = storeRaw ? JSON.parse(storeRaw).state.storeId : null;
+
+  console.log("내 storeId:", myStoreId, "공유 storeId:", share?.storeId);
+
+  const isOwner = share?.storeId === myStoreId;
 
   console.log(share);
   useEffect(() => setStatus("open"), []); // 나중에 연결할때 수정하깅
