@@ -9,7 +9,7 @@ export interface PageData<T> {
   totalPages: number;
   size: number;
   content: T[];
-  number?: number;
+  number: number;
   first: boolean;
   last: boolean;
   empty: boolean;

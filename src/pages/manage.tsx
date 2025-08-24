@@ -5,6 +5,9 @@ import SentRequestContent from "@/components/manage/SentRequestContent";
 import { ShareStatus } from "@/constants/status";
 import { useWishInfinite } from "@/hooks/useWishInfinite";
 import { useShareInfinite } from "@/hooks/useShareInfinite";
+// import type { InfiniteData } from "@tanstack/react-query";
+// import type { PageData } from "@/types/api";
+// import type { ShareItem } from "@/types/share";
 
 export default function Manage({ status }: { status: string }) {
   const [selectedTab, setSelectedTab] = useState(0);
@@ -24,7 +27,13 @@ export default function Manage({ status }: { status: string }) {
   } = useShareInfinite(20);
 
   const wishItems = wish?.flat ?? [];
+
+  // const sharePages = (share as InfiniteData<PageData<ShareItem>> | undefined)
+  //   ?.pages;
+
   const shareItems = share?.flat ?? [];
+  // const shareItems: ShareItem[] =
+  //   sharePages?.flatMap((p) => p.content ?? []) ?? [];
 
   useEffect(() => {
     setSelectedTab(status === "receive" ? 0 : 1);

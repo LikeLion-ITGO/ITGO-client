@@ -22,6 +22,7 @@ export async function fetchReceivedClaims(
   );
 
   const pageData = res.data.data;
+
   return {
     ...pageData,
     page,
@@ -37,6 +38,7 @@ export async function fetchSentClaims(wishId: number, page: number, size = 10) {
   );
 
   const pageData = res.data.data;
+
   return {
     ...pageData,
     page,

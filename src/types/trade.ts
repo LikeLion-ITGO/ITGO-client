@@ -42,5 +42,11 @@ export interface TradeItem {
   receiverOpenTime?: string;
   receiverCloseTime?: string;
   receiverPhoneNumber?: string;
-
+  storeImageUrl: string;
+  giverStoreName?: string;
+  receiverStoreName?: string;
+  itemImageUrl: string;
+  AcceptedAt: string;
+  completedAt?: string;
+  canceledAt?: string;
 }

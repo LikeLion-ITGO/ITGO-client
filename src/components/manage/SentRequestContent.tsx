@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 import { useSentClaims } from "@/hooks/useSentClaims";
 import type { WishItem } from "@/types/wish";
+import { formatTimeAgo } from "@/types/time";
 
 export default function SentRequestContent({
   wish,
@@ -23,26 +24,30 @@ export default function SentRequestContent({
 
   const claims = data?.content ?? [];
 
-  const getTimeAgo = (dateStr?: string) => {
-    if (!dateStr) return "";
-    const date = new Date(dateStr);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMinutes = Math.floor(diffMs / 1000 / 60);
+  // const getTimeAgo = (dateStr?: string) => {
+  //   if (!dateStr) return "";
+  //   const date = new Date(dateStr);
+  //   const now = new Date();
+  //   const diffMs = now.getTime() - date.getTime();
 
-    if (diffMinutes < 60) {
-      return `${diffMinutes}분 전`;
-    }
-    const diffHours = Math.floor(diffMinutes / 60);
-    if (diffHours < 24) {
-      return `${diffHours}시간 전`;
-    }
-    const diffDays = Math.floor(diffHours / 24);
-    return `${diffDays}일 전`;
-  };
+  //   const diffMinutes = Math.floor(diffMs / 1000 / 60);
+
+  //   console.log(diffMs);
+  //   console.log(diffMinutes);
+  //   if (diffMinutes < 60) {
+  //     return `${diffMinutes}분 전`;
+  //   }
+  //   const diffHours = Math.floor(diffMinutes / 60);
+  //   if (diffHours < 24) {
+  //     return `${diffHours}시간 전`;
+  //   }
+  //   const diffDays = Math.floor(diffHours / 24);
+  //   return `${diffDays}일 전`;
+  // };
 
   const visibleClaims = claims?.filter((c) => c.status !== "CANCELED");
 
+  console.log(">>", wish?.regDate);
   return (
     <div className="flex flex-col px-5 pt-6 gap-16">
       {receive_status === ShareStatus.NO_REQUEST ? (
@@ -83,7 +88,7 @@ export default function SentRequestContent({
                 </span>
               </div>
               <span className="caption text-gray-200 whitespace-nowrap">
-                {getTimeAgo(wish?.regDate)}
+                {wish?.regDate ? formatTimeAgo(wish?.regDate) : ""}
               </span>
             </div>
           </div>

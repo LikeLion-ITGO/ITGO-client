@@ -9,6 +9,8 @@ import type { ShareItem } from "@/types/share";
 import { useState } from "react";
 import { fetchReceivedClaims } from "@/apis/claim";
 import { useQuery } from "@tanstack/react-query";
+import type { PageData } from "@/types/api";
+import type { ClaimItem } from "@/types/claim";
 
 export default function ReceivedRequestContent({
   give_status,
@@ -24,14 +26,18 @@ export default function ReceivedRequestContent({
   const activeShare = shareItems[activeIndex];
 
   // 활성 shareId의 클레임 조회
-  const { data } = useQuery({
+  const { data } = useQuery<PageData<ClaimItem>>({
     queryKey: ["received-claims", activeShare?.shareId],
     queryFn: () => fetchReceivedClaims(activeShare!.shareId, 0, 50),
     enabled: !!activeShare?.shareId,
     staleTime: 30_000,
   });
 
-  const visibleClaims = data?.content.filter((c) => c.status !== "CANCELED");
+  const visibleClaims: ClaimItem[] = (data?.content ?? []).filter(
+    (c) => c.status !== "CANCELED"
+  );
+  console.log("active", activeShare);
+  console.log("data", data);
 
   return (
     <div className="flex flex-col px-5 pt-6 gap-16">
