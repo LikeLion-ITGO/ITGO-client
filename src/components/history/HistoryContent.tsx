@@ -1,4 +1,3 @@
-import MailMilk from "@/assets/images/mail-milk.png";
 import { Clock, MapPin } from "lucide-react";
 import { Button } from "../ui/button";
 import Phone from "@/assets/icons/history/phone.svg?react";
@@ -7,6 +6,7 @@ import CheckCircle from "@/assets/icons/history/check-circle.svg?react";
 import type { TradeItem } from "@/types/trade";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { completeTrade } from "@/apis/trade";
+import { formatTimeAgo } from "@/types/time";
 
 interface HistoryContentProps {
   status: string;
@@ -67,7 +67,9 @@ export const HistoryContent = ({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-row justify-between">
-        <span className="body-01 text-gray-500">2025.11.11</span>
+        <span className="body-01 text-gray-500">
+          {trade.AcceptedAt.split("T")[0].replace("-", ".").replace("-", ".")}
+        </span>
         <span
           className={`subhead-03 ${
             status === "COMPLETED" ? "text-gray-500" : "text-blue-normal-hover"
@@ -82,8 +84,8 @@ export const HistoryContent = ({
           style={{ boxShadow: "0px 2px 12px rgba(0, 0, 0, 0.05)" }}
         >
           <img
-            src={MailMilk}
-            alt="매일 우유"
+            src={trade.itemImageUrl}
+            alt={trade.itemName}
             className="h-[90px] w-[90px] rounded-full"
           />
           <div className="flex flex-col flex-1 gap-3">
@@ -96,12 +98,14 @@ export const HistoryContent = ({
                   {trade.wishQuantity}개
                 </span>
               </div>
-              <div className="caption text-gray-200">5분 전</div>
+              <div className="caption text-gray-200">
+                {formatTimeAgo(trade.AcceptedAt)}
+              </div>
             </div>
 
             <div className="flex flex-col gap-2">
               <div className="body-01 text-gray-500 flex flex-row items-center gap-2">
-                <span>1km</span>
+                <span>{trade.distanceKm}km</span>
                 <span className="w-[1px] h-[10px] bg-[#D9D9D9]"></span>
                 <span className="flex flex-row items-center gap-1">
                   <Clock size={16} />
@@ -123,11 +127,13 @@ export const HistoryContent = ({
           style={{ boxShadow: "0px 2px 12px rgba(0, 0, 0, 0.05)" }}
         >
           <div className="flex flex-col flex-1 gap-4">
-            <div className="headline-01 text-gray-900">{trade.brand}</div>
+            <div className="headline-01 text-gray-900">
+              {trade.giverStoreName ?? trade.receiverStoreName}
+            </div>
             <div className="flex flex-col body-01 gap-[6px] text-gray-600">
               <span className="flex flex-row items-center gap-[6px]">
                 <MapPin size={16} />
-                {roadAddress}
+                {(roadAddress ?? "").replace(/\s*\(.*/, "")}
               </span>
               <span className="flex flex-row items-center tracking--2 gap-[6px]">
                 <Clock size={16} />
@@ -140,8 +146,8 @@ export const HistoryContent = ({
             </div>
           </div>
           <img
-            src={MailMilk}
-            alt="매일 우유"
+            src={trade.storeImageUrl}
+            alt={trade.giverStoreName ?? trade.receiverStoreName}
             className="h-[90px] w-[90px] rounded-full"
           />
         </div>

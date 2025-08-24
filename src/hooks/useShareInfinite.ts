@@ -5,7 +5,7 @@ import type { ApiResponse, PageData } from "@/types/api";
 
 export function useShareInfinite(size = 20) {
   return useInfiniteQuery<
-    ApiResponse<PageData<ShareManageItem>>, // fetchSharePage 반환
+    ApiResponse<PageData<ShareManageItem>>,
     Error,
     {
       pages: PageData<ShareManageItem>[];
