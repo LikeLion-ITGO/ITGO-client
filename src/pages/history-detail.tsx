@@ -12,7 +12,7 @@ import { ShareCancelModal } from "@/components/history/ShareCancelModal";
 import { toast } from "sonner";
 import CheckCircle from "@/assets/icons/history/check-circle.svg?react";
 import Stars from "@/assets/icons/history/stars.svg?react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { cancelTrade, completeTrade, getTradeDetail } from "@/apis/trade";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { TradeDetail } from "@/types/trade";
@@ -25,6 +25,7 @@ export const HistoryDetail = () => {
   const tradeId = Number(id);
   const qc = useQueryClient();
 
+  const navigate = useNavigate();
   const {
     data: trade,
     isLoading,
@@ -204,7 +205,10 @@ export const HistoryDetail = () => {
             <PresentSmall />
             나눔하는 가게
           </span>
-          <div className="flex flex-col gap-2 pl-7">
+          <div
+            className="flex flex-col gap-2 pl-7"
+            onClick={() => navigate(`/store-info/${trade.giver.storeId}`)}
+          >
             <span className="headline-01 flex flex-row items-center gap-2">
               {trade.giver.storeName} <ChevronRight />
             </span>
@@ -234,7 +238,10 @@ export const HistoryDetail = () => {
             <HeartSmall />
             나눔하는 가게
           </span>
-          <div className="flex flex-col gap-2 pl-7">
+          <div
+            className="flex flex-col gap-2 pl-7"
+            onClick={() => navigate(`/store-info/${trade.receiver.storeId}`)}
+          >
             <span className="headline-01 flex flex-row items-center gap-2">
               {trade.receiver.storeName}
               <ChevronRight />

@@ -19,6 +19,30 @@ export interface SharePage {
   number: number;
 }
 
+//manage 용
+export interface SharManagePage {
+  content: ShareManageItem[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+}
+
+export interface ShareManageItem {
+  shareId: number;
+  itemName: string;
+  brand: string;
+  quantity: number;
+  expirationDate: string;
+  openTime: string;
+  closeTime: string;
+  description: string;
+  regDate: string;
+  primaryImageUrl?: string;
+  claimTotalCount: number;
+  freshCertified: boolean;
+}
+
 //ShareList용...
 export interface ShareResponse {
   shareId: number;
