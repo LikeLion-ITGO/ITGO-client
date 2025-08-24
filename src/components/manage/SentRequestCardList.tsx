@@ -31,6 +31,7 @@ export const SentRequestCardList = ({ claims }: { claims?: ClaimItem[] }) => {
             primaryImageUrl={claim.share?.primaryImageUrl}
             status={claim.status}
             tradeId={claim.tradeId}
+            shareId={claim.share?.shareId}
           />
         ))}
       </div>

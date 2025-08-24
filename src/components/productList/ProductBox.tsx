@@ -2,7 +2,7 @@ import { Button } from "../ui/button";
 // import sampleImg from "../../assets/images/sampleMilk.png";
 import timeIcon from "../../assets/icons/home/timeIcon.svg";
 import type { ShareResponse } from "@/types/share";
-import { formatLocalTime } from "@/types/time";
+import { formatLocalTime, formatTimeAgo } from "@/types/time";
 import { useNavigate } from "react-router-dom";
 
 interface productType {
@@ -13,6 +13,9 @@ interface productType {
 export const ProductBox = ({ item, type = "default" }: productType) => {
   const navigate = useNavigate();
   const id = item.shareId;
+
+  console.log(">>>>.", item.regDate);
+  console.log(item);
   return (
     <div
       onClick={() => navigate(`/sharelist/${id}`)}
@@ -60,7 +63,9 @@ export const ProductBox = ({ item, type = "default" }: productType) => {
                 {item.itemName} {item.quantity}개
               </p>
             </div>
-            <div className="caption text-[#BCC3CE] w-[30px]">5분 전</div>
+            <div className="caption text-[#BCC3CE] w-[30px]">
+              {formatTimeAgo(item.regDate)}
+            </div>
           </div>
           <div className=" flex flex-col body-01 gap-[8px] text-[#777A7F]">
             {type != "simple" && (
