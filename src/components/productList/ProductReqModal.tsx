@@ -1,13 +1,24 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { TimeInput } from "../common/TimeInput";
 import { Checkbox } from "@radix-ui/react-checkbox";
+// import type { ProductReqForm } from "@/apis/share";
+
+export type ProductReqForm = {
+  title: string;
+  quantity: number;
+  description: string;
+  openTime: string; // "HH:mm"
+  closeTime: string; // "HH:mm"
+};
 
 interface ProductReqModalProps {
   open: boolean;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm: (payload: ProductReqForm) => Promise<void>;
+  defaultOpenTime: string; // 예: "10:00"
+  defaultCloseTime: string; // 예: "19:00"
 }
 
 const MAX_DESC_LEN = 500;
@@ -16,6 +27,8 @@ export const ProductReqModal = ({
   open,
   onClose,
   onConfirm,
+  defaultOpenTime,
+  defaultCloseTime,
 }: ProductReqModalProps) => {
   const [title, setTitle] = useState("");
   const [qty, setQty] = useState<string>("");
@@ -24,17 +37,29 @@ export const ProductReqModal = ({
   const [endTime, setEndTime] = useState("");
   const [storeTimeChecked, setStoreTimeChecked] = useState(false);
 
+  // 모달 열릴 때마다 초기화
+  useEffect(() => {
+    setTitle("");
+    setQty("");
+    setDesc("");
+    setStartTime("");
+    setEndTime("");
+    setStoreTimeChecked(false);
+  }, [open]);
+
   if (!open) return null;
 
-  // 500자 제한 + 카운터
-  const handleDescChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const next = e.target.value.slice(0, MAX_DESC_LEN);
-    setDesc(next);
-  };
+  const handleDescChange = (e: React.ChangeEvent<HTMLTextAreaElement>) =>
+    setDesc(e.target.value.slice(0, MAX_DESC_LEN));
 
   const handleStoreTimeToggle = (checked: boolean) => {
-    setStoreTimeChecked(!!checked);
-    if (checked) {
+    const on = !!checked;
+    setStoreTimeChecked(on);
+    if (on) {
+      // 가게 운영시간으로 자동 채우기
+      setStartTime(defaultOpenTime || "");
+      setEndTime(defaultCloseTime || "");
+    } else {
       setStartTime("");
       setEndTime("");
     }
@@ -48,6 +73,24 @@ export const ProductReqModal = ({
     qty.trim().length > 0 &&
     Number(qty.replace(/[^0-9]/g, "")) > 0 &&
     isTimeValid;
+
+  const submit = () => {
+    const quantity = Number(qty.replace(/[^0-9]/g, "")) || 0;
+
+    const openTime = storeTimeChecked
+      ? defaultOpenTime || startTime
+      : startTime;
+    const closeTime = storeTimeChecked ? defaultCloseTime || endTime : endTime;
+
+    onConfirm({
+      title: title.trim(),
+      quantity,
+      description: desc.trim(),
+      openTime,
+      closeTime,
+    });
+    onClose();
+  };
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/20">
@@ -68,7 +111,7 @@ export const ProductReqModal = ({
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="제목을 입력하세요"
                 className="body-02 !h-11 text-gray-900 border border-gray-200 rounded-lg px-4 py-[15px] placeholder:text-gray-400
-                  focus:outline-none focus:ring-0 focus:ring-transparent focus-visible:ring-0 focus-visible:border-blue-normal"
+                  focus:outline-none focus:ring-0 focus-visible:border-blue-normal"
               />
             </div>
 
@@ -81,29 +124,27 @@ export const ProductReqModal = ({
                 onChange={(e) => setQty(e.target.value.replace(/[^0-9]/g, ""))}
                 placeholder="수량을 입력하세요"
                 className="body-02 !h-11 text-gray-900 border border-gray-200 rounded-lg px-4 py-[15px] placeholder:text-gray-400
-                  focus:outline-none focus:ring-0 focus:ring-transparent focus-visible:ring-0 focus-visible:border-blue-normal"
+                  focus:outline-none focus:ring-0 focus-visible:border-blue-normal"
               />
             </div>
 
             {/* 설명 (선택, 500자 제한) */}
             <div className="subhead-02 text-gray-700 flex flex-col gap-4">
               <div className="flex justify-between">
-                <div>
-                  <span>
-                    설명 <span className="text-gray-400">(선택)</span>
-                  </span>
-                </div>
-                <div className="text-right text-xs text-gray-400">
+                <span>
+                  설명 <span className="text-gray-400">(선택)</span>
+                </span>
+                <span className="text-xs text-gray-400">
                   <span className="text-[#3CADFF]">{desc.length}</span>/
                   {MAX_DESC_LEN}
-                </div>
+                </span>
               </div>
               <textarea
                 value={desc}
                 onChange={handleDescChange}
                 maxLength={MAX_DESC_LEN}
-                placeholder="사장님에게 물품에 대해 설명해주세요. (ex. 물품이 필요한 이유, 간절함 어필 등)"
-                className="body-02 h-[100px] p-4 text-gray-900 placeholder:text-gray-400 border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-0 focus:border-blue-normal"
+                placeholder="사장님에게 필요한 이유 등 설명을 적어주세요 (최대 500자)"
+                className="body-02 h-[100px] p-4 text-gray-900 placeholder:text-gray-400 border border-gray-200 rounded-lg resize-none focus:outline-none focus:border-blue-normal"
               />
             </div>
 
@@ -118,7 +159,7 @@ export const ProductReqModal = ({
                     placeholder="10:00"
                     disabled={storeTimeChecked}
                     className={`body-02 w-full !h-11 border border-gray-200 rounded-lg px-4 py-[15px]
-                      placeholder:text-gray-400 focus:outline-none focus:ring-0 focus-visible:border-blue-normal
+                      placeholder:text-gray-400 focus:outline-none focus-visible:border-blue-normal
                       ${
                         storeTimeChecked
                           ? "bg-gray-100 text-gray-200"
@@ -136,7 +177,7 @@ export const ProductReqModal = ({
                     placeholder="19:00"
                     disabled={storeTimeChecked}
                     className={`body-02 w-full !h-11 border border-gray-200 rounded-lg px-4 py-[15px]
-                      placeholder:text-gray-400 focus:outline-none focus:ring-0 focus-visible:border-blue-normal
+                      placeholder:text-gray-400 focus:outline-none focus-visible:border-blue-normal
                       ${
                         storeTimeChecked
                           ? "bg-gray-100 text-gray-200"
@@ -173,12 +214,8 @@ export const ProductReqModal = ({
           </Button>
           <Button
             disabled={!isValid}
-            onClick={() => {
-              onConfirm();
-              onClose();
-            }}
-            className={`rounded-[12px] flex-1 h-[48px] text-white font-semibold text-[16px]
-              bg-[#3CADFF] disabled:opacity-100`}
+            onClick={submit}
+            className="rounded-[12px] flex-1 h-[48px] text-white font-semibold text-[16px] bg-[#3CADFF] disabled:opacity-100"
           >
             요청하기
           </Button>

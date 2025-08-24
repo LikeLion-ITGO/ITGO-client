@@ -6,6 +6,9 @@ import { formatLocalTime, formatTimeAgo } from "@/types/time";
 import { useNavigate } from "react-router-dom";
 import { ProductReqModal } from "./ProductReqModal";
 import { useState } from "react";
+import { claimQuick } from "@/apis/share";
+import { toast } from "sonner";
+import axios from "axios";
 
 interface productType {
   type?: "default" | "simple" | "noBtn";
@@ -16,6 +19,38 @@ export const ProductBox = ({ item, type = "default" }: productType) => {
   const navigate = useNavigate();
   const id = item.shareId;
   const [openReqModal, setOpenReqModal] = useState(false);
+
+  type ApiErrorBody = {
+    code?: string;
+    message?: string;
+    error?: string;
+    details?: unknown;
+  };
+
+  // Object 체크
+  function isRecord(v: unknown): v is Record<string, unknown> {
+    return typeof v === "object" && v !== null;
+  }
+
+  // 에러 메시지
+  function getApiErrorMessage(err: unknown): string {
+    if (axios.isAxiosError<ApiErrorBody>(err)) {
+      const data = err.response?.data;
+      if (isRecord(data)) {
+        const msg =
+          (typeof data.message === "string" && data.message) ||
+          (typeof data.error === "string" && data.error);
+        if (msg) return msg;
+      }
+
+      const status = err.response?.status;
+      if (status) return `요청이 실패했어요 (HTTP ${status}).`;
+      return "네트워크 요청에 실패했어요.";
+    }
+
+    if (err instanceof Error && err.message) return err.message;
+    return "알 수 없는 오류가 발생했어요.";
+  }
 
   console.log(">>>>.", item.regDate);
   console.log(item);
@@ -67,7 +102,7 @@ export const ProductBox = ({ item, type = "default" }: productType) => {
                   {item.itemName} {item.quantity}개
                 </p>
               </div>
-              <div className="caption text-[#BCC3CE] w-[30px]">
+              <div className="caption text-[#BCC3CE] min-w-[33px] max-w-[50px]">
                 {formatTimeAgo(item.regDate)}
               </div>
             </div>
@@ -104,9 +139,28 @@ export const ProductBox = ({ item, type = "default" }: productType) => {
       <ProductReqModal
         open={openReqModal}
         onClose={() => setOpenReqModal(false)}
-        onConfirm={() => {
-          //
-          setOpenReqModal(false);
+        defaultOpenTime={item.openTime.slice(0, 5)} // "HH:mm"
+        defaultCloseTime={item.closeTime.slice(0, 5)} // "HH:mm"
+        onConfirm={async (form) => {
+          try {
+            const payload = {
+              shareId: id,
+              quantity: Number(form.quantity),
+              openTime: form.openTime.trim(),
+              closeTime: form.closeTime.trim(),
+              title: form.title.trim(),
+              description: (form.description ?? "").trim(),
+            };
+
+            await claimQuick(payload);
+            toast.success("요청이 접수되었습니다!");
+          } catch (err: unknown) {
+            const msg = getApiErrorMessage(err);
+            console.error("claimQuick error:", err);
+            toast.error(msg);
+          } finally {
+            setOpenReqModal(false);
+          }
         }}
       />
     </div>

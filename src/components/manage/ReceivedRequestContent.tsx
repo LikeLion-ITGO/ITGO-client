@@ -40,7 +40,7 @@ export default function ReceivedRequestContent({
   console.log("data", data);
 
   return (
-    <div className="flex flex-col px-5 pt-6 gap-16">
+    <div className="flex flex-col px-5 pt-6 gap-16 pb-[30px]">
       {give_status === ShareStatus.NO_REQUEST ? (
         <div className="flex flex-col items-center gap-4 pt-[171px]">
           <div className="flex flex-col items-center headline-long-02 text-gray-900">
