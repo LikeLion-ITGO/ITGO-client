@@ -36,8 +36,6 @@ export default function ReceivedRequestContent({
   const visibleClaims: ClaimItem[] = (data?.content ?? []).filter(
     (c) => c.status !== "CANCELED"
   );
-  console.log("active", activeShare);
-  console.log("data", data);
 
   return (
     <div className="flex flex-col px-5 pt-6 gap-16">
