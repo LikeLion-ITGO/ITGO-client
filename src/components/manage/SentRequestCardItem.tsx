@@ -181,9 +181,7 @@ export const SentRequestCardItem = ({
             <div className="flex flex-col gap-2 body-01 text-gray-500">
               <div className="flex flex-row gap-2">
                 <span>{distanceKm}km</span>
-                <span className="w-[1px] h-[10px] bg-[#D9D9D9]">
-                  {formatAgo(minutesAgo)}
-                </span>
+                <span className="w-[1px] h-[10px] bg-[#D9D9D9]"></span>
                 <span className="flex flex-row items-center gap-1">
                   <Clock size={16} />
                   <span>
