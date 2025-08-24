@@ -25,3 +25,16 @@ export interface ClaimAccept {
   claimAt: string;
   decideAt: string;
 }
+
+export type CreateClaimReq = {
+  wishId: number;
+  shareId: number;
+};
+export type CreateClaimRes = {
+  data: {
+    claimId: number;
+    wishId: number;
+    shareId: number;
+    status: ClaimStatus;
+  };
+};

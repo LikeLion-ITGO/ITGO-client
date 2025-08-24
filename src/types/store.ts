@@ -32,6 +32,8 @@ export type CreateStoreReq = {
   closeTime: string;
   phoneNumber: string;
   description?: string;
+  /** 새 스펙: presign(draft)에서 받은 키 */
+  imageDraftKey?: string;
 };
 
 export type UpdateStoreReq = {
@@ -46,4 +48,18 @@ export type UpdateStoreReq = {
   closeTime: string;
   phoneNumber: string;
   description: string;
+  imageDraftKey?: string;
+};
+
+/** presign(draft) */
+export type StoreImageDraftReq = {
+  ext: string; // "jpg" | "png" ...
+  contentType: string; // "image/jpeg" ...
+  sizeBytes: number;
+};
+export type StoreImageDraftItem = {
+  seq: number; // 단건이면 0
+  putUrl: string;
+  previewUrl: string; // 업로드 후 접근될 URL
+  draftKey: string; // <-- 이걸 createStore에 넣음
 };

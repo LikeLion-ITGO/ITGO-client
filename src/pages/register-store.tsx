@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import MainLayout from "@/components/layouts/MainLayout";
 
 import PRF_IMG from "@/assets/icons/storeInfoPage/PRF_IMG.svg";
@@ -10,12 +10,7 @@ import { ROUTES } from "@/constants/routes";
 import { Input } from "@/components/ui/input";
 import { useDaumPostcodePopup, type Address } from "react-daum-postcode";
 import { TimeInput } from "@/components/common/TimeInput";
-import {
-  confirmStoreImage,
-  createStore,
-  presignStoreImage,
-  uploadToS3,
-} from "@/apis/store";
+import { createStore, presignStoreImageDraft, uploadToS3 } from "@/apis/store";
 import type { CreateStoreReq } from "@/types/store";
 import type {
   KakaoAddressSearchResult,
@@ -47,13 +42,19 @@ declare global {
   }
 }
 
-export {};
+const PHONE_REGEX = /^(?:\d{2,3}-\d{3,4}-\d{4})$/;
+// 필요하면 버튼 활성화에서 좌표 조건을 꺼보세요.
+// const REQUIRE_COORDS_FOR_BUTTON = true;
 
 export const RegisterStore = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // 이미지 상태
   const [profilePreview, setProfilePreview] = useState<string | null>(null);
   const [profileFile, setProfileFile] = useState<File | null>(null);
+  const [imageDraftKey, setImageDraftKey] = useState<string | undefined>();
+  // const [isUploadingImage, setIsUploadingImage] = useState(false);
 
   // 폼 필드
   const [storeName, setStoreName] = useState("");
@@ -64,17 +65,18 @@ export const RegisterStore = () => {
 
   // 주소 상태
   const [address, setAddress] = useState("");
-  const [dong, setDong] = useState(""); // 동(법정동)
+  const [dong, setDong] = useState("");
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
 
+  // 주소검색
   const scriptUrl =
     "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
   const openPostcode = useDaumPostcodePopup(scriptUrl);
 
+  // 주소 선택 완료
   const onComplete = async (data: Address) => {
     try {
-      // 1) 도로명 주소 조립
       let full = data.address;
       const extras: string[] = [];
       if (data.addressType === "R") {
@@ -82,21 +84,17 @@ export const RegisterStore = () => {
         if (data.buildingName) extras.push(data.buildingName);
         if (extras.length) full += ` (${extras.join(", ")})`;
       }
-
-      // 2) 주소/동 상태 저장
       setAddress(full);
       setDong(data.bname || "");
 
-      // 3) Kakao Geocoder 로드 후 지오코딩
+      // Kakao 지오코딩
       const geocoder = new window.kakao.maps.services.Geocoder();
       geocoder.addressSearch(
         full,
         (result: KakaoAddressSearchResult, status: string) => {
           if (status === window.kakao.maps.services.Status.OK && result?.[0]) {
-            const lat = parseFloat(result[0].y);
-            const lng = parseFloat(result[0].x);
-            setLatitude(lat);
-            setLongitude(lng);
+            setLatitude(parseFloat(result[0].y));
+            setLongitude(parseFloat(result[0].x));
           } else {
             console.error("❌ 좌표 변환 실패:", status, result);
           }
@@ -107,28 +105,52 @@ export const RegisterStore = () => {
     }
   };
 
-  const handleOpenPostcode = () => {
-    openPostcode({
-      onComplete,
-    });
-  };
+  const handleOpenPostcode = () => openPostcode({ onComplete });
 
-  const handleImageClick = () => {
-    fileInputRef.current?.click();
-  };
+  // 이미지 선택
+  const handleImageClick = () => fileInputRef.current?.click();
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  // 사진 선택 시: presign(draft) → S3 PUT
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
-    if (file) {
-      setProfileFile(file);
-      setProfilePreview(URL.createObjectURL(file));
+    if (!file) return;
+
+    setProfileFile(file);
+    setProfilePreview(URL.createObjectURL(file));
+    event.target.value = ""; // 같은 파일 재선택 허용
+
+    try {
+      // setIsUploadingImage(true);
+      const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+      const draft = await presignStoreImageDraft({
+        ext,
+        contentType: file.type || "image/jpeg",
+        sizeBytes: file.size,
+      });
+      await uploadToS3(draft.putUrl, file);
+      setImageDraftKey(draft.draftKey);
+      // setProfilePreview(draft.previewUrl); // 업로드 후 CDN 미리보기 쓰고 싶으면 사용
+    } catch (e) {
+      console.error("presign/upload 실패", e);
+      setImageDraftKey(undefined);
+    } finally {
+      // setIsUploadingImage(false);
     }
   };
 
-  /** 저장(등록) */
+  // ObjectURL 정리
+  useEffect(() => {
+    return () => {
+      if (profilePreview?.startsWith("blob:"))
+        URL.revokeObjectURL(profilePreview);
+    };
+  }, [profilePreview]);
+
+  // 저장(등록)
   const handleSave = async () => {
     try {
-      // 1) 필수값 검증
       if (!storeName) return console.log("가게 이름을 입력해 주세요.");
       if (!address) return console.log("주소를 선택해 주세요.");
       if (!startTime || !endTime)
@@ -137,17 +159,21 @@ export const RegisterStore = () => {
         return console.log(
           "좌표가 아직 없습니다. 주소 선택 후 잠시만 기다렸다가 다시 시도하세요."
         );
-
-      // ✅ 전화번호 정규식 체크
-      const phoneRegex = /^(?:\d{2,3}-\d{3,4}-\d{4})$/;
-      if (!phoneRegex.test(phoneNumber)) {
+      if (!PHONE_REGEX.test(phoneNumber)) {
         alert(
           "전화번호는 010-1234-5678 또는 02-123-4567 형식으로 입력해주세요."
         );
         return;
       }
+      if (profileFile && !imageDraftKey) {
+        alert(
+          "이미지 업로드가 아직 완료되지 않았어요. 잠시 후 다시 저장해주세요."
+        );
+        console.log(profileFile);
+        console.log(imageDraftKey);
+        return;
+      }
 
-      // 2) 가게 등록
       const payload: CreateStoreReq = {
         storeName,
         address: {
@@ -160,24 +186,10 @@ export const RegisterStore = () => {
         closeTime: endTime,
         phoneNumber,
         description,
+        imageDraftKey,
       };
 
-      const { storeId } = await createStore(payload);
-
-      // 3) 이미지가 있으면 presign → PUT → confirm
-      if (profileFile) {
-        const ext = (profileFile.name.split(".").pop() || "jpg").toLowerCase();
-
-        const { putUrl, objectKey } = await presignStoreImage(storeId, {
-          ext,
-          contentType: profileFile.type || "image/jpeg",
-        });
-
-        await uploadToS3(putUrl, profileFile);
-
-        await confirmStoreImage({ storeId, objectKey });
-      }
-
+      await createStore(payload);
       navigate(ROUTES.HOME, { state: { showToast: true } });
     } catch (e) {
       console.error(e);
@@ -192,7 +204,8 @@ export const RegisterStore = () => {
     phoneNumber.trim() &&
     description.trim() &&
     latitude !== null &&
-    longitude !== null;
+    longitude !== null &&
+    imageDraftKey !== null;
 
   return (
     <MainLayout bgcolor="white">
@@ -212,24 +225,22 @@ export const RegisterStore = () => {
           저장
         </div>
       </header>
+
       <div className="flex justify-center">
         <div
           className="w-[112px] h-[112px] relative mb-[32px] cursor-pointer"
           onClick={handleImageClick}
         >
-          {
-            <img
-              src={profilePreview || PRF_IMG}
-              alt="프로필 이미지"
-              className="w-[112px] h-[112px] bg-[#F5F7FA] rounded-[112px]"
-            />
-          }
+          <img
+            src={profilePreview || PRF_IMG}
+            alt="프로필 이미지"
+            className="w-[112px] h-[112px] bg-[#F5F7FA] rounded-[112px]"
+          />
           <img
             src={imageIcon}
             alt="사진변경"
             className="w-[36px] h-[36px] p-[6px] bg-[#3CADFF] rounded-[100px] absolute bottom-[0px] right-[0px] border-[2px] border-white"
           />
-
           <input
             type="file"
             accept="image/*"
@@ -239,6 +250,7 @@ export const RegisterStore = () => {
           />
         </div>
       </div>
+
       <form className="flex flex-col gap-[40px]">
         <div className="gap-4 flex flex-col">
           <label className="subhead-02 text-[#47484B] text-[14px]">이름</label>
@@ -248,6 +260,7 @@ export const RegisterStore = () => {
             onChange={(e) => setStoreName(e.target.value)}
           />
         </div>
+
         <div className="gap-4 flex flex-col">
           <label className="subhead-02 text-[#47484B] text-[14px]">위치</label>
           <Input
@@ -259,6 +272,7 @@ export const RegisterStore = () => {
             focus:outline-none focus:ring-0 focus:ring-transparent focus-visible:ring-0 focus-visible:border-blue-normal"
           />
         </div>
+
         <div className="gap-2 flex flex-col">
           <label className="subhead-02 text-[#47484B] text-[14px]">
             운영시간
@@ -282,6 +296,7 @@ export const RegisterStore = () => {
             />
           </div>
         </div>
+
         <div className="gap-4 flex flex-col">
           <label className="subhead-02 text-[#47484B] text-[14px]">
             연락처
@@ -292,6 +307,7 @@ export const RegisterStore = () => {
             onChange={(e) => setPhoneNumber(e.target.value)}
           />
         </div>
+
         <div className="gap-4 flex flex-col mb-[70px]">
           <label className="flex flex-row justify-between subhead-02 text-[#47484B] text-[14px]">
             <p>가게 소개</p>
@@ -301,11 +317,11 @@ export const RegisterStore = () => {
           </label>
 
           <textarea
-            placeholder={"우리 가게를 소개해봐요!"}
+            placeholder="우리 가게를 소개해봐요!"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             maxLength={500}
-            className="h-[138px]  w-full text-[16px]  rounded-[8px] border-[1px] border-[#BCC3CE] px-4 py-4 focus:border-[#3CADFF] focus:outline-none resize-none "
+            className="h-[138px] w-full text-[16px] rounded-[8px] border-[1px] border-[#BCC3CE] px-4 py-4 focus:border-[#3CADFF] focus:outline-none resize-none"
           />
         </div>
       </form>

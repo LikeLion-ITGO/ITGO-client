@@ -1,7 +1,7 @@
 // src/apis/wish.ts
 import axiosInstance from "@/apis/axiosInstance";
 import type { ApiResponse, PageData } from "@/types/api";
-import type { ClaimItem } from "@/types/claim";
+import type { ClaimItem, CreateClaimReq, CreateClaimRes } from "@/types/claim";
 
 /**
  * wish 목록 페이지네이션
@@ -55,4 +55,10 @@ export async function cancelClaim(claimId: number) {
     `/claim/cancel/${claimId}`
   );
   return res.data;
+}
+
+//
+export async function createClaim(payload: CreateClaimReq) {
+  const { data } = await axiosInstance.post<CreateClaimRes>("/claim", payload);
+  return data;
 }

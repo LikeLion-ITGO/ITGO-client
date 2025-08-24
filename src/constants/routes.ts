@@ -15,6 +15,7 @@ export const ROUTES = {
   HISTORY_GIVE: "/history/give",
   HISTORY_DETAIL: "/history/detail/:id",
   SUCCESS: "/success/:id",
+  EDIT_SHAREDETAIL: "sharelist-edit/:id",
 } as const;
 
 export type RouteKey = keyof typeof ROUTES;

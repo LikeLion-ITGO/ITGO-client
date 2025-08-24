@@ -3,17 +3,24 @@ import { ProductBox } from "./ProductBox";
 import { useNavigate } from "react-router-dom";
 import type { ShareResponse } from "@/types/share";
 import { useEffect, useState } from "react";
-import { fetchShareList } from "@/apis/share";
+import { fetchShareDongList } from "@/apis/share";
 
 export const ProductList = () => {
   const navigate = useNavigate();
   const [list, setList] = useState<ShareResponse[]>([]);
 
   useEffect(() => {
-    fetchShareList(0, 3).then((data) => {
-      setList(data.content);
-    });
+    (async () => {
+      try {
+        const { content } = await fetchShareDongList(0, 3);
+        setList(Array.isArray(content) ? content : []);
+      } catch (e) {
+        console.error(e);
+        setList([]);
+      }
+    })();
   }, []);
+
   return (
     <div className="flex flex-col ">
       <p className="py-[6px] w-[66px] h-[29px] px-[12px] bg-[#DDF0FF] text-[14px] rounded-[48px] flex items-center justify-center text-[#3CADFF] font-bold mb-2">
@@ -26,7 +33,7 @@ export const ProductList = () => {
         우리동네 재고 나눔 →
       </h4>
       {!list.length ? (
-        <div className="w-full h-[100vh] text-center text-[gray]">
+        <div className="w-full h-[200px] text-center text-[gray]">
           아직 나눔중인 재고가 없습니다.
         </div>
       ) : (
