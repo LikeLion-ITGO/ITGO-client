@@ -1,35 +1,19 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { fetchSharePage } from "@/apis/share";
-import type { ShareManageItem } from "@/types/share";
-import type { ApiResponse, PageData } from "@/types/api";
+import type { ShareItem } from "@/types/share";
 
 export function useShareInfinite(size = 20) {
-  return useInfiniteQuery<
-    ApiResponse<PageData<ShareManageItem>>,
-    Error,
-    {
-      pages: PageData<ShareManageItem>[];
-      flat: ShareManageItem[];
-      pageParams: number[];
-    }, // select 이후
-    ["share", number], // TQueryKey
-    number
-  >({
+  return useInfiniteQuery({
     queryKey: ["share", size],
-    queryFn: ({ pageParam = 0 }: { pageParam: number }) =>
-      fetchSharePage(pageParam, size),
-
+    queryFn: ({ pageParam = 0 }) => fetchSharePage(pageParam, size),
     initialPageParam: 0,
     getNextPageParam: (lastPage) => {
-      const pg = lastPage.data;
-      return pg.last ? undefined : pg.number + 1;
+      const next = lastPage.page + 1;
+      return next < lastPage.totalPages ? next : undefined;
     },
-    select: (res) => {
-      // 각 page의 data만 뽑아서 사용
-      const pages = res.pages.map((p) => p.data);
-      const flat = pages.flatMap((p) => p.content ?? []);
-      return { pages, flat, pageParams: res.pageParams };
+    select: (data) => {
+      const flat: ShareItem[] = data.pages.flatMap((p) => p.content);
+      return { ...data, flat };
     },
-    staleTime: 30_000,
   });
 }

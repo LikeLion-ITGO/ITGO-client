@@ -36,7 +36,7 @@ export const SentRequestCardItem = ({
   brand?: string;
   itemName?: string;
   quantity?: number;
-  minutesAgo?: string;
+  minutesAgo?: number;
   distanceKm?: number;
   openTime?: string | LocalTime;
   closeTime?: string | LocalTime;
