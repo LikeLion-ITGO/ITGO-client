@@ -36,7 +36,6 @@ export const RegisterGive = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [finalLabel, setFinalLabel] = useState<FreshResult>("Fresh");
 
-
   const MAX = 5;
   const navigate = useNavigate();
   const certified = images.length > 0 && finalLabel !== "Spoiled";
