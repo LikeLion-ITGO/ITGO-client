@@ -44,9 +44,11 @@ export const RegisterGive = () => {
   const [images, setImages] = useState<Preview[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+
   const [labelData, setLabelData] = useState<labelsFinal>();
 
   const [finalLabel, setFinalLabel] = useState<FreshResult>("Fresh");
+
 
 
   const MAX = 5;
@@ -367,7 +369,9 @@ export const RegisterGive = () => {
         </div>
         {/* 입력폼 */}
 
+
         <GiveRegisterForm onSubmit={handleSubmit} labelData={labelData} freshCertified={certified}/>
+
 
       </div>
       <AIGeneratingModal

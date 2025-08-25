@@ -31,6 +31,7 @@ type Props = {
   initialValues?: Partial<BaseValues>;
   buttonText?: string;
 
+
   labelData?: labelsFinal;
 
   freshCertified?: boolean;
@@ -42,9 +43,11 @@ export const GiveRegisterForm = ({
   initialValues,
   buttonText = "업로드",
 
+
   labelData,
 
   freshCertified,
+
 
 }: Props) => {
   const [selectedMethod, setSelectedMethod] = useState("냉장");
