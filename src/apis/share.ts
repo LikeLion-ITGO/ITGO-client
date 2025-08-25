@@ -4,6 +4,8 @@ import axiosInstance from "@/apis/axiosInstance";
 import type {
   PresignRequestItem,
   PresignResponseItem,
+  QuickClaimReq,
+  QuickClaimRes,
   ShareCreateReq,
   ShareDetail,
   ShareDetailApi,
@@ -128,4 +130,14 @@ export async function fetchShareDongList(
     : [];
 
   return { content };
+}
+
+// 빠른요청
+
+export async function claimQuick(body: QuickClaimReq) {
+  const { data } = await axiosInstance.post<{ data: QuickClaimRes }>(
+    "/claim/quick",
+    body
+  );
+  return data.data;
 }

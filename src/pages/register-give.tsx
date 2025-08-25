@@ -34,8 +34,8 @@ export const RegisterGive = () => {
   const [isFreshModalOpen, setIsFreshModalOpen] = useState(false);
   const [images, setImages] = useState<Preview[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
   const [finalLabel, setFinalLabel] = useState<FreshResult>("Fresh");
+
 
   const MAX = 5;
   const navigate = useNavigate();
