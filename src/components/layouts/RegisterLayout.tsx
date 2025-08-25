@@ -16,7 +16,7 @@ export default function RegisterLayout({
   return (
     <div className={`h-100dvh flex flex-col ${backgroundColor}`}>
       <header
-        className={`fixed top-0 w-full flex text-xl font-semibold justify-center px-5 py-[14px] text-gray-900 ${backgroundColor}`}
+        className={`fixed top-0 z-1000 w-full flex text-xl font-semibold justify-center px-5 py-[14px] text-gray-900 ${backgroundColor}`}
       >
         <div
           className="absolute left-5"

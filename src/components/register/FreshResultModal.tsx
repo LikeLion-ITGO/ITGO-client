@@ -6,7 +6,7 @@ import HalfFreshIcon from "@/assets/icons/register/half-fresh-icon.svg?react";
 import SpoiledIcon from "@/assets/icons/register/spoiled-icon.svg?react";
 import clsx from "clsx";
 
-type FreshResult = "FRESH" | "HALF_FRESH" | "SPOILED";
+type FreshResult = "Fresh" | "Half-Fresh" | "Spoiled";
 interface FreshResultModalProps {
   open: boolean;
   onClose: () => void;
@@ -22,19 +22,19 @@ const RESULT_MAP: Record<
     Icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   }
 > = {
-  FRESH: {
+  Fresh: {
     label: "매우 신선함",
     lines: ["신선제품 인증이", "완료되었어요!"],
     colorClass: "text-[#34D12B]",
     Icon: FreshIcon,
   },
-  HALF_FRESH: {
+  "Half-Fresh": {
     label: "신선함",
     lines: ["신선제품 인증이", "완료되었어요!"],
     colorClass: "text-sub",
     Icon: HalfFreshIcon,
   },
-  SPOILED: {
+  Spoiled: {
     label: "신선하지 않음",
     lines: ["신선제품 인증이 안된", "상품은 업로드가 불가해요."],
     colorClass: "text-red",
@@ -49,6 +49,7 @@ export const FreshResultModal = ({
 }: FreshResultModalProps) => {
   const { label, lines, colorClass, Icon } = RESULT_MAP[fresh_result];
 
+  console.log(fresh_result);
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="w-[229px] h-[276px] rounded-[24px] p-5 bg-white [&>button]:hidden">
@@ -82,7 +83,7 @@ export const FreshResultModal = ({
               className="subhead-03 h-12 bg-blue-normal text-white"
               onClick={onClose}
             >
-              {fresh_result == "SPOILED" ? "다른 사진으로 인증하기" : "확인"}
+              {fresh_result == "Spoiled" ? "다른 사진으로 인증하기" : "확인"}
             </Button>
           </div>
         </div>
