@@ -167,3 +167,32 @@ export type QuickClaimRes = {
   claimAt: string;
   decidedAt?: string | null;
 };
+
+//AI
+
+//라벨
+export type AiLabelValue = {
+  value: string;
+  confidence: number;
+  evidence: string[];
+};
+export type AiLabelsResponse = {
+  labels: {
+    brand?: AiLabelValue;
+    item_name?: AiLabelValue;
+    storage?: AiLabelValue;
+  };
+  images: Array<{
+    image_id: string;
+    brand?: AiLabelValue;
+    item_name?: AiLabelValue;
+    storage?: AiLabelValue;
+  }>;
+};
+
+export type labelsFinal = {
+  brand?: AiLabelValue;
+  item_name?: AiLabelValue;
+  storage?: AiLabelValue;
+};
+// 신선도

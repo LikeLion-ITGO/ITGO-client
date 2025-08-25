@@ -5,6 +5,7 @@ import { Checkbox } from "../ui/checkbox";
 import { TimeInput } from "../common/TimeInput";
 import clsx from "clsx";
 import type {
+  labelsFinal,
   RecieveRegisterRequest,
   ShareCreateReq,
   StorageType,
@@ -29,12 +30,14 @@ type Props = {
   onSubmit?: (payload: RecieveRegisterRequest) => void;
   initialValues?: Partial<BaseValues>;
   buttonText?: string;
+  labelData?: labelsFinal;
 };
 
 export const GiveRegisterForm = ({
   onSubmit,
   initialValues,
   buttonText = "업로드",
+  labelData,
 }: Props) => {
   const [selectedMethod, setSelectedMethod] = useState("냉장");
 
@@ -70,6 +73,13 @@ export const GiveRegisterForm = ({
     if (initialValues.storageType)
       setSelectedMethod(STORAGE_TO_METHOD[initialValues.storageType]);
   }, [initialValues]);
+
+  useEffect(() => {
+    if (!labelData) return;
+    if (labelData.item_name?.value) setItemName(labelData.item_name.value);
+    if (labelData.brand?.value) setBrand(labelData.brand.value);
+    if (labelData.storage?.value) setSelectedMethod(labelData.storage.value);
+  }, [labelData]);
 
   /** 가게 운영시간 로드 (체크박스 켜져있는 경우 폼에도 반영) */
   useEffect(() => {

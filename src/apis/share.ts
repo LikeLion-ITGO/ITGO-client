@@ -3,6 +3,7 @@ import axiosInstance from "@/apis/axiosInstance";
 import type { PageData } from "@/types/api";
 
 import type {
+  AiLabelsResponse,
   PresignRequestItem,
   PresignResponseItem,
   QuickClaimReq,
@@ -14,6 +15,7 @@ import type {
   ShareItem,
   ShareResponse,
 } from "@/types/share";
+import axiosAI from "./axiosAI";
 
 /**
  * wish 목록 페이지네이션
@@ -136,11 +138,22 @@ export async function fetchShareDongList(
 }
 
 // 빠른요청
-
 export async function claimQuick(body: QuickClaimReq) {
   const { data } = await axiosInstance.post<{ data: QuickClaimRes }>(
     "/claim/quick",
     body
   );
   return data.data;
+}
+
+// AI
+// 라벨부터
+export async function aiUploadLabels(files: File[], verbose = 0) {
+  const fd = new FormData();
+  files.forEach((f) => fd.append("files", f));
+
+  const { data } = await axiosAI.post<AiLabelsResponse>("/labels", fd, {
+    params: { verbose },
+  });
+  return data;
 }

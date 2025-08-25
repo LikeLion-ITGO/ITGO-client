@@ -10,8 +10,17 @@ import FreshIcon from "@/assets/icons/register/fresh-icon.svg?react";
 import { X } from "lucide-react";
 import { toast } from "sonner";
 import { FreshResultModal } from "@/components/register/FreshResultModal";
-import type { PresignRequestItem, ShareCreateReq } from "@/types/share";
-import { createShare, presignShareImageDrafts, putToS3 } from "@/apis/share";
+import type {
+  labelsFinal,
+  PresignRequestItem,
+  ShareCreateReq,
+} from "@/types/share";
+import {
+  aiUploadLabels,
+  createShare,
+  presignShareImageDrafts,
+  putToS3,
+} from "@/apis/share";
 import { getExtAndType } from "@/lib/utils";
 import ToolTip from "@/assets/icons/register/tooltip.svg";
 import { useNavigate } from "react-router-dom";
@@ -31,6 +40,8 @@ export const RegisterGive = () => {
   const [isFreshModalOpen, setIsFreshModalOpen] = useState(false);
   const [images, setImages] = useState<Preview[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [labelData, setLabelData] = useState<labelsFinal>();
+
   const MAX = 5;
   const navigate = useNavigate();
 
@@ -104,8 +115,16 @@ export const RegisterGive = () => {
     });
   };
 
-  const handleAIClick = () => {
-    if (images.length === 0) {
+  //ai --->  자동입력
+  const handleAIClick = async () => {
+    const files = images.map((p) => p.file).filter((f): f is File => !!f);
+
+    if (images.some((p) => p.uploading)) {
+      toast("이미지 업로드가 끝나길 기다려주세요.");
+      return;
+    }
+
+    if (files.length === 0) {
       toast("사진을 먼저 업로드 해주세요!", {
         icon: <CheckFail />,
         unstyled: true,
@@ -119,8 +138,27 @@ export const RegisterGive = () => {
       return;
     }
     setIsModalOpen(true);
+
+    try {
+      const res = await aiUploadLabels(files, 0);
+
+      setLabelData(res.labels);
+    } catch (err) {
+      console.error("AI 업로드 실패!", err);
+      toast.error("AI 분석 요청에 실패했어요. 잠시 후 다시 시도해 주세요.");
+    } finally {
+      setIsModalOpen(false);
+      console.log(">>>", labelData);
+    }
   };
 
+  useEffect(() => {
+    if (!labelData) return;
+
+    console.log(labelData);
+  }, [labelData, setLabelData]);
+
+  //ai ---> 신선도
   const handleVerifyClick = () => {
     if (images.length === 0) {
       toast("사진을 먼저 업로드 해주세요!", {
@@ -264,7 +302,7 @@ export const RegisterGive = () => {
           </button>
         </div>
         {/* 입력폼 */}
-        <GiveRegisterForm onSubmit={handleSubmit} />
+        <GiveRegisterForm onSubmit={handleSubmit} labelData={labelData} />
       </div>
       <AIGeneratingModal
         open={isModalOpen}
