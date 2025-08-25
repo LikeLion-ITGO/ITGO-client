@@ -49,7 +49,7 @@ export default function SentRequestContent({
 
   console.log(">>", wish?.regDate);
   return (
-    <div className="flex flex-col px-5 pt-6 gap-16">
+    <div className="flex flex-col px-5 pt-6 gap-16  pb-[30px]">
       {receive_status === ShareStatus.NO_REQUEST ? (
         <div className="flex flex-col items-center gap-4 pt-[171px]">
           <div className="flex flex-col items-center headline-long-02 text-gray-900">

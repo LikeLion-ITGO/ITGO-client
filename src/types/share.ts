@@ -149,3 +149,25 @@ export type ShareDetail = {
   storeImageUrl: string;
   storeId: number;
 };
+
+// 빠른요청
+
+export type QuickClaimReq = {
+  shareId: number;
+  quantity: number;
+  openTime: string;
+  closeTime: string;
+  title: string;
+  description: string;
+};
+
+export type QuickClaimRes = {
+  claimId: number;
+  wishId?: number | null;
+  shareId: number;
+  requesterStoreId: number;
+  quantity: number;
+  status: "PENDING" | "APPROVED" | "REJECTED";
+  claimAt: string;
+  decidedAt?: string | null;
+};

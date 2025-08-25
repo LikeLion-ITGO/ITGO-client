@@ -57,7 +57,10 @@ export const LogoutModal = ({ open, onClose }: LogoutModalProps) => {
           </Button>
           <Button
             className="h-12 flex-1 subhead-03 text-white rounded-xl bg-blue-normal hover:bg-blue-normal"
-            onClick={() => mutate()}
+            onClick={() => {
+              mutate();
+              navigate(ROUTES.LOGIN);
+            }}
           >
             로그아웃하기
           </Button>
