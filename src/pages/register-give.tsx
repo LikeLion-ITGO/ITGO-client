@@ -16,6 +16,7 @@ import { getExtAndType } from "@/lib/utils";
 import ToolTip from "@/assets/icons/register/tooltip.svg";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
+import { aiFreshness } from "@/apis/ai";
 
 type Preview = {
   id: string;
@@ -31,6 +32,11 @@ export const RegisterGive = () => {
   const [isFreshModalOpen, setIsFreshModalOpen] = useState(false);
   const [images, setImages] = useState<Preview[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // const [isVerifying, setIsVerifying] = useState(false);
+  // const [freshOverall, setFreshOverall] = useState<FreshnessLabel | null>(null);
+  // const [freshDetails, setFreshDetails] = useState<FreshnessDetail[]>([]);
+
   const MAX = 5;
   const navigate = useNavigate();
 
@@ -121,7 +127,7 @@ export const RegisterGive = () => {
     setIsModalOpen(true);
   };
 
-  const handleVerifyClick = () => {
+  const handleVerifyClick = async () => {
     if (images.length === 0) {
       toast("사진을 먼저 업로드 해주세요!", {
         icon: <CheckFail />,
@@ -132,11 +138,23 @@ export const RegisterGive = () => {
           title: "subhead-03 text-white",
         },
       });
-
-      console.log("클릭");
       return;
     }
-    setIsFreshModalOpen(true);
+
+    try {
+      // setIsVerifying(true);
+      setIsFreshModalOpen(true);
+
+      const files = images.map((p) => p.file);
+      const resp = await aiFreshness(files);
+      console.log("zz", resp);
+    } catch (e) {
+      console.error(e);
+      toast.error("신선도 인증에 실패했어요. 잠시 후 다시 시도해 주세요.");
+    } finally {
+      // setIsVerifying(false);
+      console.log("hi");
+    }
   };
 
   //
@@ -193,7 +211,7 @@ export const RegisterGive = () => {
             <button
               type="button"
               onClick={openPicker}
-              className="shrink-0 w-[78px] h-[78px] flex flex-col items-center justify-center gap-[6px] text-gray-400 border border-gray-200 rounded-lg"
+              className="w-[78px] h-[78px] flex flex-col items-center justify-center gap-[6px] text-gray-400 border border-gray-200 rounded-lg"
             >
               <Camera />
               <div className="subhead-02 flex flex-row">

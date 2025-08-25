@@ -23,6 +23,9 @@ export const LogoutModal = ({ open, onClose }: LogoutModalProps) => {
     onSuccess: () => {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
+      localStorage.removeItem("store-id-storage");
+      localStorage.removeItem("user-storage");
+      localStorage.removeItem("wish-id-storage");
 
       queryClient.clear();
 
