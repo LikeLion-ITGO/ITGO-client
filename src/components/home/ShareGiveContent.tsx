@@ -52,7 +52,7 @@ export const ShareGiveContent = ({
               재고를 나눔 요청을 받았어요
             </span>
             <Button className="flex px-3 py-2 items-center w-10 h-[26px] justify-center text-sm text-subtxt font-semibold bg-white rounded-[48px] hover:bg-white">
-              {shareItems?.length}명
+              {shareItems?.reduce((sum, i) => sum + i.claimTotalCount, 0)}명
             </Button>
           </div>
         );

@@ -198,7 +198,13 @@ export const SentRequestCardItem = ({
         </div>
       </div>
 
-      <Button className={buttonClasses} onClick={handleButtonClick}>
+      <Button
+        className={buttonClasses}
+        onClick={(e) => {
+          e.stopPropagation();
+          handleButtonClick();
+        }}
+      >
         {buttonLabel}
       </Button>
     </div>
