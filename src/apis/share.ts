@@ -1,6 +1,5 @@
 // src/apis/wish.ts
 import axiosInstance from "@/apis/axiosInstance";
-import type { PageData } from "@/types/api";
 
 import type {
   AiLabelsResponse,
@@ -12,7 +11,7 @@ import type {
   ShareDetail,
   ShareDetailApi,
   ShareImage,
-  ShareItem,
+  SharePageResp,
   ShareResponse,
 } from "@/types/share";
 import axiosAI from "./axiosAI";
@@ -23,16 +22,14 @@ import axiosAI from "./axiosAI";
  * @param size 페이지 크기 (기본 20)
  */
 
-export async function fetchSharePage(page: number, size = 20) {
-  const res = await axiosInstance.get<PageData<ShareItem>>("/share", {
+export async function fetchSharePage(
+  page: number,
+  size = 20
+): Promise<SharePageResp> {
+  const res = await axiosInstance.get<SharePageResp>("/share", {
     params: { page, size },
   });
-
-  const pageData = res.data;
-  return {
-    ...pageData,
-    page,
-  };
+  return res.data; // ✅ { code, message, data: { content, number, last, ... } }
 }
 
 //ShareList용....

@@ -17,6 +17,7 @@ export const ShareGiveContent = ({
   shareItems,
   acceptedStoreIds,
 }: ShareGiveContentProps) => {
+  console.log(shareItems);
   const navigate = useNavigate();
   const renderDescriptionContent = () => {
     switch (give_status) {

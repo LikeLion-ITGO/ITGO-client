@@ -30,14 +30,22 @@ type Props = {
   onSubmit?: (payload: RecieveRegisterRequest) => void;
   initialValues?: Partial<BaseValues>;
   buttonText?: string;
+
   labelData?: labelsFinal;
+
+  freshCertified?: boolean;
+
 };
 
 export const GiveRegisterForm = ({
   onSubmit,
   initialValues,
   buttonText = "업로드",
+
   labelData,
+
+  freshCertified,
+
 }: Props) => {
   const [selectedMethod, setSelectedMethod] = useState("냉장");
 
@@ -140,11 +148,12 @@ export const GiveRegisterForm = ({
       description: desc.trim(),
       expirationDate: expiry.trim(),
       storageType: METHOD_TO_STORAGE[selectedMethod],
-      freshCertified: false, // 신선인증 결과-> 상위에서 바꾸기
+      freshCertified: freshCertified ?? false,
       openTime: storeTimeChecked ? storeOpenTime : startTime,
       closeTime: storeTimeChecked ? storeCloseTime : endTime,
     };
 
+    console.log(payload);
     onSubmit?.(payload);
   };
 

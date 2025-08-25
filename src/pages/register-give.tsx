@@ -25,6 +25,7 @@ import { getExtAndType } from "@/lib/utils";
 import ToolTip from "@/assets/icons/register/tooltip.svg";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
+import { aiFreshness } from "@/apis/ai";
 
 type Preview = {
   id: string;
@@ -34,16 +35,23 @@ type Preview = {
   uploading?: boolean;
 };
 
+type FreshResult = "Fresh" | "Half-Fresh" | "Spoiled";
+
 export const RegisterGive = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isTooltipOpen, setIsToolTipOpen] = useState(false);
   const [isFreshModalOpen, setIsFreshModalOpen] = useState(false);
   const [images, setImages] = useState<Preview[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [labelData, setLabelData] = useState<labelsFinal>();
+
+  const [finalLabel, setFinalLabel] = useState<FreshResult>("Fresh");
+
 
   const MAX = 5;
   const navigate = useNavigate();
+  const certified = images.length > 0 && finalLabel !== "Spoiled";
 
   useEffect(() => {
     return () => images.forEach((p) => URL.revokeObjectURL(p.url));
@@ -107,6 +115,45 @@ export const RegisterGive = () => {
     }
   };
 
+  const toFreshResult = (v: string): FreshResult => {
+    const k = (v ?? "")
+      .trim()
+      .toUpperCase()
+      .replace(/[\s_]+/g, "-");
+    switch (k) {
+      case "FRESH":
+        return "Fresh";
+      case "HALF-FRESH":
+        return "Half-Fresh";
+      case "SPOILED":
+        return "Spoiled";
+      default:
+        return "Spoiled";
+    }
+  };
+
+  const dropSpoiledByResults = (results: string[] | undefined) => {
+    if (!Array.isArray(results) || results.length === 0) return 0;
+
+    const labels = results.map(toFreshResult);
+    const removedCount = labels.filter((l) => l === "Spoiled").length;
+
+    if (removedCount === 0) return 0;
+
+    setImages((prev) => {
+      // URL 정리 + Spoiled만 제거
+      prev.forEach((p, i) => {
+        if (labels[i] === "Spoiled") URL.revokeObjectURL(p.url);
+      });
+      return prev.filter((_, i) => labels[i] !== "Spoiled");
+    });
+
+    // 같은 파일 다시 선택 가능하도록 리셋
+    if (fileInputRef.current) fileInputRef.current.value = "";
+
+    return removedCount;
+  };
+
   const removeImage = (id: string) => {
     setImages((prev) => {
       const t = prev.find((p) => p.id === id);
@@ -152,14 +199,16 @@ export const RegisterGive = () => {
     }
   };
 
+
   useEffect(() => {
     if (!labelData) return;
 
     console.log(labelData);
   }, [labelData, setLabelData]);
 
-  //ai ---> 신선도
-  const handleVerifyClick = () => {
+
+  const handleVerifyClick = async () => {
+
     if (images.length === 0) {
       toast("사진을 먼저 업로드 해주세요!", {
         icon: <CheckFail />,
@@ -170,14 +219,29 @@ export const RegisterGive = () => {
           title: "subhead-03 text-white",
         },
       });
-
-      console.log("클릭");
       return;
     }
-    setIsFreshModalOpen(true);
-  };
 
-  //
+    try {
+      const files = images.map((p) => p.file);
+      const resp = await aiFreshness(files);
+
+      const removed = dropSpoiledByResults(resp.results);
+      if (removed > 0) {
+        toast(
+          `${removed}장의 사진이 신선하지 않아요. 제거했습니다. 다른 사진으로 다시 올려주세요.`
+        );
+      }
+
+      setFinalLabel(resp.final_label);
+      setIsFreshModalOpen(true);
+    } catch (e) {
+      console.error(e);
+      toast.error("신선도 인증에 실패했어요. 잠시 후 다시 시도해 주세요.");
+    } finally {
+      console.log("신선도 인증");
+    }
+  };
 
   // 제출: draftKey만 모아 서버로 전송
   const handleSubmit = async (values: Omit<ShareCreateReq, "images">) => {
@@ -231,7 +295,7 @@ export const RegisterGive = () => {
             <button
               type="button"
               onClick={openPicker}
-              className="shrink-0 w-[78px] h-[78px] flex flex-col items-center justify-center gap-[6px] text-gray-400 border border-gray-200 rounded-lg"
+              className="w-[78px] h-[78px] flex flex-col items-center justify-center gap-[6px] text-gray-400 border border-gray-200 rounded-lg"
             >
               <Camera />
               <div className="subhead-02 flex flex-row">
@@ -244,7 +308,7 @@ export const RegisterGive = () => {
               {images.map((img) => (
                 <div
                   key={img.id}
-                  className="relative shrink-0 w-[78px] h-[78px] rounded-lg overflow-hidden"
+                  className="relative w-[78px] h-[78px] rounded-lg overflow-hidden"
                 >
                   <button
                     type="button"
@@ -302,7 +366,9 @@ export const RegisterGive = () => {
           </button>
         </div>
         {/* 입력폼 */}
-        <GiveRegisterForm onSubmit={handleSubmit} labelData={labelData} />
+
+        <GiveRegisterForm onSubmit={handleSubmit} labelData={labelData} freshCertified={certified}/>
+
       </div>
       <AIGeneratingModal
         open={isModalOpen}
@@ -311,7 +377,7 @@ export const RegisterGive = () => {
       <FreshResultModal
         open={isFreshModalOpen}
         onClose={() => setIsFreshModalOpen(false)}
-        fresh_result={"SPOILED"}
+        fresh_result={finalLabel}
       />
     </RegisterLayout>
   );

@@ -1,35 +1,39 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { fetchSharePage } from "@/apis/share";
-import type { ShareManageItem } from "@/types/share";
-import type { ApiResponse, PageData } from "@/types/api";
+import type { ShareItem, SharePageResp } from "@/types/share";
+
+type Selected = {
+  pages: SharePageResp[]; // ✅ ApiResponse 래퍼 배열
+  pageParams: number[];
+  flat: ShareItem[]; // 모든 페이지 content 평탄화
+};
 
 export function useShareInfinite(size = 20) {
   return useInfiniteQuery<
-    ApiResponse<PageData<ShareManageItem>>,
-    Error,
-    {
-      pages: PageData<ShareManageItem>[];
-      flat: ShareManageItem[];
-      pageParams: number[];
-    }, // select 이후
-    ["share", number], // TQueryKey
-    number
+    SharePageResp, // TQueryFnData (한 페이지의 원본 타입)
+    Error, // TError
+    Selected, // TData (select 반환 타입)
+    readonly ["share", number], // TQueryKey
+    number // TPageParam
   >({
-    queryKey: ["share", size],
-    queryFn: ({ pageParam = 0 }: { pageParam: number }) =>
-      fetchSharePage(pageParam, size),
+    queryKey: ["share", size] as const,
+    queryFn: ({ pageParam = 0 }) => fetchSharePage(pageParam, size),
 
     initialPageParam: 0,
     getNextPageParam: (lastPage) => {
-      const pg = lastPage.data;
-      return pg.last ? undefined : pg.number + 1;
+      const d = lastPage.data;
+      return d.last ? undefined : d.number + 1; // ✅ 래퍼 내부 기준
     },
-    select: (res) => {
-      // 각 page의 data만 뽑아서 사용
-      const pages = res.pages.map((p) => p.data);
-      const flat = pages.flatMap((p) => p.content ?? []);
-      return { pages, flat, pageParams: res.pageParams };
+
+    select: (data): Selected => {
+      const flat = data.pages.flatMap((p) => p.data?.content ?? []); // ✅ data.content
+      return {
+        pages: data.pages,
+        pageParams: data.pageParams as number[],
+        flat,
+      };
     },
+
     staleTime: 30_000,
   });
 }

@@ -1,3 +1,5 @@
+import type { ApiResponse, PageData } from "./api";
+
 export interface ShareItem {
   shareId: number;
   itemName: string;
@@ -18,6 +20,8 @@ export interface SharePage {
   size: number;
   number: number;
 }
+
+export type SharePageResp = ApiResponse<PageData<ShareItem>>;
 
 //manage 용
 export interface SharManagePage {

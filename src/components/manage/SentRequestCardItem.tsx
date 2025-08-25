@@ -36,7 +36,7 @@ export const SentRequestCardItem = ({
   brand?: string;
   itemName?: string;
   quantity?: number;
-  minutesAgo?: string;
+  minutesAgo?: number;
   distanceKm?: number;
   openTime?: string | LocalTime;
   closeTime?: string | LocalTime;
@@ -127,6 +127,15 @@ export const SentRequestCardItem = ({
     }
   };
 
+  const formatAgo = (minutes?: number) => {
+    if (minutes === undefined) return "";
+    if (minutes < 60) return `${minutes}분 전`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}시간 전`;
+    const days = Math.floor(hours / 24);
+    return `${days}일 전`;
+  };
+
   return (
     <div
       className="relative flex flex-col p-5 bg-white border border-gray-100 rounded-3xl gap-6"
@@ -165,7 +174,9 @@ export const SentRequestCardItem = ({
                   {itemName} {quantity && ` ${quantity}개`}
                 </span>
               </div>
-              <span className="caption text-gray-200">{minutesAgo}</span>
+              <span className="caption text-gray-200">
+                {formatAgo(minutesAgo)}
+              </span>
             </div>
             <div className="flex flex-col gap-2 body-01 text-gray-500">
               <div className="flex flex-row gap-2">
